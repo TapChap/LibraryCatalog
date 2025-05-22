@@ -9,7 +9,7 @@ def getBook(book_name):
     return book, 200
 
 def getBookById(book_id):
-    book = Book.query.filter_by(book_id=book_id).first()
+    book = Book.query.get(book_id)
 
     if not book:
         return None, 404

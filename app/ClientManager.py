@@ -9,7 +9,7 @@ def getClient(username):
     return client, 200
 
 def getClientByID(client_id):
-    client = Client.query.filter_by(id=client_id).first()
+    client = Client.query.get(client_id)
 
     if not client:
         return None, 404
