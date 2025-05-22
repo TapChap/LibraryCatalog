@@ -1,6 +1,8 @@
 from database import db
 
-borrowd_books_table = db.Table(
+# Many-to-many relationship table for books that can be held by multiple clients
+# and clients that can hold multiple books
+borrowed_books_table = db.Table(
     'book_holding_table',
     db.Column('client_id', db.Integer, db.ForeignKey('client.id'), primary_key=True),
     db.Column('book_id', db.Integer, db.ForeignKey('book.id'), primary_key=True)
@@ -12,14 +14,17 @@ class Client(db.Model):
     display_name = db.Column(db.String(120), nullable=False)
     permission = db.Column(db.Integer, default=1)
 
-    held_books = db.relationship('Book', secondary=borrowd_books_table, backref=db.backref('holders', lazy='dynamic'))
+    # Many-to-many relationship: clients can hold multiple books
+    held_books = db.relationship('Book', secondary=borrowed_books_table,
+                                 backref=db.backref('holders', lazy='dynamic'))
 
     def toJson(self):
         return {
             "id": self.id,
             "username": self.username,
             "display_name": self.display_name,
-            "permission": self.permission
+            "permission": self.permission,
+            "held_books": [book.toJson() for book in self.held_books]
         }
 
 
@@ -29,8 +34,7 @@ class Book(db.Model):
     isTaken = db.Column(db.Boolean, default=False)
     quantity = db.Column(db.Integer, default=1)
 
-    heldById = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=True)
-    heldBy = db.relationship('Client', backref='held_books', lazy=True)
+    # The relationship to clients is defined via backref in the Client model
 
     def toJson(self):
         return {
@@ -38,6 +42,5 @@ class Book(db.Model):
             "book_name": self.book_name,
             "isTaken": self.isTaken,
             "quantity": self.quantity,
-            "heldById": self.heldById,
-            "heldBy": self.heldBy
+            "holders": [holder.username for holder in self.holders]
         }

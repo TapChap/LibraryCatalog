@@ -72,7 +72,7 @@ def add_book():
 
     db.session.commit()
 
-    return {"message": "updated bookDB", "newBook": book.toJson()}, 201
+    return {"message": "updated bookDB", "Book": book.toJson()}, 201
 
 @app.route('/book/<string:book_name>', methods=['GET'])
 def fetch_book(book_name):
@@ -82,7 +82,16 @@ def fetch_book(book_name):
 
     return {"book": book.toJson()}, 200
 
-@app.route('/borrow/client/<int:client_id>', methods=['POST'])
+@app.route('/book/id/<int:book_id>', methods=['GET'])
+def fetch_book_by_id(book_id):
+    book, status_code = getBookById(book_id)
+    if status_code == 404:
+        abort(404, description="error: Book not found")
+
+    return {"book": book.toJson()}, 200
+
+
+@app.route('/client/id/<int:client_id>/obtain_book', methods=['POST'])
 def obtain_book(client_id):
     data = request.get_json()
     book_id = data.get("book_id")
@@ -98,9 +107,17 @@ def obtain_book(client_id):
     if status_code == 404:
         abort(404, description="error: User not found")
 
+    # Check if book is available
+    if book.isTaken:
+        abort(400, description="error: Book not available")
+
+    # Check if client already has this book
+    if book in client.held_books:
+        abort(400, description="error: Client already has this book")
+
+    # Decrease quantity and add to client's held books
     book.quantity -= 1
-    if book.quantity == 0:
-        db.session.remove(book)
+    book.isTaken = book.quantity == 0  # Mark as taken if no copies left
 
     client.held_books.append(book)
 
@@ -112,11 +129,37 @@ def obtain_book(client_id):
         "user": client.toJson()
     }, 200
 
-@app.route('/holding/client/<int:client_id>', methods=['POST'])
+@app.route('/client/id/<int:client_id>/held_books', methods=['GET'])
 def get_held_books(client_id):
     client, status_code = getClientByID(client_id)
 
     if status_code == 404:
         abort(404, "error: Client not found")
 
-    return client.held_books
+    # Return JSON serializable data
+    held_books = [book.toJson() for book in client.held_books]
+
+    return {
+        "client_id": client_id,
+        "client_name": client.display_name,
+        "held_books": held_books
+    }, 200
+
+
+@app.route('/book/id/<int:book_id>/holders', methods=['GET'])
+def get_book_holders(book_id):
+    """Get all clients currently holding a specific book"""
+    book, status_code = getBookById(book_id)
+    if status_code == 404:
+        abort(404, description="error: Book not found")
+
+    # Get all clients holding this book
+    holders = [{"id": client.id, "username": client.username, "display_name": client.display_name}
+               for client in book.holders]
+
+    return {
+        "book_id": book_id,
+        "book_name": book.book_name,
+        "total_holders": len(holders),
+        "holders": holders
+    }, 200
