@@ -8,6 +8,7 @@ borrowed_books_table = db.Table(
     db.Column('book_id', db.Integer, db.ForeignKey('book.id'), primary_key=True)
 )
 
+
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -30,23 +31,47 @@ class Client(db.Model):
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    book_name = db.Column(db.String(200), nullable=False)
     isTaken = db.Column(db.Boolean, default=False)
     quantity = db.Column(db.Integer, default=1)
 
+    book_name = db.Column(db.String(200), nullable=False)
+    category = db.Column(db.String(200), nullable=False)
+
+    series = db.Column(db.String(200), nullable=True)
+    series_index = db.Column(db.String(3), nullable=True)
+    author = db.Column(db.String(200), nullable=True)
+    sub_cat = db.Column(db.String(200), nullable=True)
+    sub_cat_index = db.Column(db.Integer, nullable=True)
+    description = db.Column(db.String(200), nullable=True)
+    notes = db.Column(db.String(200), nullable=True)
+    librarian_notes = db.Column(db.String(200), nullable=True)
+
     # The relationship to clients is defined via backref in the Client model
 
-    def toJson(self, holders=False):
+    def toJson(self, holders=False, full=False):
         json = {
             "id": self.id,
-            "book_name": self.book_name,
             "isTaken": self.isTaken,
-            "quantity": self.quantity
+            "quantity": self.quantity,
+            "book_name": self.book_name,
+            "category": self.category
         }
 
         if holders:
             json.update({
                 "holders": [holder.username for holder in self.holders]
+            })
+
+        if full:
+            json.update({
+                "series": self.series,
+                "series_index": self.series_index,
+                "author": self.author,
+                "sub_category": self.sub_cat,
+                "sub_category_index": self.sub_cat_index,
+                "description": self.description,
+                "notes": self.notes,
+                "librarian_notes": self.librarian_notes
             })
 
         return json

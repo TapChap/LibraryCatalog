@@ -43,3 +43,37 @@ def obtain_book(client_id):
         "book": book.toJson(),
         "user": client.toJson()
     }, 200
+
+@library_route.route('/id/<int:client_id>/return_book', methods=['POST'])
+def return_book(client_id):
+    data = request.get_json()
+    book_id = data.get("book_id")
+
+    if not book_id:
+        abort(400, description="error: Missing book id")
+
+    book, status_code = getBookById(book_id)
+    if status_code == 404:
+        abort(404, description="error: Book not found")
+
+    client, status_code = getClientByID(client_id)
+    if status_code == 404:
+        abort(404, description="error: User not found")
+
+    # Check if the client already has this book
+    if book not in client.held_books:
+        abort(400, description="error: attempt to return book that isn't owned by client")
+
+    # Decrease quantity and add to client's held books
+    book.quantity += 1
+    book.isTaken = False
+
+    client.held_books.remove(book)
+
+    db.session.commit()
+
+    return {
+        "message": "book returned from user",
+        "book": book.toJson(),
+        "user": client.toJson()
+    }, 200

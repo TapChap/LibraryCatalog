@@ -1,6 +1,6 @@
 from flask import request, abort, Blueprint
 
-from app.Permission import Permission
+from client.Permission import Permission
 from database import db
 from app.client.Client_db import *
 
