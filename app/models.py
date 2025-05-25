@@ -38,7 +38,7 @@ class Book(db.Model):
     category = db.Column(db.String(200), nullable=False)
 
     series = db.Column(db.String(200), nullable=True)
-    series_index = db.Column(db.String(3), nullable=True)
+    series_index = db.Column(db.String(30), nullable=True)
     author = db.Column(db.String(200), nullable=True)
     sub_cat = db.Column(db.String(200), nullable=True)
     sub_cat_index = db.Column(db.Integer, nullable=True)

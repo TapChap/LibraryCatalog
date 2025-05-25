@@ -9,9 +9,12 @@ book_route = Blueprint("book_bp", __name__)
 def add_book():
     data = request.get_json()
     book_name = data.get("book_name")
+    category = data.get("category")
 
-    if not book_name:
-        abort(400, description="error : Missing book name")
+    print(category)
+
+    if not book_name or not category:
+        abort(400, description="error : Missing book name or category")
 
     # book exists in the system already incrementing quantity
     # if book := Book.query.filter_by(book_name=book_name).first():
@@ -21,7 +24,7 @@ def add_book():
         book.quantity += 1
         book.isTaken = False
     else:
-        book = createBook(book_name)
+        book = createBook(book_name, category)
         db.session.add(book)
 
     db.session.commit()
@@ -36,9 +39,9 @@ def fetch_book(book_name):
 
     return {"book": book.toJson(True)}, 200
 
-@book_route.route('/<int:id>', methods=['GET'])
-def fetch_book_by_id(book_id):
-    book, status_code = getBookById(book_id)
+@book_route.route('/id/<int:id>', methods=['GET'])
+def fetch_book_by_id(id):
+    book, status_code = getBookById(id)
     if status_code == 404:
         abort(404, description="error: Book not found")
 
@@ -66,6 +69,6 @@ def get_book_holders(book_id):
 def get_all_books():
     books = getAllBooks()
 
-    book_json_list = [book.toJson(True) for book in books]
+    book_json_list = [book.toJson(True, True) for book in books]
 
     return book_json_list, 200
