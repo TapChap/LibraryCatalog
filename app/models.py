@@ -36,11 +36,17 @@ class Book(db.Model):
 
     # The relationship to clients is defined via backref in the Client model
 
-    def toJson(self):
-        return {
+    def toJson(self, holders=False):
+        json = {
             "id": self.id,
             "book_name": self.book_name,
             "isTaken": self.isTaken,
-            "quantity": self.quantity,
-            "holders": [holder.username for holder in self.holders]
+            "quantity": self.quantity
         }
+
+        if holders:
+            json.update({
+                "holders": [holder.username for holder in self.holders]
+            })
+
+        return json

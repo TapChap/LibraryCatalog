@@ -19,3 +19,6 @@ def getClientByID(client_id):
 def createClient(username, display_name, permission_level):
     client = Client(username=username, display_name=display_name, permission=permission_level)
     return client
+
+def getAllClients():
+    return Client.query.all()

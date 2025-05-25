@@ -18,3 +18,6 @@ def getBookById(book_id):
 
 def createBook(book_name):
     return Book(book_name=book_name)
+
+def getAllBooks():
+    return Book.query.all()

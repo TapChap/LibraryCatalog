@@ -19,6 +19,7 @@ def add_book():
     book, status_code = getBook(book_name)
     if status_code == 200:
         book.quantity += 1
+        book.isTaken = False
     else:
         book = createBook(book_name)
         db.session.add(book)
@@ -27,13 +28,13 @@ def add_book():
 
     return {"message": "updated bookDB", "Book": book.toJson()}, 201
 
-@book_route.route('/<string:book_nae>', methods=['GET'])
+@book_route.route('/<string:book_name>', methods=['GET'])
 def fetch_book(book_name):
     book, status_code = getBook(book_name)
     if status_code == 404:
         abort(404, description="error: Book not found")
 
-    return {"book": book.toJson()}, 200
+    return {"book": book.toJson(True)}, 200
 
 @book_route.route('/<int:id>', methods=['GET'])
 def fetch_book_by_id(book_id):
@@ -41,7 +42,7 @@ def fetch_book_by_id(book_id):
     if status_code == 404:
         abort(404, description="error: Book not found")
 
-    return {"book": book.toJson()}, 200
+    return {"book": book.toJson(True)}, 200
 
 @book_route.route('/<int:id>/holding', methods=['GET'])
 def get_book_holders(book_id):
@@ -60,3 +61,11 @@ def get_book_holders(book_id):
         "total_holders": len(holders),
         "holders": holders
     }, 20
+
+@book_route.route('/all', methods=['GET'])
+def get_all_books():
+    books = getAllBooks()
+
+    book_json_list = [book.toJson(True) for book in books]
+
+    return book_json_list, 200

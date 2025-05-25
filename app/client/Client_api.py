@@ -66,3 +66,10 @@ def get_held_books(client_id):
         "held_books": held_books
     }, 200
 
+@client_route.route('/all', methods=['GET'])
+def get_client_db():
+    clients = getAllClients()
+
+    client_json_list = [client.toJson() for client in clients]
+
+    return client_json_list, 200
