@@ -1,9 +1,11 @@
-from flask import request, abort
+from flask import request, abort, Blueprint
 
 from database import db
 from book.Book_db import *
 from client.Client_db import *
 from server import app
+
+library_route = Blueprint("library_bp", __name__)
 
 @app.route('/client/id/<int:client_id>/obtain_book', methods=['POST'])
 def obtain_book(client_id):

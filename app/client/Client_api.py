@@ -1,9 +1,12 @@
-from flask import request, abort
+from flask import request, abort, Blueprint
 
 from app.Permission import Permission
 from database import db
 from app.client.Client_db import *
 
+client_route = Blueprint("client_bp", __name__)
+
+@client_route.route('/signup', methods=['POST'])
 def signup(permission_level):
     data = request.get_json()
     username = data.get('username')
@@ -21,9 +24,11 @@ def signup(permission_level):
 
     return {"message": "User created", "user": new_user.toJson()}, 201
 
+@client_route.route("/signup-admin", methods=['POST'])
 def admin_signup():
     return signup(Permission.ADMIN.value)
 
+@client_route.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -37,12 +42,15 @@ def login():
 
     return {"message": "Logged in", "user": user.toJson()}
 
+@client_route.route('/<string:username>')
 def fetch_client(username):
     return getClient(username)[0].toJson()
 
+@client_route.route('/id/<int:id>')
 def fetch_client_by_id(id):
     return getClientByID(id)[0].toJson()
 
+@client_route.route('/id/<int:client_id>/holding', methods=['GET'])
 def get_held_books(client_id):
     client, status_code = getClientByID(client_id)
 
