@@ -1,4 +1,4 @@
-from models import Client
+from app.models import Client
 
 def getClient(username):
     client = Client.query.filter_by(username=username).first()

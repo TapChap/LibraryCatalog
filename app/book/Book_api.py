@@ -1,0 +1,62 @@
+from flask import request, abort
+
+from app.database import db
+from app.server import app
+from app.book.Book_db import *
+
+@app.route('/add_book', methods=['POST'])
+def add_book():
+    data = request.get_json()
+    book_name = data.get("book_name")
+
+    if not book_name:
+        abort(400, description="error : Missing book name")
+
+    # book exists in the system already incrementing quantity
+    # if book := Book.query.filter_by(book_name=book_name).first():
+
+    book, status_code = getBook(book_name)
+    if status_code == 200:
+        book.quantity += 1
+    else:
+        book = createBook(book_name)
+        db.session.add(book)
+
+    db.session.commit()
+
+    return {"message": "updated bookDB", "Book": book.toJson()}, 201
+
+
+@app.route('/book/<string:book_name>', methods=['GET'])
+def fetch_book(book_name):
+    book, status_code = getBook(book_name)
+    if status_code == 404:
+        abort(404, description="error: Book not found")
+
+    return {"book": book.toJson()}, 200
+
+@app.route('/book/id/<int:book_id>', methods=['GET'])
+def fetch_book_by_id(book_id):
+    book, status_code = getBookById(book_id)
+    if status_code == 404:
+        abort(404, description="error: Book not found")
+
+    return {"book": book.toJson()}, 200
+
+@app.route('/book/id/<int:book_id>/holding', methods=['GET'])
+def get_book_holders(book_id):
+    """Get all clients currently holding a specific book"""
+    book, status_code = getBookById(book_id)
+    if status_code == 404:
+        abort(404, description="error: Book not found")
+
+    # Get all clients holding this book
+    holders = [{"id": client.id, "username": client.username, "display_name": client.display_name}
+               for client in book.holders]
+
+    return {
+        "book_id": book_id,
+        "book_name": book.book_name,
+        "total_holders": len(holders),
+        "holders": holders
+    }, 20

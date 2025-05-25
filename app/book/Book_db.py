@@ -1,4 +1,4 @@
-from models import Book
+from app.models import Book
 
 def getBook(book_name):
     book = Book.query.filter_by(book_name=book_name).first()

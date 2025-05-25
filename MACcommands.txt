@@ -1,0 +1,5 @@
+CMD command to send a ping to all devices on a subnet
+FOR /L %i IN (1,1,254) DO @ping -n 1 -w 40 192.168.181.%i >nul && echo Host %i is up
+
+can be followed by to get the mac address of every device on the network
+arp -a
