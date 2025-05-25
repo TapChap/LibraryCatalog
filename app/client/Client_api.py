@@ -1,12 +1,10 @@
 from flask import request, abort
 
 from app.Permission import Permission
-from app.database import db
-from app.server import app
+from database import db
 from app.client.Client_db import *
 
-@app.route('/signup', methods=['POST'])
-def signup(permission_level=1):
+def signup(permission_level):
     data = request.get_json()
     username = data.get('username')
     display_name = data.get('display_name')
@@ -23,11 +21,9 @@ def signup(permission_level=1):
 
     return {"message": "User created", "user": new_user.toJson()}, 201
 
-@app.route("/signup-admin", methods=['POST'])
 def admin_signup():
     return signup(Permission.ADMIN.value)
 
-@app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -41,12 +37,12 @@ def login():
 
     return {"message": "Logged in", "user": user.toJson()}
 
-@app.route('/user/<string:username>')
-def getClientName(username):
+def fetch_client(username):
     return getClient(username)[0].toJson()
 
+def fetch_client_by_id(id):
+    return getClientByID(id)[0].toJson()
 
-@app.route('/client/id/<int:client_id>/holding', methods=['GET'])
 def get_held_books(client_id):
     client, status_code = getClientByID(client_id)
 

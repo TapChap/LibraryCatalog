@@ -25,7 +25,7 @@ def obtain_book(client_id):
     if book.isTaken:
         abort(400, description="error: Book not available")
 
-    # Check if client already has this book
+    # Check if the client already has this book
     if book in client.held_books:
         abort(400, description="error: Client already has this book")
 
