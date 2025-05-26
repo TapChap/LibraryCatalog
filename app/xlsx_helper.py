@@ -1,5 +1,6 @@
 import pandas as pd
 from book.xlsxBook import xlsxBook
+from book.Book_db import createBook
 
 def readFromFile(path, usecols):
     df = pd.read_excel(path, usecols=usecols)
@@ -18,3 +19,10 @@ def readFromFile(path, usecols):
             raise Exception(f"error at row {index+1}, incorrect data type")
 
     return data
+
+def writeToSQL(data, db):
+    for book in data:
+        sqlBook = createBook(*book.serialize())
+
+        db.session.add(sqlBook)
+        db.session.commit()

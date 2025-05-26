@@ -1,6 +1,4 @@
-import json
-import os
-import uuid
+import json, os, uuid
 
 from flask import Flask
 from sqlalchemy import text
@@ -8,7 +6,7 @@ from sqlalchemy import text
 from client.Client_api import *
 from book.Book_api import *
 from Library import *
-from xlsxToSQL import xlsxToSQL
+from xlsx_helper import *
 
 app = Flask(__name__)
 
@@ -30,14 +28,12 @@ def loadFromFile():
     json_data = request.form.get('dataColumns')
     file = request.files.get('data')
 
-    # UPLOAD_DIR = "uploads"
-    # os.makedirs(UPLOAD_DIR, exist_ok=True)
-
     filename = f"{uuid.uuid4()}_{file.filename}"
-    # save_path = os.path.join(UPLOAD_DIR, filename)
     file.save(filename)
 
-    xlsxToSQL(db, filename, json.loads(json_data).get('dataColumns'))
+    data = readFromFile(filename, json.loads(json_data).get('dataColumns'))
+    writeToSQL(data, db)
+
     os.remove(filename)
 
     return {"success": "successfully loaded from file"}, 201
