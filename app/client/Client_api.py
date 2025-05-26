@@ -7,7 +7,7 @@ from app.client.Client_db import *
 client_route = Blueprint("client_bp", __name__)
 
 @client_route.route('/signup', methods=['POST'])
-def signup(permission_level):
+def signup(permission_level=1):
     data = request.get_json()
     username = data.get('username')
     display_name = data.get('display_name')

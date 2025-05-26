@@ -11,7 +11,16 @@ def add_book():
     book_name = data.get("book_name")
     category = data.get("category")
 
-    print(category)
+    # Get other parameters from URL query string
+    series = request.args.get("series")
+    series_index = request.args.get("series_index", type=int)
+    author = request.args.get("author")
+    sub_cat = request.args.get("sub_cat")
+    sub_cat_index = request.args.get("sub_cat_index", type=int)
+    quantity = request.args.get("quantity", default=1, type=int)
+    desc = request.args.get("description")
+    notes = request.args.get("notes")
+    librarian_notes = request.args.get("librarian_notes")
 
     if not book_name or not category:
         abort(400, description="error : Missing book name or category")
@@ -19,17 +28,25 @@ def add_book():
     # book exists in the system already incrementing quantity
     # if book := Book.query.filter_by(book_name=book_name).first():
 
-    book, status_code = getBook(book_name)
-    if status_code == 200:
-        book.quantity += 1
+    new_book = createBook(book_name, category, quantity=quantity,
+                          series=series, series_index=series_index, author=author,
+                          sub_cat=sub_cat, sub_cat_index=sub_cat_index,
+                          desc=desc, notes=notes, librarian_notes=librarian_notes)
+
+    book, status_code = bookExists(new_book)
+    if status_code == 200 and equals(book, new_book):
+        book.quantity += new_book.quantity
         book.isTaken = False
+
+        book.description = new_book.description
+        book.notes = new_book.notes
+        book.librarian_notes = new_book.librarian_notes
     else:
-        book = createBook(book_name, category)
-        db.session.add(book)
+        db.session.add(new_book)
 
     db.session.commit()
 
-    return {"message": "updated bookDB", "Book": book.toJson()}, 201
+    return {"message": "updated bookDB", "Book": new_book.toJson(full=True)}, 201
 
 @book_route.route('/<string:book_name>', methods=['GET'])
 def fetch_book(book_name):

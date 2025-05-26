@@ -1,3 +1,5 @@
+import random
+
 from database import db
 
 # Many-to-many relationship table for books that can be held by multiple clients
@@ -8,9 +10,12 @@ borrowed_books_table = db.Table(
     db.Column('book_id', db.Integer, db.ForeignKey('book.id'), primary_key=True)
 )
 
+def genID():
+    return random.randint(1000000, 9999999)
+
 
 class Client(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, default=genID)
     username = db.Column(db.String(80), unique=True, nullable=False)
     display_name = db.Column(db.String(120), nullable=False)
     permission = db.Column(db.Integer, default=1)
