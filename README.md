@@ -10,6 +10,60 @@ http://<192.168.181.247:5500>/
 
 ## 📖 Book Management (from `Book_api.py`)
 
+### Book Json
+# 📘 Book JSON Schema Reference
+
+This document describes the structure of a `Book` object as returned by the backend API in different levels of detail, based on flags such as `full` and `holders`.
+
+---
+
+## 🧩 Base Fields (Always Included)
+
+```json
+{
+  "id": "integer",
+  "isTaken": "boolean",
+  "quantity": "integer",
+  "book_name": "string",
+  "category": "string"
+}
+```
+
+* `id`: Unique identifier for the book
+* `isTaken`: Whether the book is currently taken (i.e., unavailable)
+* `quantity`: Number of available copies
+* `book_name`: The title of the book
+* `category`: The book's main category
+
+---
+
+## 👥 Holders (Included if `holders`)
+
+```json
+{
+  "holders": [ { ...user object... } ]
+}
+```
+
+* `holders`: A list of users currently holding the book. Each holder is serialized using their `toJson()` method.
+
+---
+
+## 🧾 Full Details (Included if `full`)
+
+```json
+{
+  "series": "string | null",
+  "series_index": "integer | null",
+  "author": "string | null",
+  "sub_category": "string | null",
+  "sub_category_index": "integer | null",
+  "description": "string | null",
+  "notes": "string | null",
+  "librarian_notes": "string | null"
+}
+```
+
 ### 1. Add a New Book
 
 * **Endpoint:** `POST /book/add`
@@ -29,7 +83,7 @@ http://<192.168.181.247:5500>/
   ```json
   {
     "message": "updated bookDB",
-    "Book": { ...full book details... }
+    "Book": { ...book details... } full - ✅, holders - ❌
   }
   ```
 
@@ -40,7 +94,7 @@ http://<192.168.181.247:5500>/
 
   ```json
   {
-    "books": [ { ...all books with book_name... } ]
+    "books": [ { ...all books with book_name... } ] full - ❌, holders - ❌
   }
   ```
 
@@ -51,7 +105,7 @@ http://<192.168.181.247:5500>/
 
   ```json
   {
-    "book": { ...full book details... }
+    "book": { ...full book details... } full - ✅, holders - ✅
   }
   ```
 
@@ -61,7 +115,7 @@ http://<192.168.181.247:5500>/
 * **Response:**
 
   ```json
-  [ { ...all db books... }, ... ]
+  [ { ...first db book... }, { ...seconds db book... }, ... ] full - ✅, holders - ✅
   ```
 
 ---
