@@ -5,6 +5,7 @@ from book.Book_db import *
 
 book_route = Blueprint("book_bp", __name__)
 
+
 @book_route.route('/add', methods=['POST'])
 def add_book():
     data = request.get_json()
@@ -28,10 +29,11 @@ def add_book():
     # book exists in the system already incrementing quantity
     # if book := Book.query.filter_by(book_name=book_name).first():
 
-    new_book = createBook(book_name, category, quantity=quantity,
-                          series=series, series_index=series_index, author=author,
-                          sub_cat=sub_cat, sub_cat_index=sub_cat_index,
-                          desc=desc, notes=notes, librarian_notes=librarian_notes)
+    new_book = createBook(
+        book_name, category, quantity=quantity,
+        series=series, series_index=series_index, author=author,
+        sub_cat=sub_cat, sub_cat_index=sub_cat_index,
+        desc=desc, notes=notes, librarian_notes=librarian_notes)
 
     book, status_code = bookExists(new_book)
     if status_code == 200 and equals(book, new_book):
@@ -48,13 +50,17 @@ def add_book():
 
     return {"message": "updated bookDB", "Book": new_book.toJson(full=True)}, 201
 
+
 @book_route.route('/<string:book_name>', methods=['GET'])
-def fetch_book(book_name):
-    book, status_code = getBook(book_name)
+def fetch_books(book_name):
+    books, status_code = getBook(book_name)
     if status_code == 404:
         abort(404, description="error: Book not found")
 
-    return {"book": book.toJson(True)}, 200
+    books = [book.toJson(full=True) for book in books]
+
+    return {"book": books}, 200
+
 
 @book_route.route('/id/<int:id>', methods=['GET'])
 def fetch_book_by_id(id):
@@ -62,25 +68,7 @@ def fetch_book_by_id(id):
     if status_code == 404:
         abort(404, description="error: Book not found")
 
-    return {"book": book.toJson(True)}, 200
-
-@book_route.route('/<int:id>/holding', methods=['GET'])
-def get_book_holders(book_id):
-    """Get all clients currently holding a specific book"""
-    book, status_code = getBookById(book_id)
-    if status_code == 404:
-        abort(404, description="error: Book not found")
-
-    # Get all clients holding this book
-    holders = [{"id": client.id, "username": client.username, "display_name": client.display_name}
-               for client in book.holders]
-
-    return {
-        "book_id": book_id,
-        "book_name": book.book_name,
-        "total_holders": len(holders),
-        "holders": holders
-    }, 20
+    return {"book": book.toJson(True, True)}, 200
 
 @book_route.route('/all', methods=['GET'])
 def get_all_books():

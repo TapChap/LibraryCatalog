@@ -44,11 +44,20 @@ def login():
 
 @client_route.route('/<string:username>')
 def fetch_client(username):
-    return getClient(username)[0].toJson()
+    client, status_code = getClient(username)
+    if status_code == 404:
+        return abort(404, description="User not found")
+
+    return client.toJson()
 
 @client_route.route('/id/<int:id>')
 def fetch_client_by_id(id):
-    return getClientByID(id)[0].toJson()
+    client, status_code = getClientByID(id)
+    if status_code == 404:
+        return abort(404, description="User not found")
+
+    return client.toJson()
+
 
 @client_route.route('/id/<int:client_id>/holding', methods=['GET'])
 def get_held_books(client_id):
@@ -57,19 +66,12 @@ def get_held_books(client_id):
     if status_code == 404:
         abort(404, "error: Client not found")
 
-    # Return JSON serializable data
-    held_books = [book.toJson() for book in client.held_books]
+    held_books = [book.toJson(full=True, holders=False) for book in client.held_books]
 
-    return {
-        "client_id": client_id,
-        "client_name": client.display_name,
-        "held_books": held_books
-    }, 200
+    return {"client": client.toJson(), "books": held_books}, 200
 
 @client_route.route('/all', methods=['GET'])
 def get_client_db():
     clients = getAllClients()
-
     client_json_list = [client.toJson() for client in clients]
-
     return client_json_list, 200

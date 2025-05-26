@@ -21,8 +21,9 @@ class Client(db.Model):
     permission = db.Column(db.Integer, default=1)
 
     # Many-to-many relationship: clients can hold multiple books
-    held_books = db.relationship('Book', secondary=borrowed_books_table,
-                                 backref=db.backref('holders', lazy='dynamic'))
+    held_books = db.relationship(
+        'Book', secondary=borrowed_books_table,
+        backref=db.backref('holders', lazy='dynamic'))
 
     def toJson(self):
         return {
@@ -64,7 +65,7 @@ class Book(db.Model):
 
         if holders:
             json.update({
-                "holders": [holder.username for holder in self.holders]
+                "holders": [holder.toJson() for holder in self.holders]
             })
 
         if full:

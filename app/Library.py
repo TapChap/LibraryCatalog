@@ -60,11 +60,9 @@ def return_book(client_id):
     if status_code == 404:
         abort(404, description="error: User not found")
 
-    # Check if the client already has this book
     if book not in client.held_books:
-        abort(400, description="error: attempt to return book that isn't owned by client")
+        abort(400, description="error: attempt to return book that isn't taken by client")
 
-    # Decrease quantity and add to client's held books
     book.quantity += 1
     book.isTaken = False
 

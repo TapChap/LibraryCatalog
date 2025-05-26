@@ -1,12 +1,12 @@
 from models import Book
 
 def getBook(book_name):
-    book = Book.query.filter_by(book_name=book_name).first()
+    books = Book.query.filter_by(book_name=book_name)
 
-    if not book:
+    if not books:
         return None, 404
 
-    return book, 200
+    return books, 200
 
 def bookExists(book):
     book_copy = Book.query.filter_by(
