@@ -13,8 +13,8 @@ def readFromFile(path, usecols):
         try:
             data.append(xlsxBook(
                 index, row["שם הספר"], row["קטגוריה"],
-                row["סדרה"], row["מספר בסדרה"], row["מחבר"], row["תת-קטגוריה"], row["קאטר"],
-                row["כפילויות"], row["תיאור"], row["הערות"], row["הערות ספרן"]))
+                row["סדרה"], row["מספר בסדרה"], row["מחבר"], row["תווית"], row["תת-קטגוריה"],
+                row["קאטר"], row["כפילויות"], row["תיאור"], row["הערות"], row["הערות ספרן"]))
         except ValueError:
             raise Exception(f"error at row {index+1}, incorrect data type")
 

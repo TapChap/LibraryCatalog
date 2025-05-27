@@ -46,6 +46,7 @@ class Book(db.Model):
     series = db.Column(db.String(200), nullable=True)
     series_index = db.Column(db.String(30), nullable=True)
     author = db.Column(db.String(200), nullable=True)
+    label = db.Column(db.String(5), nullable=True)
     sub_cat = db.Column(db.String(200), nullable=True)
     sub_cat_index = db.Column(db.Integer, nullable=True)
     description = db.Column(db.String(200), nullable=True)
@@ -73,6 +74,7 @@ class Book(db.Model):
                 "series": self.series,
                 "series_index": self.series_index,
                 "author": self.author,
+                "label": self.label,
                 "sub_category": self.sub_cat,
                 "sub_category_index": self.sub_cat_index,
                 "description": self.description,

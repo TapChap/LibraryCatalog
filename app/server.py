@@ -40,7 +40,8 @@ def loadFromFile():
 
 @app.route('/book/drop', methods=['POST'])
 def drop_book_table():
-    result = runSQL("TRUNCATE TABLE book RESTART IDENTITY CASCADE;")
+    result = runSQL("TRUNCATE TABLE book RESTART IDENTITY CASCADE;") #drop table values
+    # result = runSQL("DROP TABLE book CASCADE") #drop table itself
 
     if not result:
         return {"result" : "dropped table"}, 200
@@ -67,4 +68,4 @@ def runSQL(sql_string):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # create tables
-    app.run(host="0.0.0.0", port=5500, debug=True)
+    app.run(host="0.0.0.0", port=80, debug=True)

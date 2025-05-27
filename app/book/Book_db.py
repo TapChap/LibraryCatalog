@@ -3,7 +3,7 @@ from models import Book
 def getBook(book_name):
     books = Book.query.filter_by(book_name=book_name)
 
-    if not books:
+    if not books.first():
         return None, 404
 
     return books, 200
@@ -32,7 +32,7 @@ def getBookById(book_id):
     return book, 200
 
 def createBook(book_name, category, quantity=1,
-               series="", series_index="", author="", sub_cat="",
+               series="", series_index="", author="", label="", sub_cat="",
                sub_cat_index=0, desc="", notes="", librarian_notes=""):
     return Book(
         book_name=book_name, category=category,
@@ -40,6 +40,7 @@ def createBook(book_name, category, quantity=1,
         series=series,
         series_index=series_index,
         author=author,
+        label=label,
         sub_cat=sub_cat,
         sub_cat_index=sub_cat_index,
         quantity=quantity,
@@ -58,6 +59,7 @@ def equals(book1, book2):
             book1.series == book2.series and
             book1.series_index == book2.series_index and
             book1.author == book2.author and
+            book1.label == book2.label and
             book1.sub_cat == book2.sub_cat and
             book1.sub_cat_index == book2.sub_cat_index
     )
