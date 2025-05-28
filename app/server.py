@@ -1,6 +1,7 @@
 import json, os, uuid
 
 from flask import Flask
+from flask_cors import CORS
 from sqlalchemy import text
 
 from client.Client_api import *
@@ -9,6 +10,7 @@ from Library import *
 from xlsx_helper import *
 
 app = Flask(__name__)
+CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:DEsyro.200506@localhost/book_sharing'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Library Tracker - Login / Signup</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f3f4f6;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+        }
+
+        .container {
+          background-color: white;
+          padding: 2rem;
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+          max-width: 400px;
+          width: 100%;
+        }
+
+        h2 {
+          text-align: center;
+        }
+
+        input[type="text"], input[type="password"] {
+          padding: 0.5rem;
+          font-size: 1rem;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          width: 100%;
+        }
+
+        button {
+          padding: 0.7rem;
+          font-size: 1rem;
+          background-color: #3b82f6;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+
+        button:hover {
+          background-color: #2563eb;
+        }
+
+        .switch-link {
+          text-align: center;
+          margin-top: 1rem;
+        }
+
+        .switch-link a {
+          color: #3b82f6;
+          text-decoration: none;
+        }
+
+        .switch-link a:hover {
+          text-decoration: underline;
+        }
+
+        .error {
+          color: red;
+          text-align: center;
+        }
+
+        .success {
+          color: green;
+          text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="signup-container">
+    <h2>Sign Up</h2>
+    <div id="signup-msg"></div>
+    <input type="text" id="signup-username" placeholder="Username" required />
+    <input type="text" id="signup-display" placeholder="Display Name" required />
+    <button onclick="handleSignup()">Sign Up</button>
+    <div class="switch-link">
+        Already have an account? <a href="#" onclick="toggleForm()">Log In</a>
+    </div>
+</div>
+
+<div class="container" id="login-container" style="display: none;">
+    <h2>Log In</h2>
+    <div id="login-msg"></div>
+    <input type="text" id="login-username" placeholder="Username" required />
+    <button onclick="handleLogin()">Log In</button>
+    <div class="switch-link">
+        Don't have an account? <a href="#" onclick="toggleForm()">Sign Up</a>
+    </div>
+</div>
+
+<script>
+    function toggleForm() {
+      const signup = document.getElementById("signup-container");
+      const login = document.getElementById("login-container");
+      signup.style.display = signup.style.display === "none" ? "block" : "none";
+      login.style.display = login.style.display === "none" ? "block" : "none";
+    }
+
+    async function handleSignup() {
+      const username = document.getElementById("signup-username").value;
+      const display_name = document.getElementById("signup-display").value;
+
+      const response = await fetch("http://localhost:80/user/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({"username": username, "display_name": display_name})
+      });
+
+      const msg = document.getElementById("signup-msg");
+      const resData = await response.json();
+      msg.className = response.ok ? "success" : "error";
+      msg.textContent = resData.message || "Signup failed";
+    }
+
+    async function handleLogin() {
+      const username = document.getElementById("login-username").value;
+
+      const response = await fetch("http://localhost:80/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({"username": username}),
+      }).then(response => response.json())
+      .then(data => {
+    console.log("User ID:", data.user.id); // assuming the field is called `id` inside user
+  })
+  .catch(error => console.error("Error:", error));;
+
+      const msg = document.getElementById("login-msg");
+      const resData = await response.json();
+      msg.className = response.ok ? "success" : "error";
+      msg.textContent = resData.message || "Login failed";
+    }
+</script>
+
+</body>
+</html>

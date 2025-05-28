@@ -3,6 +3,7 @@ from flask import request, abort, Blueprint
 from client.Permission import Permission
 from database import db
 from app.client.Client_db import *
+from passwordManager import hashPassword
 
 client_route = Blueprint("client_bp", __name__)
 
@@ -11,16 +12,19 @@ def signup(permission_level=1):
     data = request.get_json()
     username = data.get('username')
     display_name = data.get('display_name')
+    password = data.get("password")
 
     if not username or not display_name:
-        abort(400, description="error: Missing username or display_name")
+        abort(400, description="error: Missing credentials")
 
     if getClient(username)[1] == 200:
         abort(409, description="error: user already exists")
 
-    new_user = createClient(username, display_name, permission_level)
+    new_user = createClient(username, display_name, permission_level, *hashPassword(password))
     db.session.add(new_user)
     db.session.commit()
+
+    print("user created", new_user.toJson())
 
     return {"message": "User created", "user": new_user.toJson()}, 201
 
@@ -32,13 +36,19 @@ def admin_signup():
 def login():
     data = request.get_json()
     username = data.get('username')
+    password = data.get('password')
 
-    if not username:
-        abort(400, description="Missing username")
+    if not username or not password:
+        abort(400, description="Missing username or password")
 
     user, status_code = getClient(username)
     if status_code == 404:
         abort(404, description="User not found")
+
+    if not user.validatePassword(password):
+        abort(401, description="Incorrect Password")
+
+    print("logged in", user.toJson())
 
     return {"message": "Logged in", "user": user.toJson()}
 
@@ -48,6 +58,8 @@ def fetch_client(username):
     if status_code == 404:
         return abort(404, description="User not found")
 
+    print("client", client.toJson())
+
     return client.toJson()
 
 @client_route.route('/id/<int:id>')
@@ -55,6 +67,8 @@ def fetch_client_by_id(id):
     client, status_code = getClientByID(id)
     if status_code == 404:
         return abort(404, description="User not found")
+
+    print("client", client.toJson())
 
     return client.toJson()
 

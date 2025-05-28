@@ -1,4 +1,4 @@
-import random
+import random, passwordManager
 
 from database import db
 
@@ -18,6 +18,8 @@ class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True, default=genID)
     username = db.Column(db.String(80), unique=True, nullable=False)
     display_name = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(64))
+    salt = db.Column(db.String(passwordManager.SALT_LENGTH))
     permission = db.Column(db.Integer, default=1)
 
     # Many-to-many relationship: clients can hold multiple books
@@ -33,6 +35,9 @@ class Client(db.Model):
             "permission": self.permission,
             "held_books": [book.toJson() for book in self.held_books]
         }
+
+    def validatePassword(self, password):
+        return passwordManager.hashPassword(password, self.salt)[0] == self.password
 
 
 class Book(db.Model):

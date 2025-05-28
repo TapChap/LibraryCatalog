@@ -16,8 +16,8 @@ def getClientByID(client_id):
 
     return client, 200
 
-def createClient(username, display_name, permission_level):
-    client = Client(username=username, display_name=display_name, permission=permission_level)
+def createClient(username, display_name, permission_level, password, salt):
+    client = Client(username=username, display_name=display_name, password=password, salt=salt, permission=permission_level)
     return client
 
 def getAllClients():
