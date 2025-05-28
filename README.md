@@ -3,7 +3,7 @@
 ## Base URL
 
 ```
-http://<192.168.181.247:5500>/
+http://<192.168.181.247:80>/
 ```
 
 ---
@@ -122,6 +122,23 @@ This document describes the structure of a `Book` object as returned by the back
 
 ## 👤 Client Management (from `Client_api.py`)
 
+### User Json
+# 📘 User JSON Schema Reference
+
+---
+
+## 🧩 Base Fields (Always Included)
+
+```json
+{
+  "id": "integer",
+  "username": "string",
+  "display_name": "string",
+  "permission": "string",
+  "held_books": [{ ...book details... }]
+}
+```
+
 ### 1. User Signup
 
 * **Endpoint:** `POST /user/signup`
@@ -130,7 +147,8 @@ This document describes the structure of a `Book` object as returned by the back
   ```json
   {
     "username": "string",
-    "display_name": "string"
+    "display_name": "string",
+    "password": "string"
   }
   ```
 * **Response:**
@@ -155,7 +173,8 @@ This document describes the structure of a `Book` object as returned by the back
 
   ```json
   {
-    "username": "string"
+    "username": "string",
+    "password": "string"
   }
   ```
 * **Response:**
