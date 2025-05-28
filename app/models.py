@@ -33,6 +33,7 @@ class Client(db.Model):
             "username": self.username,
             "display_name": self.display_name,
             "permission": self.permission,
+            "password hash": self.password,
             "held_books": [book.toJson() for book in self.held_books]
         }
 

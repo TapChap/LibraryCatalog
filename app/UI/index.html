@@ -80,6 +80,7 @@
     <div id="signup-msg"></div>
     <input type="text" id="signup-username" placeholder="Username" required />
     <input type="text" id="signup-display" placeholder="Display Name" required />
+    <input type="password" id="signup-password" placeholder="Password" required />
     <button onclick="handleSignup()">Sign Up</button>
     <div class="switch-link">
         Already have an account? <a href="#" onclick="toggleForm()">Log In</a>
@@ -90,6 +91,7 @@
     <h2>Log In</h2>
     <div id="login-msg"></div>
     <input type="text" id="login-username" placeholder="Username" required />
+    <input type="password" id="login-password" placeholder="Password" required />
     <button onclick="handleLogin()">Log In</button>
     <div class="switch-link">
         Don't have an account? <a href="#" onclick="toggleForm()">Sign Up</a>
@@ -107,11 +109,12 @@
     async function handleSignup() {
       const username = document.getElementById("signup-username").value;
       const display_name = document.getElementById("signup-display").value;
+      const password = document.getElementById("signup-password").value;
 
       const response = await fetch("http://localhost:80/user/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({"username": username, "display_name": display_name})
+        body: JSON.stringify({"username": username, "display_name": display_name, "password": password})
       });
 
       const msg = document.getElementById("signup-msg");
@@ -122,21 +125,18 @@
 
     async function handleLogin() {
       const username = document.getElementById("login-username").value;
+      const password = document.getElementById("login-password").value;
 
       const response = await fetch("http://localhost:80/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({"username": username}),
+        body: JSON.stringify({"username": username, "password": password}),
       }).then(response => response.json())
       .then(data => {
-    console.log("User ID:", data.user.id); // assuming the field is called `id` inside user
+      console.log("log-in successful");
+      console.log(JSON.stringify(data.user));
   })
   .catch(error => console.error("Error:", error));;
-
-      const msg = document.getElementById("login-msg");
-      const resData = await response.json();
-      msg.className = response.ok ? "success" : "error";
-      msg.textContent = resData.message || "Login failed";
     }
 </script>
 
