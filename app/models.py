@@ -85,8 +85,11 @@ class Book(db.Model):
 
         if full:
             if self.sub_cat_index:
-                prefix, index = self.label.split('.')
-                formatted_label = f"{prefix}.{self.sub_cat_index}.{index}"
+                if len(self.label) > 1: # handling label edge cases
+                    prefix, index = self.label.split('.')
+                    formatted_label = f"{prefix}.{self.sub_cat_index}.{index}"
+                else:
+                    formatted_label = f'{self.label}.{self.sub_cat_index}.0'
 
             json.update({
                 "series": self.series,

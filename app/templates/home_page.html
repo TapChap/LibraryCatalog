@@ -102,6 +102,45 @@
             cursor: not-allowed;
         }
 
+        .held-books-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            background-color: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .held-books-btn:hover {
+            background-color: #6d28d9;
+        }
+
+        .return-btn {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            background-color: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .return-btn:hover:not(:disabled) {
+            background-color: #d97706;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
         .message {
             padding: 0.75rem;
             border-radius: 5px;
@@ -311,6 +350,9 @@
             <button class="search-btn" id="search-btn" onclick="searchBooks()">
                 חפש ספרים
             </button>
+            <button class="held-books-btn" onclick="toggleHeldBooks()">
+                הספרים שלי
+            </button>
         </div>
         <div id="message-container"></div>
     </div>
@@ -322,6 +364,8 @@
 
 <script>
     let currentUser = null;
+    let heldBooks = [];
+    let showingHeldBooks = false;
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', function() {
@@ -330,6 +374,7 @@
         if (userData) {
             currentUser = JSON.parse(userData);
             document.getElementById('user-display').textContent = `ברוכים הבאים, ${currentUser.display_name || currentUser.username}!`;
+            loadHeldBooks(); // Load held books on page load
         }
     });
 
@@ -389,15 +434,21 @@
         }
     }
 
-    function displayBooks(books) {
+    function displayBooks(books, isHeldBooks = false) {
         const booksContainer = document.getElementById('books-container');
 
         if (books.length === 0) {
-            booksContainer.innerHTML = '<div class="no-results">לא נמצאו ספרים. נסו מונח חיפוש אחר.</div>';
+            const emptyMessage = isHeldBooks ? 'אין ספרים בבעלותכם כרגע' : 'לא נמצאו ספרים. נסו מונח חיפוש אחר.';
+            booksContainer.innerHTML = `<div class="no-results">${emptyMessage}</div>`;
             return;
         }
 
-        const booksHTML = books.map(book => `
+        const titleHtml = isHeldBooks ? '<div class="section-title">הספרים שלכם</div>' : '';
+
+        const booksHTML = books.map(book => {
+            const isOwnedByUser = isHeldBooks || heldBooks.some(heldBook => heldBook.id === book.id);
+
+            return `
             <div class="book-card">
                 <div class="book-title">${escapeHtml(book.book_name)}</div>
                 ${book.author ? `<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : ''}
@@ -455,17 +506,26 @@
                     </div>
                 ` : ''}
 
-                <button
-                    class="obtain-btn"
-                    onclick="obtainBook(${book.id})"
-                    ${book.isTaken ? 'disabled' : ''}
-                >
-                    ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
-                </button>
+                ${isOwnedByUser ? `
+                    <button
+                        class="return-btn"
+                        onclick="returnBook(${book.id})"
+                    >
+                        החזר ספר
+                    </button>
+                ` : `
+                    <button
+                        class="obtain-btn"
+                        onclick="obtainBook(${book.id})"
+                        ${book.isTaken ? 'disabled' : ''}
+                    >
+                        ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
+                    </button>
+                `}
             </div>
-        `).join('');
+        `;}).join('');
 
-        booksContainer.innerHTML = `<div class="books-grid">${booksHTML}</div>`;
+        booksContainer.innerHTML = titleHtml + `<div class="books-grid">${booksHTML}</div>`;
     }
 
     async function obtainBook(bookId) {
@@ -477,7 +537,7 @@
         const messageContainer = document.getElementById('message-container');
 
         try {
-            const response = await fetch(`http://localhost:80/library/id/${currentUser.id}/obtain_book`, {
+            const response = await fetch(`http://localhost:80/library/user/id/${currentUser.id}/obtain`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -491,7 +551,8 @@
 
             if (response.ok) {
                 showMessage(`הספר "${data.book.book_name}" נתקבל בהצלחה!`, 'success');
-                // Refresh the search results to update availability
+                // Reload held books and refresh search results
+                await loadHeldBooks();
                 const searchInput = document.getElementById('search-input');
                 if (searchInput.value.trim()) {
                     searchBooks();
@@ -526,6 +587,89 @@
     function logout() {
         sessionStorage.removeItem('libraryUser');
         window.location.href = '/'; // Adjust path as needed
+    }
+
+    async function loadHeldBooks() {
+        if (!currentUser || !currentUser.id) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:80/user/id/${currentUser.id}/holding`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                heldBooks = data.books || [];
+            } else {
+                console.error('Failed to load held books:', data.message);
+                heldBooks = [];
+            }
+        } catch (error) {
+            console.error('Error loading held books:', error);
+            heldBooks = [];
+        }
+    }
+
+    function toggleHeldBooks() {
+        showingHeldBooks = !showingHeldBooks;
+        const heldBooksBtn = document.querySelector('.held-books-btn');
+
+        if (showingHeldBooks) {
+            displayBooks(heldBooks, true);
+            heldBooksBtn.textContent = 'חזור לחיפוש';
+            showMessage(`יש לכם ${heldBooks.length} ספרים`, 'info');
+        } else {
+            document.getElementById('books-container').innerHTML = '';
+            heldBooksBtn.textContent = 'הספרים שלי';
+            document.getElementById('message-container').innerHTML = '';
+        }
+    }
+
+    async function returnBook(bookId) {
+        if (!currentUser || !currentUser.id) {
+            showMessage('אנא התחברו כדי להחזיר ספרים', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:80/library/user/id/${currentUser.id}/return`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    book_id: bookId
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage(`הספר "${data.book.book_name}" הוחזר בהצלחה!`, 'success');
+                // Reload held books and refresh display
+                await loadHeldBooks();
+                if (showingHeldBooks) {
+                    displayBooks(heldBooks, true);
+                } else {
+                    // If we're in search results, refresh them
+                    const searchInput = document.getElementById('search-input');
+                    if (searchInput.value.trim()) {
+                        searchBooks();
+                    }
+                }
+            } else {
+                showMessage(data.message || 'נכשל בהחזרת הספר', 'error');
+            }
+        } catch (error) {
+            console.error('Return book error:', error);
+            showMessage('שגיאה בהתחברות לשרת', 'error');
+        }
     }
 </script>
 </body>

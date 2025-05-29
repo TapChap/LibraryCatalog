@@ -231,7 +231,7 @@ This document describes the structure of a `Book` object as returned by the back
 
 ### 1. Borrow Book
 
-* **Endpoint:** `POST /library/id/<client_id>/obtain_book`
+* **Endpoint:** `POST /library/user/id/<client_id>/obtain`
 * **Request Body:**
 
   ```json
@@ -251,7 +251,7 @@ This document describes the structure of a `Book` object as returned by the back
 
 ### 2. Return Book
 
-* **Endpoint:** `POST /library/id/<client_id>/return_book`
+* **Endpoint:** `POST /library/user/id/<client_id>/return`
 * **Request Body:**
 
   ```json

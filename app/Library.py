@@ -6,7 +6,7 @@ from client.Client_db import *
 
 library_route = Blueprint("library_bp", __name__)
 
-@library_route.route('/id/<int:client_id>/obtain_book', methods=['POST'])
+@library_route.route('/user/id/<int:client_id>/obtain', methods=['POST'])
 def obtain_book(client_id):
     data = request.get_json()
     book_id = data.get("book_id")
@@ -44,7 +44,7 @@ def obtain_book(client_id):
         "user": client.toJson()
     }, 200
 
-@library_route.route('/id/<int:client_id>/return_book', methods=['POST'])
+@library_route.route('/user/id/<int:client_id>/return', methods=['POST'])
 def return_book(client_id):
     data = request.get_json()
     book_id = data.get("book_id")
@@ -61,7 +61,7 @@ def return_book(client_id):
         return {"message": "User not found"}, 404
 
     if book not in client.held_books:
-        return {"message": "attempt to return book that isn't taken by client"}, 400
+        return {"message": "attempt to return book that isn't taken by user"}, 400
 
     book.quantity += 1
     book.isTaken = False
