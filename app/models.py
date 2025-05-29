@@ -11,7 +11,10 @@ borrowed_books_table = db.Table(
 )
 
 def genID():
-    return random.randint(1000000, 9999999)
+    id = random.randint(1000000, 9999999)
+    if Client.query.get(id):
+        return genID()
+    return id
 
 
 class Client(db.Model):
@@ -33,7 +36,6 @@ class Client(db.Model):
             "username": self.username,
             "display_name": self.display_name,
             "permission": self.permission,
-            "password hash": self.password,
             "held_books": [book.toJson() for book in self.held_books]
         }
 

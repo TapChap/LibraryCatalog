@@ -14,21 +14,18 @@ def signup(permission_level=1):
     display_name = data.get('display_name')
     password = data.get("password")
 
-    if not username or not display_name:
-        return {"message": "Missing credentials"}, 400
-
-    if getClient(username)[1] == 200:
-        return {"message": "User already exists"}, 409
-
     # username validation
-    if len(username) < 4:
+    if not username or len(username) < 4:
         return {"message": "Username too short", "offending_field": "username"}, 400
 
-    if len(password) < 4:
+    if not password or len(password) < 4:
         return {"message": "Password too short", "offending_field": "password"}, 400
 
-    if len(display_name) < 4:
+    if not display_name or len(display_name) < 4:
         return {"message": "Display name too short", "offending_field": "display_name"}, 400
+
+    if getClient(username)[1] == 200:
+        return {"message": "User already exists", "offending_field": "username"}, 409
 
     new_user = createClient(username, display_name, permission_level, *hashPassword(password))
     db.session.add(new_user)
