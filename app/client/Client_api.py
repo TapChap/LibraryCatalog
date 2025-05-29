@@ -93,7 +93,7 @@ def get_held_books(client_id):
 
     held_books = [book.toJson(full=True, holders=False) for book in client.held_books]
 
-    return {"client": client.toJson(), "books": held_books}, 200
+    return {"client": client.toJson(False), "books": held_books}, 200
 
 
 @client_route.route('/all', methods=['GET'])

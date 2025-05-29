@@ -132,9 +132,10 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({"username": username, "password": password}),
       }).then(response => response.json())
-      .then(data => {
-      console.log("log-in successful");
-      console.log(JSON.stringify(data.user));
+        .then(data => {
+    console.log("log-in successful");
+    sessionStorage.setItem('libraryUser', JSON.stringify(data.user));
+    window.location.href = '/home_page'; // Redirect to home page
   })
   .catch(error => console.error("Error:", error));;
     }

@@ -30,14 +30,20 @@ class Client(db.Model):
         'Book', secondary=borrowed_books_table,
         backref=db.backref('holders', lazy='dynamic'))
 
-    def toJson(self):
-        return {
+    def toJson(self, holding=True):
+        json = {
             "id": self.id,
             "username": self.username,
             "display_name": self.display_name,
             "permission": self.permission,
-            "held_books": [book.toJson() for book in self.held_books]
         }
+
+        if holding:
+            json.update({
+                "held_books": [book.toJson() for book in self.held_books]
+            })
+
+        return json
 
     def validatePassword(self, password):
         return passwordManager.hashPassword(password, self.salt)[0] == self.password
@@ -78,16 +84,22 @@ class Book(db.Model):
             })
 
         if full:
+            if self.sub_cat_index:
+                prefix, index = self.label.split('.')
+                formatted_label = f"{prefix}.{self.sub_cat_index}.{index}"
+
             json.update({
                 "series": self.series,
                 "series_index": self.series_index,
                 "author": self.author,
-                "label": self.label,
+                "label": self.label if not self.sub_cat_index else formatted_label,
                 "sub_category": self.sub_cat,
                 "sub_category_index": self.sub_cat_index,
                 "description": self.description,
                 "notes": self.notes,
                 "librarian_notes": self.librarian_notes
             })
+
+            print(self.label + '.' + str(self.sub_cat_index))
 
         return json

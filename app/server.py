@@ -25,6 +25,10 @@ app.register_blueprint(library_route, url_prefix="/library")
 def index():
     return render_template("index.html")
 
+@app.route('/home_page')
+def homePage():
+    return render_template("home_page.html")
+
 @app.route('/loadFromFile', methods=['POST'])
 def loadFromFile():
     json_data = request.form.get('dataColumns')
