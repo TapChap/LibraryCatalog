@@ -12,7 +12,7 @@ from xlsx_helper import *
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:DEsyro.200506@localhost/book_sharing'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234567890@localhost/MachanaimLibraryDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -46,7 +46,7 @@ def drop_book_table():
     # result = runSQL("DROP TABLE book CASCADE") #drop table itself
 
     if not result:
-        return {"result" : "dropped table"}, 200
+        return {"result": "dropped table"}, 200
     return result
 
 def runSQL(sql_string):
@@ -60,8 +60,7 @@ def runSQL(sql_string):
             # Only fetch rows if the statement returns them
             if result.returns_rows:
                 return result.fetchall()
-            else:
-                return None
+            return None
     except Exception as e:
         print(f"SQL execution error: {e}")
         return None
