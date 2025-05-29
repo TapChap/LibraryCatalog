@@ -1,4 +1,4 @@
-from flask import request, abort, Blueprint
+from flask import request, Blueprint
 
 from client.Permission import Permission
 from database import db
@@ -22,13 +22,13 @@ def signup(permission_level=1):
 
     # username validation
     if len(username) < 4:
-        return {"message": "Username too short"}, 400
+        return {"message": "Username too short", "offending_field": "username"}, 400
 
     if len(password) < 4:
-        return {"message": "Password too short"}, 400
+        return {"message": "Password too short", "offending_field": "password"}, 400
 
     if len(display_name) < 4:
-        return {"message": "Display name too short"}, 400
+        return {"message": "Display name too short", "offending_field": "display_name"}, 400
 
     new_user = createClient(username, display_name, permission_level, *hashPassword(password))
     db.session.add(new_user)
