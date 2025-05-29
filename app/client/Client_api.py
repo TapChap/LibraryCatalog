@@ -20,6 +20,16 @@ def signup(permission_level=1):
     if getClient(username)[1] == 200:
         abort(409, description="error: user already exists")
 
+    # username validation
+    if len(username) < 4:
+        abort(400, description="error: username too short")
+
+    if len(password) < 4:
+        abort(400, description="error: password too short")
+
+    if len(display_name) < 4:
+        abort(400, description="error: display name too short")
+
     new_user = createClient(username, display_name, permission_level, *hashPassword(password))
     db.session.add(new_user)
     db.session.commit()
@@ -28,9 +38,11 @@ def signup(permission_level=1):
 
     return {"message": "User created", "user": new_user.toJson()}, 201
 
+
 @client_route.route("/signup-admin", methods=['POST'])
 def admin_signup():
     return signup(Permission.ADMIN.value)
+
 
 @client_route.route('/login', methods=['POST'])
 def login():
@@ -52,6 +64,7 @@ def login():
 
     return {"message": "Logged in", "user": user.toJson()}
 
+
 @client_route.route('/<string:username>')
 def fetch_client(username):
     client, status_code = getClient(username)
@@ -61,6 +74,7 @@ def fetch_client(username):
     print("client", client.toJson())
 
     return client.toJson()
+
 
 @client_route.route('/id/<int:id>')
 def fetch_client_by_id(id):
@@ -83,6 +97,7 @@ def get_held_books(client_id):
     held_books = [book.toJson(full=True, holders=False) for book in client.held_books]
 
     return {"client": client.toJson(), "books": held_books}, 200
+
 
 @client_route.route('/all', methods=['GET'])
 def get_client_db():

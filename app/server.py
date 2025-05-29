@@ -1,6 +1,6 @@
 import json, os, uuid
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 from sqlalchemy import text
 
@@ -23,7 +23,7 @@ app.register_blueprint(library_route, url_prefix="/library")
 
 @app.route('/')
 def index():
-    return "Flask is running!"
+    return render_template("index.html")
 
 @app.route('/loadFromFile', methods=['POST'])
 def loadFromFile():
