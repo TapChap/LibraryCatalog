@@ -12,23 +12,23 @@ def obtain_book(client_id):
     book_id = data.get("book_id")
 
     if not book_id:
-        abort(400, description="error: Missing book id")
+        return {"message": "Missing book id"}, 400
 
     book, status_code = getBookById(book_id)
     if status_code == 404:
-        abort(404, description="error: Book not found")
+        return {"message": "Book not found"}, 404
 
     client, status_code = getClientByID(client_id)
     if status_code == 404:
-        abort(404, description="error: User not found")
+        return {"message": "User not found"}, 404
 
     # Check if book is available
     if book.isTaken:
-        abort(400, description="error: Book not available")
+        return {"message": "Book not available"}, 400
 
     # Check if the client already has this book
     if book in client.held_books:
-        abort(400, description="error: Client already has this book")
+        return {"message": "Client already has this book"}, 400
 
     # Decrease quantity and add to client's held books
     book.quantity -= 1
@@ -50,18 +50,18 @@ def return_book(client_id):
     book_id = data.get("book_id")
 
     if not book_id:
-        abort(400, description="error: Missing book id")
+        return {"message": "Missing book id"}, 400
 
     book, status_code = getBookById(book_id)
     if status_code == 404:
-        abort(404, description="error: Book not found")
+        return {"message": "Book not found"}, 404
 
     client, status_code = getClientByID(client_id)
     if status_code == 404:
-        abort(404, description="error: User not found")
+        return {"message": "User not found"}, 404
 
     if book not in client.held_books:
-        abort(400, description="error: attempt to return book that isn't taken by client")
+        return {"message": "attempt to return book that isn't taken by client"}, 400
 
     book.quantity += 1
     book.isTaken = False

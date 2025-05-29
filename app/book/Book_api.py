@@ -25,7 +25,7 @@ def add_book():
     librarian_notes = request.args.get("librarian_notes")
 
     if not book_name or not category:
-        abort(400, description="error : Missing book name or category")
+        return {"message": "Missing book name or category"}, 400
 
     new_book = createBook(
         book_name, category, quantity=quantity,
@@ -53,18 +53,18 @@ def add_book():
 def fetch_books(book_name):
     books, status_code = getBook(book_name)
     if status_code == 404:
-        abort(404, description="error: Book not found")
+        return {"message": "Book not found"}, 404
 
     books = [book.toJson(full=True) for book in books]
 
-    return {"book": books}, 200
+    return {"books": books}, 200
 
 
 @book_route.route('/id/<int:id>', methods=['GET'])
 def fetch_book_by_id(id):
     book, status_code = getBookById(id)
     if status_code == 404:
-        abort(404, description="error: Book not found")
+        return {"message": "Book not found"}, 404
 
     return {"book": book.toJson(True, True)}, 200
 
