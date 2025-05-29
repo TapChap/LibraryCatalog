@@ -80,7 +80,7 @@ class Book(db.Model):
 
         if holders:
             json.update({
-                "holders": [holder.toJson() for holder in self.holders]
+                "holders": [holder.toJson(False) for holder in self.holders]
             })
 
         if full:
@@ -102,7 +102,5 @@ class Book(db.Model):
                 "notes": self.notes,
                 "librarian_notes": self.librarian_notes
             })
-
-            print(self.label + '.' + str(self.sub_cat_index))
 
         return json
