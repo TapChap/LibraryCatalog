@@ -41,6 +41,17 @@ def admin_signup():
     return signup(Permission.ADMIN.value)
 
 
+@client_route.route('/admin/<string:username>', methods=['POST'])
+def ascend_permission(username):
+    user, status_code = getClient(username)
+    if status_code == 404:
+        return {"message": "User not found"}, 400
+
+    user.permission = Permission.ADMIN.value
+    db.session.commit()
+
+    return {"message": "Assigned as Admin", "user": user.toJson()}, 200
+
 @client_route.route('/login', methods=['POST'])
 def login():
     data = request.get_json()

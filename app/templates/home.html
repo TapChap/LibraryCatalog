@@ -385,8 +385,6 @@
     }
 
     async function searchBooks() {
-        toggleHeldBooks();
-
         const searchInput = document.getElementById('search-input');
         const searchBtn = document.getElementById('search-btn');
         const messageContainer = document.getElementById('message-container');
@@ -456,6 +454,8 @@
                 holders = bookHolder.holders;
             }
 
+            console.log(currentUser);
+
             return `
             <div class="book-card">
                 <div class="book-title">${escapeHtml(book.book_name)}</div>
@@ -507,7 +507,7 @@
                     </div>
                 ` : ''}
 
-                ${book.librarian_notes ? `
+                ${book.librarian_notes && currentUser.permission === 9 ? `
                     <div class="book-librarian-notes">
                         <strong>הערות ספרן:</strong>
                         <p>${escapeHtml(book.librarian_notes)}</p>

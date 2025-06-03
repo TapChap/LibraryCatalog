@@ -25,9 +25,9 @@ app.register_blueprint(library_route, url_prefix="/library")
 def index():
     return render_template("index.html")
 
-@app.route('/home_page')
-def homePage():
-    return render_template("home_page.html")
+@app.route('/home')
+def home():
+    return render_template("home.html")
 
 @app.route('/loadFromFile', methods=['POST'])
 def loadFromFile():
@@ -44,9 +44,14 @@ def loadFromFile():
 
     return {"success": "successfully loaded from file"}, 201
 
-@app.route('/book/drop', methods=['POST'])
-def drop_book_table():
-    result = runSQL("TRUNCATE TABLE book RESTART IDENTITY CASCADE;") #drop table values
+@app.route('/drop/<string:table>', methods=['POST'])
+def drop_table(table):
+    if table == 'book':
+        result = runSQL("TRUNCATE TABLE book RESTART IDENTITY CASCADE;") #drop table values
+    elif table == 'user':
+        result = runSQL("TRUNCATE TABLE client RESTART IDENTITY CASCADE;") #drop table values
+    else:
+        result = "invalid table name"
     # result = runSQL("DROP TABLE book CASCADE") #drop table itself
 
     if not result:
