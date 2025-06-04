@@ -36,11 +36,6 @@ def signup(permission_level=1):
     return {"message": "User created", "user": new_user.toJson()}, 201
 
 
-@client_route.route("/signup-admin", methods=['POST'])
-def admin_signup():
-    return signup(Permission.ADMIN.value)
-
-
 @client_route.route('/admin/<string:username>', methods=['POST'])
 def ascend_permission(username):
     user, status_code = getClient(username)
