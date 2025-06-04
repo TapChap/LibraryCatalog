@@ -8,11 +8,14 @@ from client.Client_api import *
 from book.Book_api import *
 from Library import *
 from xlsx_helper import *
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234567890@localhost/MachanaimLibraryDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("DB_USERNAME")}:{os.getenv("DB_PASSWORD")}@localhost/{os.getenv("DB_NAME")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -78,4 +81,4 @@ def runSQL(sql_string):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # create tables
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="0.0.0.0", port=os.getenv("PORT"), debug=True)
