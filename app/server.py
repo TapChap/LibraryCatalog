@@ -15,7 +15,13 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("DB_USERNAME")}:{os.getenv("DB_PASSWORD")}@localhost/{os.getenv("DB_NAME")}'
+DB_USERNAME = os.getenv("DB_USERNAME")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+
+PORT = os.getenv("PORT")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USERNAME}:{DB_PASSWORD}@localhost/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -81,4 +87,4 @@ def runSQL(sql_string):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # create tables
-    app.run(host="0.0.0.0", port=os.getenv("PORT"), debug=True)
+    app.run(host="0.0.0.0", port=PORT, debug=True)
