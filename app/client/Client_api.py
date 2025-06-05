@@ -1,3 +1,5 @@
+import re
+
 from flask import request, Blueprint
 
 from client.Permission import Permission
@@ -10,13 +12,18 @@ client_route = Blueprint("client_bp", __name__)
 @client_route.route('/signup', methods=['POST'])
 def signup(permission_level=1):
     data = request.get_json()
-    username = data.get('username')
-    display_name = data.get('display_name')
-    password = data.get("password")
+    username: str = data.get('username')
+    display_name: str = data.get('display_name')
+    password: str = data.get("password")
 
     # username validation
     if not username or len(username) < 4:
         return {"message": "Username too short", "offending_field": "username"}, 400
+
+    print(re.fullmatch(r"[a-z0-9._]+", username))
+
+    if not re.fullmatch(r"[a-z0-9._]+", username):
+        return {"message": "Username may only contain lowercase letters, digits, '.' and '_'  characters", "offending_field": "username"}, 400
 
     if not password or len(password) < 4:
         return {"message": "Password too short", "offending_field": "password"}, 400
