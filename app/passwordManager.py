@@ -19,4 +19,4 @@ def generateSalt():
         '0', "1", '2', '3', '4', '5', '6', '7', "8", '9'
     ]
 
-    return "".join([chars[random.randint(0, len(chars))] for __ in range(SALT_LENGTH)])
+    return "".join([chars[random.randint(0, len(chars)-1)] for __ in range(SALT_LENGTH)])

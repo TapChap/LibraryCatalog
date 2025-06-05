@@ -20,8 +20,6 @@ def signup(permission_level=1):
     if not username or len(username) < 4:
         return {"message": "Username too short", "offending_field": "username"}, 400
 
-    print(re.fullmatch(r"[a-z0-9._]+", username))
-
     if not re.fullmatch(r"[a-z0-9._]+", username):
         return {"message": "Username may only contain lowercase letters, digits, '.' and '_'  characters", "offending_field": "username"}, 400
 

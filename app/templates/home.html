@@ -367,6 +367,8 @@
     let heldBooks = [];
     let showingHeldBooks = false;
 
+    const host_ip = "192.168.181.247"
+
     // Initialize the page
     document.addEventListener('DOMContentLoaded', function() {
         // Get user info from sessionStorage
@@ -404,7 +406,7 @@
         messageContainer.innerHTML = '';
 
         try {
-            const response = await fetch(`http://localhost:80/book/${encodeURIComponent(bookName)}`, {
+            const response = await fetch(`http://${host_ip}:80/book/${encodeURIComponent(bookName)}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -546,7 +548,7 @@
 
     async function fetchUserById(userId){
         try {
-            const response = await fetch(`http://localhost:80/user/id/${userId}`);
+            const response = await fetch(`http://${host_ip}:80/user/id/${userId}`);
             const data = await response.json();
 
             if (response.ok){
@@ -562,7 +564,7 @@
 
     async function fetchBookById(bookId){
         try {
-            const response = await fetch(`http://localhost:80/book/id/${bookId}`);
+            const response = await fetch(`http://${host_ip}:80/book/id/${bookId}`);
             const data = await response.json();
 
             if (response.ok){
@@ -585,7 +587,7 @@
         const messageContainer = document.getElementById('message-container');
 
         try {
-            const response = await fetch(`http://localhost:80/library/user/id/${currentUser.id}/obtain`, {
+            const response = await fetch(`http://${host_ip}:80/library/user/id/${currentUser.id}/obtain`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -620,7 +622,7 @@
         }
 
         try {
-            const response = await fetch(`http://localhost:80/user/id/${currentUser.id}/holding`, {
+            const response = await fetch(`http://${host_ip}:80/user/id/${currentUser.id}/holding`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -648,7 +650,7 @@
         }
 
         try {
-            const response = await fetch(`http://localhost:80/library/user/id/${currentUser.id}/return`, {
+            const response = await fetch(`http://${host_ip}:80/library/user/id/${currentUser.id}/return`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
