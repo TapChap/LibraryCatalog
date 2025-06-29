@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>מערכת ספרייה - ישיבת מחנים</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f3f4f6;
+                min-height: 100vh;
+                direction: rtl;
+                text-align: right;
+            }
+
+            .header {
+                background-color: #3b82f6;
+                color: white;
+                padding: 1rem 2rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .btn {
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 0.9rem;
+
+            }
+
+            .logout-btn {
+                background-color: #ef4444;
+            }
+
+            .logout-btn:hover {
+                background-color: #dc2626;
+            }
+
+            .back-btn {
+                background-color: #7c3aed;
+            }
+
+            .back-btn:hover {
+                background-color: #6d28d9;
+            }
+
+            .main-content {
+                max-width: 1200px;
+                margin: 2rem auto;
+                padding: 0 2rem;
+            }
+
+            .search-section {
+                background-color: white;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                margin-bottom: 2rem;
+            }
+
+            .search-container {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .search-input {
+                flex: 1;
+                padding: 0.75rem;
+                font-size: 1rem;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                text-align: right;
+                direction: rtl;
+            }
+
+            .search-btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+                background-color: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .search-btn:hover {
+                background-color: #2563eb;
+            }
+
+            .search-btn:disabled {
+                background-color: #9ca3af;
+                cursor: not-allowed;
+            }
+
+            .held-books-btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+                background-color: #7c3aed;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+
+            .held-books-btn:hover {
+                background-color: #6d28d9;
+            }
+
+            .return-btn {
+                width: 100%;
+                padding: 0.75rem;
+                font-size: 1rem;
+                background-color: #f59e0b;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-top: 1rem;
+            }
+
+            .return-btn:hover:not(:disabled) {
+                background-color: #d97706;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+                font-weight: bold;
+                color: #1f2937;
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+
+            .message {
+                padding: 0.75rem;
+                border-radius: 5px;
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+
+            .message.error {
+                background-color: #fee2e2;
+                color: #dc2626;
+                border: 1px solid #fecaca;
+            }
+
+            .message.success {
+                background-color: #dcfce7;
+                color: #16a34a;
+                border: 1px solid #bbf7d0;
+            }
+
+            .message.info {
+                background-color: #dbeafe;
+                color: #2563eb;
+                border: 1px solid #bfdbfe;
+            }
+
+            .books-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .book-card {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                padding: 1.5rem;
+                transition: transform 0.2s, box-shadow 0.2s;
+                text-align: right;
+            }
+
+            .book-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            }
+
+            .book-title {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #1f2937;
+                margin-bottom: 0.5rem;
+            }
+
+            .book-author {
+                color: #6b7280;
+                font-style: italic;
+                margin-bottom: 0.5rem;
+            }
+
+            .book-series {
+                color: #7c3aed;
+                font-weight: 500;
+                margin-bottom: 0.75rem;
+                font-size: 0.95rem;
+            }
+
+            .book-description, .book-notes, .book-librarian-notes {
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #e5e7eb;
+            }
+
+            .book-description p, .book-notes p, .book-librarian-notes p {
+                margin-top: 0.5rem;
+                color: #6b7280;
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+
+            .book-librarian-notes {
+                background-color: #fef3c7;
+                padding: 0.75rem;
+                border-radius: 5px;
+                border-right: 4px solid #f59e0b;
+            }
+
+            .book-librarian-notes strong {
+                color: #92400e;
+            }
+
+            .book-details {
+                margin-bottom: 1rem;
+            }
+
+            .book-detail {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.25rem;
+                font-size: 0.9rem;
+            }
+
+            .book-detail .label {
+                font-weight: 500;
+                color: #374151;
+            }
+
+            .book-detail .value {
+                color: #6b7280;
+            }
+
+            .availability {
+                display: inline-block;
+                padding: 0.25rem 0.5rem;
+                border-radius: 3px;
+                font-size: 0.8rem;
+                font-weight: 500;
+            }
+
+            .availability.available {
+                background-color: #dcfce7;
+                color: #16a34a;
+            }
+
+            .availability.unavailable {
+                background-color: #fee2e2;
+                color: #dc2626;
+            }
+
+            .obtain-btn {
+                width: 100%;
+                padding: 0.75rem;
+                font-size: 1rem;
+                background-color: #10b981;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-top: 1rem;
+            }
+
+            .obtain-btn:hover:not(:disabled) {
+                background-color: #059669;
+            }
+
+            .obtain-btn:disabled {
+                background-color: #9ca3af;
+                cursor: not-allowed;
+            }
+
+            .loading {
+                text-align: center;
+                padding: 2rem;
+                color: #6b7280;
+            }
+
+            .no-results {
+                text-align: center;
+                padding: 3rem;
+                color: #6b7280;
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+
+            .welcome-section {
+                background-color: white;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+
+            .welcome-section h2 {
+                color: #1f2937;
+                margin-bottom: 0.5rem;
+            }
+
+            .welcome-section p {
+                color: #6b7280;
+            }
+        </style>
+    </head>
+</head>
+<body>
+<div class="header">
+    <h1>מערכת ספרים - פאנל ניהול מערכת</h1>
+    <div class="user-info">
+        <span id="user-display">ברוכים הבאים!</span>
+        <button class="btn logout-btn" onclick="logout()">התנתק</button>
+        <button class="btn back-btn" onclick="home()">חזרה</button>
+    </div>
+</div>
+
+<div class="welcome-section">
+    <h2 class="section-title">📚 הוספת ספר חדש</h2>
+    <form id="create-book-form">
+
+        <!-- Required Fields Group -->
+        <div class="search-section">
+            <h3 class="section-subtitle required-title">שדות חובה</h3>
+
+            <div class="form-field">
+                <label for="book_name">שם הספר *</label>
+                <input class="search-input" type="text" id="book_name" name="book_name" required />
+            </div>
+
+            <div class="form-field">
+                <label for="category">קטגוריה *</label>
+                <input class="search-input" type="text" id="category" name="category" required />
+            </div>
+        </div>
+
+        <!-- Optional Fields Group -->
+        <div class="search-section optional-section">
+            <h3 class="section-subtitle optional-title">שדות רשות</h3>
+
+            <div class="form-field">
+                <label for="series">סדרה</label>
+                <input class="search-input" type="text" id="series" name="series" />
+            </div>
+
+            <div class="form-field">
+                <label for="series_index">מספר בסדרה</label>
+                <input class="search-input" type="number" id="series_index" name="series_index" />
+            </div>
+
+            <div class="form-field">
+                <label for="author">מחבר</label>
+                <input class="search-input" type="text" id="author" name="author" />
+            </div>
+
+            <div class="form-field">
+                <label for="label">תווית</label>
+                <input class="search-input" type="text" id="label" name="label" />
+            </div>
+
+            <div class="form-field">
+                <label for="sub_cat">קטגוריית משנה</label>
+                <input class="search-input" type="text" id="sub_cat" name="sub_cat" />
+            </div>
+
+            <div class="form-field">
+                <label for="sub_cat_index">מספר קטגוריית משנה</label>
+                <input class="search-input" type="number" id="sub_cat_index" name="sub_cat_index" />
+            </div>
+
+            <div class="form-field">
+                <label for="description">תיאור</label>
+                <textarea class="search-input" id="description" name="description" rows="3"></textarea>
+            </div>
+
+            <div class="form-field">
+                <label for="notes">הערות</label>
+                <textarea class="search-input" id="notes" name="notes" rows="2"></textarea>
+            </div>
+
+            <div class="form-field">
+                <label for="librarian_notes">הערות ספרן</label>
+                <textarea class="search-input" id="librarian_notes" name="librarian_notes" rows="2"></textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="obtain-btn">📤 שלח ספר חדש</button>
+    </form>
+</div>
+
+<script>
+    let currentUser = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get user info from sessionStorage
+        const userData = sessionStorage.getItem('libraryUser');
+        if (userData) {
+            currentUser = JSON.parse(userData);
+            document.getElementById('user-display').textContent = `ברוכים הבאים, ${currentUser.display_name || currentUser.username}!`;
+            console.log(currentUser)
+
+            adminBttn = document.getElementById("admin");
+            adminBttn.hidden = true;
+            if (currentUser.permission === 9) {
+                adminBttn.hidden = false;
+            }
+
+            loadHeldBooks(); // Load held books on page load
+        }
+    });
+
+    function home(){
+        window.location.href = '/home';
+    }
+</script>
+</body>
+</html>

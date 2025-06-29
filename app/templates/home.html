@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>מערכת ספרייה - ישיבת מחנים</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .header {
+            background-color: #3b82f6;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+
+        }
+
+        .logout-btn {
+            background-color: #ef4444;
+                    }
+
+        .logout-btn:hover {
+            background-color: #dc2626;
+        }
+
+        .admin-btn {
+            background-color: #ea851a;
+                    }
+
+        .admin-btn:hover {
+            background-color: #c48035;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .search-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .search-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-btn:hover {
+            background-color: #2563eb;
+        }
+
+        .search-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .held-books-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            background-color: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .held-books-btn:hover {
+            background-color: #6d28d9;
+        }
+
+        .return-btn {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            background-color: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .return-btn:hover:not(:disabled) {
+            background-color: #d97706;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .message {
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .message.error {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .message.success {
+            background-color: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message.info {
+            background-color: #dbeafe;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .book-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: right;
+        }
+
+        .book-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .book-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-author {
+            color: #6b7280;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-series {
+            color: #7c3aed;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .book-description, .book-notes, .book-librarian-notes {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .book-description p, .book-notes p, .book-librarian-notes p {
+            margin-top: 0.5rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .book-librarian-notes {
+            background-color: #fef3c7;
+            padding: 0.75rem;
+            border-radius: 5px;
+            border-right: 4px solid #f59e0b;
+        }
+
+        .book-librarian-notes strong {
+            color: #92400e;
+        }
+
+        .book-details {
+            margin-bottom: 1rem;
+        }
+
+        .book-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .book-detail .label {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .book-detail .value {
+            color: #6b7280;
+        }
+
+        .availability {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .availability.available {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .availability.unavailable {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .obtain-btn {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .obtain-btn:hover:not(:disabled) {
+            background-color: #059669;
+        }
+
+        .obtain-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .welcome-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-section h2 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>📚 מערכת הספרייה - ישיבת מחנים</h1>
+    <div class="user-info">
+        <span id="user-display">ברוכים הבאים!</span>
+        <button class="btn logout-btn" onclick="logout()">התנתק</button>
+        <button class="btn admin-btn" id="admin" onclick="admin_dashboard()">עמוד ניהול</button>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="welcome-section">
+        <h2>ברוכים הבאים לספרייה שלכם</h2>
+        <p>חפשו ספרים והוסיפו אותם לאוסף שלכם</p>
+    </div>
+
+    <div class="search-section">
+        <div class="search-container">
+            <input
+                    type="text"
+                    id="search-input"
+                    class="search-input"
+                    placeholder="הכניסו שם ספר לחיפוש..."
+                    onkeypress="handleKeyPress(event)"
+            />
+            <button class="search-btn" id="search-btn" onclick="searchBooks()">
+                חפש ספרים
+            </button>
+            <button class="held-books-btn" onclick="toggleHeldBooks()">
+                הספרים שלי
+            </button>
+        </div>
+        <div id="message-container"></div>
+    </div>
+
+    <div id="books-container">
+        <!-- Books will be displayed here -->
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let heldBooks = [];
+    let showingHeldBooks = false;
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get user info from sessionStorage
+        const userData = sessionStorage.getItem('libraryUser');
+        if (userData) {
+            currentUser = JSON.parse(userData);
+            document.getElementById('user-display').textContent = `ברוכים הבאים, ${currentUser.display_name || currentUser.username}!`;
+            console.log(currentUser)
+
+            adminBttn = document.getElementById("admin");
+            adminBttn.hidden = true;
+            if (currentUser.permission === 9) {
+                adminBttn.hidden = false;
+            }
+
+            loadHeldBooks(); // Load held books on page load
+        }
+    });
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            searchBooks();
+        }
+    }
+
+    async function searchBooks() {
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const messageContainer = document.getElementById('message-container');
+        const booksContainer = document.getElementById('books-container');
+
+        const bookName = searchInput.value.trim();
+
+        if (!bookName) {
+            showMessage('אנא הכניסו שם ספר לחיפוש', 'error');
+            return;
+        }
+
+        // Show loading state
+        searchBtn.disabled = true;
+        searchBtn.textContent = 'מחפש...';
+        booksContainer.innerHTML = '<div class="loading">מחפש ספרים...</div>';
+        messageContainer.innerHTML = '';
+
+        try {
+            const response = await fetch(`http://localhost:80/book/${encodeURIComponent(bookName)}`, {
+                method: 'GET',
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                await displayBooks(data.books);
+                if (data.books.length === 0) {
+                    showMessage('לא נמצאו ספרים עם השם הזה', 'info');
+                } else {
+                    showMessage(`נמצאו ${data.books.length} ספר/ים`, 'success');
+                }
+            } else {
+                showMessage(data.message || 'נכשל בחיפוש ספרים', 'error');
+                booksContainer.innerHTML = '';
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+            showMessage('שגיאה בהתחברות לשרת', 'error');
+            booksContainer.innerHTML = '';
+        } finally {
+            searchBtn.disabled = false;
+            searchBtn.textContent = 'חפש ספרים';
+        }
+    }
+
+    async function displayBooks(books, isHeldBooks = false) {
+        const booksContainer = document.getElementById('books-container');
+
+        if (books.length === 0) {
+            const emptyMessage = isHeldBooks ? 'אין ספרים בבעלותכם כרגע' : 'לא נמצאו ספרים. נסו מונח חיפוש אחר.';
+            booksContainer.innerHTML = `<div class="no-results">${emptyMessage}</div>`;
+            return;
+        }
+
+        const titleHtml = isHeldBooks ? '<div class="section-title">הספרים שלכם</div>' : '';
+
+        const booksHTML = await Promise.all(books.map(async book => {
+            const isOwnedByUser = isHeldBooks || heldBooks.some(heldBook => heldBook.id === book.id);
+
+            var bookHolder, holders;
+            if (!isOwnedByUser && book.isTaken) {
+                bookHolder = await fetchBookById(book.id);
+                holders = bookHolder.holders;
+            }
+
+            console.log(currentUser);
+
+            return `
+            <div class="book-card">
+                <div class="book-title">${escapeHtml(book.book_name)}</div>
+                ${book.author ? `<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : ''}
+
+                ${book.series ? `
+                    <div class="book-series">
+                        <strong>${escapeHtml(book.series)}</strong>
+                        ${book.series_index ? ` (#${book.series_index})` : ''}
+                    </div>
+                ` : ''}
+
+                <div class="book-details">
+                    <div class="book-detail">
+                        <span class="label">קטגוריה:</span>
+                        <span class="value">${escapeHtml(book.category)}</span>
+                    </div>
+                    ${book.sub_category ? `
+                        <div class="book-detail">
+                            <span class="label">תת-קטגוריה:</span>
+                            <span class="value">${escapeHtml(book.sub_category)}</span>
+                        </div>
+                    ` : ''}
+                    ${book.label ? `
+                        <div class="book-detail">
+                            <span class="label">תווית:</span>
+                            <span class="value">${escapeHtml(book.label)}</span>
+                        </div>
+                    ` : ''}
+                    <div class="book-detail">
+                        <span class="label">זמין:</span>
+                        <span class="availability ${book.isTaken ? 'unavailable' : 'available'}">
+                            ${book.isTaken ? 'לא זמין' : `${book.quantity} עותקים`}
+                        </span>
+                    </div>
+                </div>
+
+                ${book.description ? `
+                    <div class="book-description">
+                        <strong>תיאור:</strong>
+                        <p>${escapeHtml(book.description)}</p>
+                    </div>
+                ` : ''}
+
+                ${book.notes ? `
+                    <div class="book-notes">
+                        <strong>הערות:</strong>
+                        <p>${escapeHtml(book.notes)}</p>
+                    </div>
+                ` : ''}
+
+                ${book.librarian_notes && currentUser.permission === 9 ? `
+                    <div class="book-librarian-notes">
+                        <strong>הערות ספרן:</strong>
+                        <p>${escapeHtml(book.librarian_notes)}</p>
+                    </div>
+                ` : ''}
+
+                ${holders ? `
+                    <div class="book-holder">
+                        <strong>נמצא אצל</strong>
+                        <p>${escapeHtml(holders.map(h => h.display_name).join(', '))}</p>
+                    </div>
+                ` : ''}
+
+                ${isOwnedByUser ? `
+                    <button
+                        class="return-btn"
+                        onclick="returnBook(${book.id})"
+                    >
+                        החזר ספר
+                    </button>
+                ` : `
+                    <button
+                        class="obtain-btn"
+                        onclick="obtainBook(${book.id})"
+                        ${book.isTaken ? 'disabled' : ''}
+                    >
+                        ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
+                    </button>
+                `}
+            </div>
+        `;
+        }));
+
+        booksContainer.innerHTML = titleHtml + `<div class="books-grid">${booksHTML.join('')}</div>`;
+    }
+
+    async function fetchUserById(userId){
+        try {
+            const response = await fetch(`http://localhost:80/user/id/${userId}`);
+            const data = await response.json();
+
+            if (response.ok){
+                return data.user;
+            } else {
+                showMessage(data.message || 'נכשל במציאת משתמש', 'error');
+            }
+        } catch (error) {
+            console.error('fetch user by id:', error);
+            showMessage('שגיאה בהתחברות לשרת', 'error');
+        }
+    }
+
+    async function fetchBookById(bookId){
+        try {
+            const response = await fetch(`http://localhost:80/book/id/${bookId}`);
+            const data = await response.json();
+
+            if (response.ok){
+                return data.book;
+            } else {
+                showMessage(data.message || 'נכשל במציאת ספר', 'error');
+            }
+        } catch (error) {
+            console.error('fetch book by id:', error);
+            showMessage('שגיאה בהתחברות לשרת', 'error');
+        }
+    }
+
+    async function obtainBook(bookId) {
+        if (!currentUser || !currentUser.id) {
+            showMessage('אנא התחברו כדי לקבל ספרים', 'error');
+            return;
+        }
+
+        const messageContainer = document.getElementById('message-container');
+
+        try {
+            const response = await fetch(`http://localhost:80/library/user/id/${currentUser.id}/obtain`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    book_id: bookId
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage(`הספר "${data.book.book_name}" נתקבל בהצלחה!`, 'success');
+                // Reload held books and refresh search results
+                await loadHeldBooks();
+                const searchInput = document.getElementById('search-input');
+                if (searchInput.value.trim()) {
+                    searchBooks();
+                }
+            } else {
+                showMessage(data.message || 'נכשל בקבלת הספר', 'error');
+            }
+        } catch (error) {
+            console.error('Obtain book error:', error);
+            showMessage('שגיאה בהתחברות לשרת', 'error');
+        }
+    }
+
+    async function loadHeldBooks() {
+        if (!currentUser || !currentUser.id) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:80/user/id/${currentUser.id}/holding`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                heldBooks = data.books || [];
+            } else {
+                console.error('Failed to load held books:', data.message);
+                heldBooks = [];
+            }
+        } catch (error) {
+            console.error('Error loading held books:', error);
+            heldBooks = [];
+        }
+    }
+
+    async function returnBook(bookId) {
+        if (!currentUser || !currentUser.id) {
+            showMessage('אנא התחברו כדי להחזיר ספרים', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:80/library/user/id/${currentUser.id}/return`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    book_id: bookId
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage(`הספר "${data.book.book_name}" הוחזר בהצלחה!`, 'success');
+                // Reload held books and refresh display
+                await loadHeldBooks();
+                if (showingHeldBooks) {
+                    displayBooks(heldBooks, true);
+                } else {
+                    // If we're in search results, refresh them
+                    const searchInput = document.getElementById('search-input');
+                    if (searchInput.value.trim()) {
+                        searchBooks();
+                    }
+                }
+            } else {
+                showMessage(data.message || 'נכשל בהחזרת הספר', 'error');
+            }
+        } catch (error) {
+            console.error('Return book error:', error);
+            showMessage('שגיאה בהתחברות לשרת', 'error');
+        }
+    }
+
+    function showMessage(text, type) {
+        const messageContainer = document.getElementById('message-container');
+        messageContainer.innerHTML = `<div class="message ${type}">${escapeHtml(text)}</div>`;
+
+        // Auto-hide success and info messages after 5 seconds
+        if (type === 'success' || type === 'info') {
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 5000);
+        }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function logout() {
+        sessionStorage.removeItem('libraryUser');
+        window.location.href = '/';
+    }
+
+    function admin_dashboard(){
+        window.location.href = '/admin';
+    }
+
+    function toggleHeldBooks() {
+        showingHeldBooks = !showingHeldBooks;
+        const heldBooksBtn = document.querySelector('.held-books-btn');
+
+        if (showingHeldBooks) {
+            displayBooks(heldBooks, true);
+            heldBooksBtn.textContent = 'חזור לחיפוש';
+            showMessage(`יש לכם ${heldBooks.length} ספרים`, 'info');
+        } else {
+            document.getElementById('books-container').innerHTML = '';
+            heldBooksBtn.textContent = 'הספרים שלי';
+            document.getElementById('message-container').innerHTML = '';
+        }
+    }
+</script>
+</body>
+</html>
