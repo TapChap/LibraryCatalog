@@ -38,6 +38,10 @@ def index():
 def home():
     return render_template("home.html")
 
+@app.route('/admin')
+def admin():
+    return render_template("admin.html")
+
 @app.route('/loadFromFile', methods=['POST'])
 def loadFromFile():
     json_data = request.form.get('dataColumns')

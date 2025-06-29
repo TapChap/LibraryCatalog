@@ -104,3 +104,6 @@ class Book(db.Model):
             })
 
         return json
+
+    def hash_book(self):
+        return hash(self.toJson(full=True))
