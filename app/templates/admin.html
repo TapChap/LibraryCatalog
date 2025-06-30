@@ -311,7 +311,7 @@
             <div class="loading">טוען משתמשים...</div>
         </div>
     </div>
-    
+
     <!-- Create Book Section -->
     <div class="section">
         <h2 class="section-title">יצירת ספר חדש</h2>
@@ -454,7 +454,7 @@
 
         try {
             // Build URL with parameters
-            const url = `http://localhost:80/book/add?${urlParams.toString()}`;
+            const url = `http://192.168.181.247:80/book/add?${urlParams.toString()}`;
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -485,7 +485,7 @@
 
     async function loadBooksCount() {
         try {
-            const response = await fetch('http://localhost:80/book/all');
+            const response = await fetch('http://192.168.181.247:80/book/all');
             const data = await response.json();
 
             if (response.ok) {
@@ -503,7 +503,7 @@
         const usersContainer = document.getElementById('users-container');
 
         try {
-            const response = await fetch('http://localhost:80/user/all');
+            const response = await fetch('http://192.168.181.247:80/user/all');
             const data = await response.json();
 
             if (response.ok) {
@@ -568,7 +568,7 @@
         element.style.pointerEvents = 'none';
 
         try {
-            const response = await fetch(`http://localhost:80/library/user/id/${userId}/return`, {
+            const response = await fetch(`http://192.168.181.247:80/library/user/id/${userId}/return`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

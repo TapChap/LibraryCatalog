@@ -110,3 +110,5 @@ class Book(db.Model):
 
     def hash_book(self):
         return hash(self.toJson(full=True))
+
+# class SystemUpdate():

@@ -42,6 +42,12 @@ def home():
 def admin():
     return render_template("admin.html")
 
+@app.route('/system_update')
+def system_updates():
+    data = request.get_json()
+    update_content = data.get("content")
+
+
 @app.route('/loadFromFile', methods=['POST'])
 def loadFromFile():
     json_data = request.form.get('dataColumns')
