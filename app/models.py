@@ -83,13 +83,16 @@ class Book(db.Model):
                 "holders": [holder.toJson(False) for holder in self.holders]
             })
 
+        formatted_label = ""
+
         if full:
             if self.sub_cat_index:
-                if len(self.label) > 1: # handling label edge cases
-                    prefix, index = self.label.split('.')
-                    formatted_label = f"{prefix}.{self.sub_cat_index}.{index}"
-                else:
-                    formatted_label = f'{self.label}.{self.sub_cat_index}.0'
+                if self.label:
+                    if len(self.label) > 1: # handling label edge cases
+                        prefix, index = self.label.split('.')
+                        formatted_label = f"{prefix}.{self.sub_cat_index}.{index}"
+                    else:
+                        formatted_label = f'{self.label}.{self.sub_cat_index}.0'
 
             json.update({
                 "series": self.series,

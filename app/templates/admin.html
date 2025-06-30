@@ -214,8 +214,8 @@
         }
 
         .book-list {
-            display: flex;
-            flex-direction: column;
+            display: inline-flex;
+            flex-direction: row;
             gap: 0.25rem;
         }
 
@@ -227,6 +227,7 @@
             cursor: pointer;
             transition: all 0.2s;
             font-size: 0.9rem;
+            direction: inherit;
         }
 
         .book-item:hover {
@@ -293,15 +294,24 @@
             <div class="stat-label">סה"כ משתמשים</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number" id="total-books-held">-</div>
-            <div class="stat-label">ספרים מושאלים</div>
+            <div class="stat-number" id="total-books">-</div>
+            <div class="stat-label">סה"כ ספרים במערכת</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number" id="active-borrowers">-</div>
-            <div class="stat-label">משתמשים פעילים</div>
+            <div class="stat-number" id="total-books-borrowed">-</div>
+            <div class="stat-label">ספרים מושאלים</div>
         </div>
     </div>
 
+    <!-- Users Management Section -->
+    <div class="section">
+        <h2 class="section-title">ניהול משתמשים</h2>
+        <div id="users-message-container"></div>
+        <div id="users-container">
+            <div class="loading">טוען משתמשים...</div>
+        </div>
+    </div>
+    
     <!-- Create Book Section -->
     <div class="section">
         <h2 class="section-title">יצירת ספר חדש</h2>
@@ -369,19 +379,12 @@
         </form>
     </div>
 
-    <!-- Users Management Section -->
-    <div class="section">
-        <h2 class="section-title">ניהול משתמשים</h2>
-        <div id="users-message-container"></div>
-        <div id="users-container">
-            <div class="loading">טוען משתמשים...</div>
-        </div>
-    </div>
 </div>
 
 <script>
     let currentUser = null;
     let allUsers = [];
+    let totalBooksCount = 0;
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', function() {
@@ -401,6 +404,7 @@
             }
 
             loadAllUsers();
+            loadBooksCount();
         } else {
             window.location.href = '/';
         }
@@ -465,6 +469,8 @@
             if (response.ok) {
                 showBookMessage(`הספר "${requiredData.book_name}" נוצר בהצלחה!`, 'success');
                 form.reset();
+                // Reload books count to update stats
+                await loadBooksCount();
             } else {
                 showBookMessage(data.message || 'נכשל ביצירת הספר', 'error');
             }
@@ -477,6 +483,22 @@
         }
     }
 
+    async function loadBooksCount() {
+        try {
+            const response = await fetch('http://localhost:80/book/all');
+            const data = await response.json();
+
+            if (response.ok) {
+                totalBooksCount = data.books.length || 0;
+                updateStats();
+            } else {
+                console.error('Failed to load books count:', data.message);
+            }
+        } catch (error) {
+            console.error('Load books count error:', error);
+        }
+    }
+
     async function loadAllUsers() {
         const usersContainer = document.getElementById('users-container');
 
@@ -485,7 +507,8 @@
             const data = await response.json();
 
             if (response.ok) {
-                allUsers = data.users || [];
+                allUsers = data
+
                 displayUsers(allUsers);
                 updateStats();
             } else {
@@ -521,7 +544,7 @@
                     <div class="book-list">
                         ${user.held_books && user.held_books.length > 0 ?
             user.held_books.map(book => `
-                                <div class="book-item" onclick="removeBookFromUser(${user.id}, ${book.id}, '${escapeHtml(book.book_name)}', this)" title="לחץ להחזרת הספר">
+                                <div dir="rtl" class="book-item" onclick="removeBookFromUser(${user.id}, ${book.id}, '${escapeHtml(book.book_name)}', this)" title="לחץ להחזרת הספר">
                                     ${escapeHtml(book.book_name)}
                                 </div>
                             `).join('') :
@@ -578,12 +601,11 @@
 
     function updateStats() {
         const totalUsers = allUsers.length;
-        const totalBooksHeld = allUsers.reduce((sum, user) => sum + (user.held_books ? user.held_books.length : 0), 0);
-        const activeBorrowers = allUsers.filter(user => user.held_books && user.held_books.length > 0).length;
+        const totalBooksBorrowed = allUsers.reduce((sum, user) => sum + (user.held_books ? user.held_books.length : 0), 0);
 
         document.getElementById('total-users').textContent = totalUsers;
-        document.getElementById('total-books-held').textContent = totalBooksHeld;
-        document.getElementById('active-borrowers').textContent = activeBorrowers;
+        document.getElementById('total-books').textContent = totalBooksCount;
+        document.getElementById('total-books-borrowed').textContent = totalBooksBorrowed;
     }
 
     function showBookMessage(text, type) {

@@ -11,7 +11,7 @@ def getBook(book_name):
 def bookExists(book):
     book_copy = Book.query.filter_by(
         book_name=book.book_name,
-        category = book.category,
+        category=book.category,
         series=book.series,
         series_index=book.series_index,
         author=book.author,

@@ -378,6 +378,7 @@
 <script>
     let currentUser = null;
     let heldBooks = [];
+    let allBooks = []
     let showingHeldBooks = false;
 
     // Initialize the page
@@ -397,11 +398,23 @@
 
             loadHeldBooks(); // Load held books on page load
         }
+
+        loadAllBooks().then((__)=> showAllBooks());
     });
 
     function handleKeyPress(event) {
         if (event.key === 'Enter') {
             searchBooks();
+        }
+    }
+
+    async function showAllBooks() {
+        try {
+            console.log(allBooks)
+            displayBooks(allBooks);
+        } catch (error) {
+            console.error('Search error:', error);
+            showMessage('שגיאה בהצגת הספרים', 'error');
         }
     }
 
@@ -620,9 +633,8 @@
                 // Reload held books and refresh search results
                 await loadHeldBooks();
                 const searchInput = document.getElementById('search-input');
-                if (searchInput.value.trim()) {
-                    searchBooks();
-                }
+                if (searchInput.value.trim()) searchBooks();
+                else showAllBooks();
             } else {
                 showMessage(data.message || 'נכשל בקבלת הספר', 'error');
             }
@@ -651,6 +663,26 @@
                 heldBooks = data.books || [];
             } else {
                 console.error('Failed to load held books:', data.message);
+                heldBooks = [];
+            }
+        } catch (error) {
+            console.error('Error loading held books:', error);
+            heldBooks = [];
+        }
+    }
+
+    async function loadAllBooks(){
+        try {
+            const response = await fetch(`http://localhost:80/book/all`, {
+                method: 'GET',
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                allBooks = data.books || [];
+                console.log(allBooks)
+            } else {
+                console.error('Failed to load all books:', data.message);
                 heldBooks = [];
             }
         } catch (error) {
@@ -739,6 +771,7 @@
             document.getElementById('books-container').innerHTML = '';
             heldBooksBtn.textContent = 'הספרים שלי';
             document.getElementById('message-container').innerHTML = '';
+            showAllBooks();
         }
     }
 </script>

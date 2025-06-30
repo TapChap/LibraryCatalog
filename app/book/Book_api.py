@@ -14,7 +14,7 @@ def add_book():
 
     # Get other parameters from URL query string
     series = request.args.get("series")
-    series_index = request.args.get("series_index", type=int)
+    series_index = request.args.get("series_index")
     author = request.args.get("author")
     label = request.args.get("label")
     sub_cat = request.args.get("sub_cat")
@@ -74,6 +74,4 @@ def get_all_books():
 
     book_json_list = [book.toJson(True, True) for book in books]
 
-    book_json_list = book_json_list[0:200]
-
-    return book_json_list, 200
+    return {"books": book_json_list}, 200

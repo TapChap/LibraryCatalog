@@ -25,4 +25,4 @@ def writeToSQL(data, db):
         sqlBook = createBook(*book.serialize())
 
         db.session.add(sqlBook)
-        db.session.commit()
+    db.session.commit()
