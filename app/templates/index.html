@@ -119,15 +119,21 @@
             body: JSON.stringify({"username": username, "display_name": display_name, "password": password})
         });
 
-        const msg = document.getElementById("signup-msg");
-        const resData = await response.json();
-        msg.className = response.ok ? "success" : "error";
-        msg.textContent = resData.message || "Signup failed";
+        const data = await response.json();
+
+        if (response.ok) {
+            await handleLogin(data.user.username, password);
+        } else {
+            alert(data.message);
+        }
     }
 
-    async function handleLogin() {
-        const username = document.getElementById("login-username").value;
-        const password = document.getElementById("login-password").value;
+    async function handleLogin(signupUsername="", signupPassword="") {
+        const username = signupUsername || document.getElementById("login-username").value;
+        const password = signupPassword || document.getElementById("login-password").value;
+
+        console.log(signupUsername)
+        console.log(signupPassword)
 
         const response = await fetch(`http://${window.CONFIG.SERVER_URL}/user/login`, {
             method: "POST",

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>עמוד ניהול - ישיבת מחנים</title>
     <style>
         * {
@@ -26,7 +26,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
@@ -74,7 +74,7 @@
             background-color: white;
             padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
         }
 
@@ -187,7 +187,7 @@
         }
 
         .user-card:hover {
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .user-name {
@@ -248,31 +248,47 @@
             color: #6b7280;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        .button-group {
+            display: flex;
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-top: 1.5rem;
         }
 
-        .stat-card {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-align: center;
+        .submit-btn {
+            background-color: #10b981;
+            flex: 1;
+            padding: 0.75rem;
+            font-size: 1rem;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
 
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #3b82f6;
+        .submit-btn:hover:not(:disabled) {
+            background-color: #059669;
         }
 
-        .stat-label {
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
+        .delete-btn {
+            background-color: #ef4444;
+            flex: 1;
+            padding: 0.75rem;
+            font-size: 1rem;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .delete-btn:hover:not(:disabled) {
+            background-color: #dc2626;
+        }
+
+        .submit-btn:disabled, .delete-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -287,22 +303,6 @@
 </div>
 
 <div class="main-content">
-    <!-- Statistics Section -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-number" id="total-users">-</div>
-            <div class="stat-label">סה"כ משתמשים</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number" id="total-books">-</div>
-            <div class="stat-label">סה"כ ספרים במערכת</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number" id="total-books-borrowed">-</div>
-            <div class="stat-label">ספרים מושאלים</div>
-        </div>
-    </div>
-
     <!-- Users Management Section -->
     <div class="section">
         <h2 class="section-title">ניהול משתמשים</h2>
@@ -379,6 +379,33 @@
         </form>
     </div>
 
+    <div class="section system-update-section">
+        <h2 class="section-title">🔔 ניהול הודעות מערכת</h2>
+
+        <!-- System Update Form -->
+        <form id="system-update-form">
+            <div class="form-group">
+                <label for="system-update-content">הודעת מערכת חדשה</label>
+                <textarea
+                        id="system-update-content"
+                        name="content"
+                        class="form-textarea"
+                        rows="4"
+                        placeholder="הכנס כאן את הודעת המערכת החדשה..."
+                ></textarea>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="create-btn submit-btn" id="submit-update-btn">
+                    שלח הודעה חדשה
+                </button>
+                <button type="button" class="create-btn delete-btn" id="delete-update-btn">
+                    מחק הודעה קיימת
+                </button>
+            </div>
+        </form>
+    </div>
+
 </div>
 
 <script src="/static/config.js"></script>
@@ -386,10 +413,9 @@
 <script>
     let currentUser = null;
     let allUsers = [];
-    let totalBooksCount = 0;
 
     // Initialize the page
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Get user info from sessionStorage
         const userData = sessionStorage.getItem('libraryUser');
         if (userData) {
@@ -406,14 +432,22 @@
             }
 
             loadAllUsers();
-            loadBooksCount();
         } else {
             window.location.href = '/';
         }
+
+        document.getElementById('system-update-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            await submitSystemUpdate();
+        });
+
+        document.getElementById('delete-update-btn').addEventListener('click', async function () {
+            await deleteSystemUpdate();
+        });
     });
 
     // Handle create book form submission
-    document.getElementById('create-book-form').addEventListener('submit', async function(e) {
+    document.getElementById('create-book-form').addEventListener('submit', async function (e) {
         e.preventDefault();
         await createBook();
     });
@@ -485,22 +519,6 @@
         }
     }
 
-    async function loadBooksCount() {
-        try {
-            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/all`);
-            const data = await response.json();
-
-            if (response.ok) {
-                totalBooksCount = data.books.length || 0;
-                updateStats();
-            } else {
-                console.error('Failed to load books count:', data.message);
-            }
-        } catch (error) {
-            console.error('Load books count error:', error);
-        }
-    }
-
     async function loadAllUsers() {
         const usersContainer = document.getElementById('users-container');
 
@@ -512,7 +530,6 @@
                 allUsers = data
 
                 displayUsers(allUsers);
-                updateStats();
             } else {
                 showUsersMessage(data.message || 'נכשל בטעינת המשתמשים', 'error');
                 usersContainer.innerHTML = '<div class="loading">שגיאה בטעינת המשתמשים</div>';
@@ -601,15 +618,6 @@
         }
     }
 
-    function updateStats() {
-        const totalUsers = allUsers.length;
-        const totalBooksBorrowed = allUsers.reduce((sum, user) => sum + (user.held_books ? user.held_books.length : 0), 0);
-
-        document.getElementById('total-users').textContent = totalUsers;
-        document.getElementById('total-books').textContent = totalBooksCount;
-        document.getElementById('total-books-borrowed').textContent = totalBooksBorrowed;
-    }
-
     function showBookMessage(text, type) {
         const messageContainer = document.getElementById('book-message-container');
         messageContainer.innerHTML = `<div class="message ${type}">${escapeHtml(text)}</div>`;
@@ -629,6 +637,94 @@
             setTimeout(() => {
                 messageContainer.innerHTML = '';
             }, 5000);
+        }
+    }
+
+    async function submitSystemUpdate() {
+        const form = document.getElementById('system-update-form');
+        const submitBtn = document.getElementById('submit-update-btn');
+        const deleteBtn = document.getElementById('delete-update-btn');
+        const contentTextarea = document.getElementById('system-update-content');
+
+        const content = contentTextarea.value.trim();
+
+        if (!content) {
+            alert('אנא הכנס תוכן להודעה', 'error');
+            return;
+        }
+
+        // Disable buttons during request
+        submitBtn.disabled = true;
+        deleteBtn.disabled = true;
+        submitBtn.textContent = 'שולח...';
+
+        try {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/system_update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    content: content
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('הודעת המערכת נשלחה בהצלחה!', 'success');
+                contentTextarea.value = '';
+            } else {
+                alert(data.message || 'נכשל בשליחת ההודעה', 'error');
+            }
+        } catch (error) {
+            console.error('Submit system update error:', error);
+            alert('שגיאה בהתחברות לשרת', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            deleteBtn.disabled = false;
+            submitBtn.textContent = 'שלח הודעה חדשה';
+        }
+    }
+
+    async function deleteSystemUpdate() {
+        if (!confirm('האם אתם בטוחים שברצונכם למחוק את הודעת המערכת הנוכחית?')) {
+            return;
+        }
+
+        const submitBtn = document.getElementById('submit-update-btn');
+        const deleteBtn = document.getElementById('delete-update-btn');
+
+        // Disable buttons during request
+        submitBtn.disabled = true;
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = 'מוחק...';
+
+        try {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/system_update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    // Empty content to trigger reset_system_update()
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('הודעת המערכת נמחקה בהצלחה!', 'success');
+            } else {
+                alert(data.message || 'נכשל במחיקת ההודעה', 'error');
+            }
+        } catch (error) {
+            console.error('Delete system update error:', error);
+            alert('שגיאה בהתחברות לשרת', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = 'מחק הודעה קיימת';
         }
     }
 

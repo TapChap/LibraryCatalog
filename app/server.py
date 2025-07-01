@@ -4,9 +4,10 @@ from flask import Flask, render_template
 from flask_cors import CORS
 from sqlalchemy import text
 
+import system_update
 from client.Client_api import *
 from book.Book_api import *
-from Library import *
+from Library_api import *
 from xlsx_helper import *
 from dotenv import load_dotenv
 
@@ -42,11 +43,9 @@ def home():
 def admin():
     return render_template("admin.html")
 
-@app.route('/system_update')
-def system_updates():
-    data = request.get_json()
-    update_content = data.get("content")
-
+@app.route('/system_update', methods=['GET', 'POST'])
+def system_update_api():
+    return system_update.system_update(request)
 
 @app.route('/loadFromFile', methods=['POST'])
 def loadFromFile():
@@ -92,7 +91,6 @@ def runSQL(sql_string):
     except Exception as e:
         print(f"SQL execution error: {e}")
         return None
-
 
 if __name__ == '__main__':
     with app.app_context():

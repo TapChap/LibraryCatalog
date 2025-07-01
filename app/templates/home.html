@@ -67,7 +67,7 @@
 
         .main-content {
             max-width: 1200px;
-            margin: 2rem auto;
+            margin: 1rem auto;
             padding: 0 2rem;
         }
 
@@ -189,8 +189,16 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             padding: 1.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.75s ease, opacity 0.75s ease;
             text-align: right;
+
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .book-card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .book-card:hover {
@@ -327,11 +335,92 @@
 
         .welcome-section h2 {
             color: #1f2937;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .welcome-section p {
             color: #6b7280;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .system-message-container {
+            max-width: 800px;
+            margin: 1rem auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;  /* centers horizontally */
+            align-items: center;
+        }
+
+        .message-header {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1rem;
+            text-align: center;
+        }
+
+        .message-header h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .message-display p {
+            justify-content: center;
+            align-items: center;
+            padding: 0.25rem 0.25rem;
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .error-message {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .message-header {
+            position: relative;
+        }
+
+        /* Animation for showing the message */
+        .system-message-container.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
         }
     </style>
 </head>
@@ -346,9 +435,31 @@
 </div>
 
 <div class="main-content">
+    <div class="system-message-container" id="systemMessageContainer">
+        <div class="message-header">
+            <h1>🔔 הודעת מערכת</h1>
+        </div>
+
+        <div class="message-display" id="messageDisplay"></div>
+    </div>
+
     <div class="welcome-section">
-        <h2>ברוכים הבאים לספרייה שלכם</h2>
-        <p>חפשו ספרים והוסיפו אותם לאוסף שלכם</p>
+        <h2>ברוכים הבאים לספרייה של ישיבת מחנים</h2>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-users">-</div>
+                <div class="stat-label">סה"כ משתמשים</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-books">-</div>
+                <div class="stat-label">סה"כ ספרים במערכת</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-books-borrowed">-</div>
+                <div class="stat-label">ספרים מושאלים</div>
+            </div>
+        </div>
     </div>
 
     <div class="search-section">
@@ -380,7 +491,9 @@
 <script>
     let currentUser = null;
     let heldBooks = [];
-    let allBooks = []
+    let allBooks = [];
+    let allUsers = [];
+    let totalBooksCount = 0;
     let showingHeldBooks = false;
 
     // Initialize the page
@@ -401,7 +514,12 @@
             loadHeldBooks(); // Load held books on page load
         }
 
-        loadAllBooks().then((__)=> showAllBooks());
+        loadSystemMessage();
+
+        Promise.all([loadAllBooks(), loadAllUsers()]).then((__)=> {
+            showAllBooks();
+            updateStats();
+        })
     });
 
     function handleKeyPress(event) {
@@ -469,6 +587,7 @@
 
     async function displayBooks(books, isHeldBooks = false) {
         const booksContainer = document.getElementById('books-container');
+        const motionStaggerDelay_ms = 75;
 
         if (books.length === 0) {
             const emptyMessage = isHeldBooks ? 'אין ספרים בבעלותכם כרגע' : 'לא נמצאו ספרים. נסו מונח חיפוש אחר.';
@@ -486,8 +605,6 @@
                 bookHolder = await fetchBookById(book.id);
                 holders = bookHolder.holders;
             }
-
-            console.log(currentUser);
 
             return `
             <div class="book-card">
@@ -575,6 +692,14 @@
         }));
 
         booksContainer.innerHTML = titleHtml + `<div class="books-grid">${booksHTML.join('')}</div>`;
+
+        requestAnimationFrame(() => {
+            document.querySelectorAll('.book-card').forEach((card, i) => {
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, i * motionStaggerDelay_ms); // optional stagger effect
+            });
+        });
     }
 
     async function fetchUserById(userId){
@@ -682,7 +807,7 @@
 
             if (response.ok) {
                 allBooks = data.books || [];
-                console.log(allBooks)
+                totalBooksCount = allBooks.length
             } else {
                 console.error('Failed to load all books:', data.message);
                 heldBooks = [];
@@ -774,6 +899,67 @@
             heldBooksBtn.textContent = 'הספרים שלי';
             document.getElementById('message-container').innerHTML = '';
             showAllBooks();
+        }
+    }
+
+    function updateStats() {
+        const totalUsers = allUsers.length;
+        const totalBooksBorrowed = allUsers.reduce((sum, user) => sum + (user.held_books ? user.held_books.length : 0), 0);
+
+        document.getElementById('total-users').textContent = totalUsers;
+        document.getElementById('total-books').textContent = totalBooksCount;
+        document.getElementById('total-books-borrowed').textContent = totalBooksBorrowed;
+    }
+
+    async function loadAllUsers() {
+        try {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/user/all`);
+            const data = await response.json();
+
+            if (response.ok) allUsers = data
+        } catch (error) {
+            console.error('Load users error:', error);
+        }
+    }
+
+    async function loadBooksCount() {
+        try {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/all`);
+            const data = await response.json();
+
+            if (response.ok) totalBooksCount = data.books.length || 0;
+            else console.error('Failed to load books count:', data.message);
+        } catch (error) {
+            console.error('Load books count error:', error);
+        }
+    }
+
+    async function loadSystemMessage() {
+        const messageDisplay = document.getElementById('messageDisplay');
+        const container = document.getElementById('systemMessageContainer');
+
+        try {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/system_update`);
+            const data = await response.json();
+
+            if (response.ok && data.update && data.update.trim()) {
+                // Show the container and display the message
+                container.classList.add('show');
+
+                messageDisplay.innerHTML = `<p>${escapeHtml(data.update)}<p>`;
+            } else {
+                // No message found - keep container hidden
+                container.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Load system message error:', error);
+            // Show error but keep container visible
+            container.classList.add('show');
+            messageDisplay.innerHTML = `
+                    <div class="error-message">
+                        שגיאה בטעינת הודעת המערכת
+                    </div>
+                `;
         }
     }
 </script>

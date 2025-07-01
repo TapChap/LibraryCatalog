@@ -32,7 +32,7 @@ def signup(permission_level=1):
     if getClient(username)[1] == 200:
         return {"message": "User already exists", "offending_field": "username"}, 409
 
-    new_user = createClient(username, display_name, permission_level, *hashPassword(password))
+    new_user = createClient(username.strip(), display_name.strip(), permission_level, *hashPassword(password))
     db.session.add(new_user)
     db.session.commit()
 
