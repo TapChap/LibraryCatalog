@@ -376,7 +376,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             overflow: hidden;
-            display: flex;
+            display: block;
             justify-content: center;  /* centers horizontally */
             align-items: center;
         }
@@ -400,8 +400,12 @@
             padding: 0.25rem 0.25rem;
             text-align: center;
             font-size: 1.2rem;
-            margin: 0;
+            margin: 1rem 1rem; /* adds spacing */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
         }
+
 
         .error-message {
             background-color: #fee2e2;
@@ -415,12 +419,6 @@
 
         .message-header {
             position: relative;
-        }
-
-        /* Animation for showing the message */
-        .system-message-container.show {
-            display: block;
-            animation: slideIn 0.3s ease-out;
         }
     </style>
 </head>
@@ -449,11 +447,11 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-number" id="total-users">-</div>
-                <div class="stat-label">סה"כ משתמשים</div>
+                <div class="stat-label">משתמשים</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="total-books">-</div>
-                <div class="stat-label">סה"כ ספרים במערכת</div>
+                <div class="stat-label">ספרים במערכת</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="total-books-borrowed">-</div>
@@ -608,8 +606,6 @@
 
             return `
             <div class="book-card">
-                <div class="book-title">${escapeHtml(book.book_name)}</div>
-                ${book.author ? `<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : ''}
 
                 ${book.series ? `
                     <div class="book-series">
@@ -702,22 +698,6 @@
         });
     }
 
-    async function fetchUserById(userId){
-        try {
-            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/user/id/${userId}`);
-            const data = await response.json();
-
-            if (response.ok){
-                return data.user;
-            } else {
-                showMessage(data.message || 'נכשל במציאת משתמש', 'error');
-            }
-        } catch (error) {
-            console.error('fetch user by id:', error);
-            showMessage('שגיאה בהתחברות לשרת', 'error');
-        }
-    }
-
     async function fetchBookById(bookId){
         try {
             const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/id/${bookId}`);
@@ -734,11 +714,22 @@
         }
     }
 
+    // Replace the obtainBook function with this updated version
     async function obtainBook(bookId) {
         if (!currentUser || !currentUser.id) {
             showMessage('אנא התחברו כדי לקבל ספרים', 'error');
             return;
         }
+
+        // Find the book card and button
+        const bookCard = document.querySelector(`button[onclick="obtainBook(${bookId})"]`).closest('.book-card');
+        const obtainBtn = bookCard.querySelector('.obtain-btn');
+
+        // Show loading state on the button
+        const originalText = obtainBtn.textContent;
+        obtainBtn.disabled = true;
+        obtainBtn.textContent = 'מקבל...';
+        obtainBtn.style.backgroundColor = '#9ca3af';
 
         try {
             const response = await fetch(`http://${window.CONFIG.SERVER_URL}/library/user/id/${currentUser.id}/obtain`, {
@@ -755,19 +746,165 @@
 
             if (response.ok) {
                 showMessage(`הספר "${data.book.book_name}" נתקבל בהצלחה!`, 'success');
-                // Reload held books and refresh search results
+
+                // Update held books data
                 await loadHeldBooks();
 
-                // const searchInput = document.getElementById('search-input');
-                // if (searchInput.value.trim()) searchBooks();
-                // else displayBooks(allBooks, false, false)
+                // Update the availability display in the card
+                const availabilitySpan = bookCard.querySelector('.availability');
 
+                // Find the book in allBooks to get current availability info
+                const bookIndex = allBooks.findIndex(book => book.id === bookId);
+                let shouldDisableButton = false;
+
+                if (bookIndex !== -1) {
+                    const book = allBooks[bookIndex];
+                    // Reduce available quantity by 1
+                    const newAvailableCount = book.quantity - (book.taken_count || 0) - 1;
+
+                    if (newAvailableCount <= 0) {
+                        // No more copies available
+                        availabilitySpan.textContent = 'לא זמין';
+                        availabilitySpan.className = 'availability unavailable';
+                        allBooks[bookIndex].isTaken = true;
+                        shouldDisableButton = true;
+                    } else {
+                        // Still copies available
+                        availabilitySpan.textContent = `${newAvailableCount} עותקים`;
+                        availabilitySpan.className = 'availability available';
+                        // Update taken count
+                        allBooks[bookIndex].taken_count = (book.taken_count || 0) + 1;
+                    }
+                } else {
+                    // Fallback if book not found in array
+                    availabilitySpan.textContent = 'לא זמין';
+                    availabilitySpan.className = 'availability unavailable';
+                    shouldDisableButton = true;
+                }
+
+                // Always replace with return button since THIS USER just obtained the book
+                obtainBtn.outerHTML = `
+                <button
+                    class="return-btn"
+                    onclick="returnBook(${bookId})"
+                >
+                    החזר ספר
+                </button>
+            `;
 
             } else {
+                // Restore button on error
+                obtainBtn.disabled = false;
+                obtainBtn.textContent = originalText;
+                obtainBtn.style.backgroundColor = '#10b981';
                 showMessage(data.message || 'נכשל בקבלת הספר', 'error');
             }
         } catch (error) {
             console.error('Obtain book error:', error);
+            // Restore button on error
+            obtainBtn.disabled = false;
+            obtainBtn.textContent = originalText;
+            obtainBtn.style.backgroundColor = '#10b981';
+            showMessage('שגיאה בהתחברות לשרת', 'error');
+        }
+    }
+
+    // Replace the returnBook function with this updated version
+    async function returnBook(bookId) {
+        if (!currentUser || !currentUser.id) {
+            showMessage('אנא התחברו כדי להחזיר ספרים', 'error');
+            return;
+        }
+
+        // Find the book card and button
+        const bookCard = document.querySelector(`button[onclick="returnBook(${bookId})"]`).closest('.book-card');
+        const returnBtn = bookCard.querySelector('.return-btn');
+
+        // Show loading state on the button
+        const originalText = returnBtn.textContent;
+        returnBtn.disabled = true;
+        returnBtn.textContent = 'מחזיר...';
+        returnBtn.style.backgroundColor = '#9ca3af';
+
+        try {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/library/user/id/${currentUser.id}/return`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    book_id: bookId
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage(`הספר "${data.book.book_name}" הוחזר בהצלחה!`, 'success');
+
+                // Update held books data
+                await loadHeldBooks();
+
+                if (showingHeldBooks) {
+                    // If we're showing held books, remove this card entirely
+                    bookCard.style.opacity = '0';
+                    bookCard.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        bookCard.remove();
+                        // Check if there are any books left
+                        const remainingCards = document.querySelectorAll('.book-card');
+                        if (remainingCards.length === 0) {
+                            document.getElementById('books-container').innerHTML = '<div class="no-results">אין ספרים בבעלותכם כרגע</div>';
+                        }
+                    }, 300);
+                } else {
+                    // Update the availability display in the card
+                    const availabilitySpan = bookCard.querySelector('.availability');
+
+                    // Find the book in allBooks to get current availability info
+                    const bookIndex = allBooks.findIndex(book => book.id === bookId);
+
+                    if (bookIndex !== -1) {
+                        const book = allBooks[bookIndex];
+                        // Increase available quantity by 1 (return a copy)
+                        const newAvailableCount = book.quantity - Math.max((book.taken_count || 1) - 1, 0);
+
+                        availabilitySpan.textContent = `${newAvailableCount} עותקים`;
+                        availabilitySpan.className = 'availability available';
+
+                        // Update taken count
+                        allBooks[bookIndex].taken_count = Math.max((book.taken_count || 1) - 1, 0);
+                        allBooks[bookIndex].isTaken = allBooks[bookIndex].taken_count >= book.quantity;
+                    } else {
+                        // Fallback if book not found in array
+                        availabilitySpan.textContent = '1 עותק';
+                        availabilitySpan.className = 'availability available';
+                    }
+
+                    // Replace the return button with obtain button
+                    returnBtn.outerHTML = `
+                    <button
+                        class="obtain-btn"
+                        onclick="obtainBook(${bookId})"
+                    >
+                        קבל ספר
+                    </button>
+                `;
+                }
+
+            } else {
+                // Restore button on error
+                returnBtn.disabled = false;
+                returnBtn.textContent = originalText;
+                returnBtn.style.backgroundColor = '#f59e0b';
+                showMessage(data.message || 'נכשל בהחזרת הספר', 'error');
+            }
+        } catch (error) {
+            console.error('Return book error:', error);
+            // Restore button on error
+            returnBtn.disabled = false;
+            returnBtn.textContent = originalText;
+            returnBtn.style.backgroundColor = '#f59e0b';
             showMessage('שגיאה בהתחברות לשרת', 'error');
         }
     }
@@ -816,47 +953,6 @@
         } catch (error) {
             console.error('Error loading held books:', error);
             heldBooks = [];
-        }
-    }
-
-    async function returnBook(bookId) {
-        if (!currentUser || !currentUser.id) {
-            showMessage('אנא התחברו כדי להחזיר ספרים', 'error');
-            return;
-        }
-
-        try {
-            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/library/user/id/${currentUser.id}/return`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    book_id: bookId
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                showMessage(`הספר "${data.book.book_name}" הוחזר בהצלחה!`, 'success');
-                // Reload held books and refresh display
-                await loadHeldBooks();
-                if (showingHeldBooks) {
-                    displayBooks(heldBooks, true);
-                } else {
-                    // If we're in search results, refresh them
-                    const searchInput = document.getElementById('search-input');
-                    if (searchInput.value.trim()) {
-                        searchBooks();
-                    }
-                }
-            } else {
-                showMessage(data.message || 'נכשל בהחזרת הספר', 'error');
-            }
-        } catch (error) {
-            console.error('Return book error:', error);
-            showMessage('שגיאה בהתחברות לשרת', 'error');
         }
     }
 
@@ -945,9 +1041,9 @@
 
             if (response.ok && data.update && data.update.trim()) {
                 // Show the container and display the message
-                container.classList.add('show');
+                container.style.opacity = 1;
 
-                messageDisplay.innerHTML = `<p>${escapeHtml(data.update)}<p>`;
+                messageDisplay.innerHTML = `<p>${escapeHtml(data.update)}</p>`;
             } else {
                 // No message found - keep container hidden
                 container.style.display = 'none';

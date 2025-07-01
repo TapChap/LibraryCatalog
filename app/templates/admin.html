@@ -214,8 +214,8 @@
         }
 
         .book-list {
-            display: inline-flex;
-            flex-direction: row;
+            display: flex;
+            flex-wrap: wrap;  /* Allow wrapping to next row */
             gap: 0.25rem;
         }
 
@@ -228,6 +228,11 @@
             transition: all 0.2s;
             font-size: 0.9rem;
             direction: inherit;
+            flex-shrink: 0;  /* Prevent items from shrinking */
+            max-width: 200px;  /* Limit width for very long book names */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;  /* Keep text on one line */
         }
 
         .book-item:hover {
