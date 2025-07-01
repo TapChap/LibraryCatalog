@@ -375,6 +375,8 @@
     </div>
 </div>
 
+<script src="/static/config.js"></script>
+
 <script>
     let currentUser = null;
     let heldBooks = [];
@@ -438,7 +440,7 @@
         messageContainer.innerHTML = '';
 
         try {
-            const response = await fetch(`http://192.168.181.247:80/book/${encodeURIComponent(bookName)}`, {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/${encodeURIComponent(bookName)}`, {
                 method: 'GET',
             });
 
@@ -577,7 +579,7 @@
 
     async function fetchUserById(userId){
         try {
-            const response = await fetch(`http://192.168.181.247:80/user/id/${userId}`);
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/user/id/${userId}`);
             const data = await response.json();
 
             if (response.ok){
@@ -593,7 +595,7 @@
 
     async function fetchBookById(bookId){
         try {
-            const response = await fetch(`http://192.168.181.247:80/book/id/${bookId}`);
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/id/${bookId}`);
             const data = await response.json();
 
             if (response.ok){
@@ -616,7 +618,7 @@
         const messageContainer = document.getElementById('message-container');
 
         try {
-            const response = await fetch(`http://192.168.181.247:80/library/user/id/${currentUser.id}/obtain`, {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/library/user/id/${currentUser.id}/obtain`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -650,7 +652,7 @@
         }
 
         try {
-            const response = await fetch(`http://192.168.181.247:80/user/id/${currentUser.id}/holding`, {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/user/id/${currentUser.id}/holding`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -673,7 +675,7 @@
 
     async function loadAllBooks(){
         try {
-            const response = await fetch(`http://192.168.181.247:80/book/all`, {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/all`, {
                 method: 'GET',
             });
             const data = await response.json();
@@ -698,7 +700,7 @@
         }
 
         try {
-            const response = await fetch(`http://192.168.181.247:80/library/user/id/${currentUser.id}/return`, {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/library/user/id/${currentUser.id}/return`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

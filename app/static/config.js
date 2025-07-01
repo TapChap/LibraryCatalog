@@ -1,0 +1,3 @@
+window.CONFIG = {
+    SERVER_URL: "192.168.181.247:80"
+};

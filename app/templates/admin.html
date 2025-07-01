@@ -381,6 +381,8 @@
 
 </div>
 
+<script src="/static/config.js"></script>
+
 <script>
     let currentUser = null;
     let allUsers = [];
@@ -454,7 +456,7 @@
 
         try {
             // Build URL with parameters
-            const url = `http://192.168.181.247:80/book/add?${urlParams.toString()}`;
+            const url = `http://${window.CONFIG.SERVER_URL}/book/add?${urlParams.toString()}`;
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -485,7 +487,7 @@
 
     async function loadBooksCount() {
         try {
-            const response = await fetch('http://192.168.181.247:80/book/all');
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/all`);
             const data = await response.json();
 
             if (response.ok) {
@@ -503,7 +505,7 @@
         const usersContainer = document.getElementById('users-container');
 
         try {
-            const response = await fetch('http://192.168.181.247:80/user/all');
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/user/all`);
             const data = await response.json();
 
             if (response.ok) {
@@ -568,7 +570,7 @@
         element.style.pointerEvents = 'none';
 
         try {
-            const response = await fetch(`http://192.168.181.247:80/library/user/id/${userId}/return`, {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/library/user/id/${userId}/return`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
