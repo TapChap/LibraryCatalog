@@ -50,8 +50,8 @@ def add_book():
 
 
 @book_route.route('/<string:book_name>', methods=['GET'])
-def fetch_books(book_name):
-    books, status_code = getBook(book_name)
+def fetch_book(book_name):
+    books, status_code = searchBook(book_name)
     if status_code == 404:
         return {"message": "Book not found"}, 404
 

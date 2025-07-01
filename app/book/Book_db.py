@@ -1,4 +1,6 @@
 from models import Book
+from sqlalchemy import case
+
 
 def getBook(book_name):
     books = Book.query.filter_by(book_name=book_name)
@@ -7,6 +9,22 @@ def getBook(book_name):
         return None, 404
 
     return books, 200
+
+
+def searchBook(query_string):
+    q = f"%{query_string}%"
+    q_start = f"{query_string}%"
+
+    books = Book.query.filter(Book.book_name.ilike(q)).order_by(
+        Book.book_name.ilike(query_string).desc(),  # Exact matches first
+        Book.book_name.ilike(q_start).desc(),       # Then prefix matches
+        Book.book_name                              # Finally alphabetical
+    ).all()
+
+    if not books:
+        return [], 404
+    return books, 200
+
 
 def bookExists(book):
     book_copy = Book.query.filter_by(
@@ -23,6 +41,7 @@ def bookExists(book):
 
     return book_copy, 200
 
+
 def getBookById(book_id):
     book = Book.query.get(book_id)
 
@@ -30,6 +49,7 @@ def getBookById(book_id):
         return None, 404
 
     return book, 200
+
 
 def createBook(book_name, category, quantity=1,
                series="", series_index="", author="", label="", sub_cat="",
@@ -49,6 +69,7 @@ def createBook(book_name, category, quantity=1,
         librarian_notes=librarian_notes
     )
 
+
 def equals(book1, book2):
     if not book1 or not book2:
         return False
@@ -63,6 +84,7 @@ def equals(book1, book2):
             book1.sub_cat == book2.sub_cat and
             book1.sub_cat_index == book2.sub_cat_index
     )
+
 
 def getAllBooks():
     return Book.query.all()

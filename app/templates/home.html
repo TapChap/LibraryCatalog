@@ -189,7 +189,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             padding: 1.5rem;
-            transition: transform 0.75s ease, opacity 0.75s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.75s ease;
             text-align: right;
 
             opacity: 0;
@@ -202,8 +202,8 @@
         }
 
         .book-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            transform: translateY(-10px) rotate(1.5deg) scale(1.03);
+            box-shadow: 0 12px 15px rgba(0,0,0,0.25);
         }
 
         .book-title {
@@ -558,7 +558,7 @@
         messageContainer.innerHTML = '';
 
         try {
-            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/${encodeURIComponent(bookName)}`, {
+            const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/${encodeURIComponent(escapeHtml(bookName))}`, {
                 method: 'GET',
             });
 
@@ -585,7 +585,7 @@
         }
     }
 
-    async function displayBooks(books, isHeldBooks = false) {
+    async function displayBooks(books, isHeldBooks = false, animate = true) {
         const booksContainer = document.getElementById('books-container');
         const motionStaggerDelay_ms = 75;
 
@@ -740,8 +740,6 @@
             return;
         }
 
-        const messageContainer = document.getElementById('message-container');
-
         try {
             const response = await fetch(`http://${window.CONFIG.SERVER_URL}/library/user/id/${currentUser.id}/obtain`, {
                 method: 'POST',
@@ -759,9 +757,12 @@
                 showMessage(`הספר "${data.book.book_name}" נתקבל בהצלחה!`, 'success');
                 // Reload held books and refresh search results
                 await loadHeldBooks();
-                const searchInput = document.getElementById('search-input');
-                if (searchInput.value.trim()) searchBooks();
-                else showAllBooks();
+
+                // const searchInput = document.getElementById('search-input');
+                // if (searchInput.value.trim()) searchBooks();
+                // else displayBooks(allBooks, false, false)
+
+
             } else {
                 showMessage(data.message || 'נכשל בקבלת הספר', 'error');
             }
