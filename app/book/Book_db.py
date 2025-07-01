@@ -1,5 +1,5 @@
 from models import Book
-from sqlalchemy import case
+from sqlalchemy import or_, case
 
 
 def getBook(book_name):
@@ -15,11 +15,22 @@ def searchBook(query_string):
     q = f"%{query_string}%"
     q_start = f"{query_string}%"
 
-    books = Book.query.filter(Book.book_name.ilike(q)).order_by(
-        Book.book_name.ilike(query_string).desc(),  # Exact matches first
-        Book.book_name.ilike(q_start).desc(),       # Then prefix matches
-        Book.book_name                              # Finally alphabetical
-    ).all()
+    relevance = case(
+        # Exact matches get highest priority
+        (Book.book_name.ilike(query_string), 4),
+        (Book.series.ilike(query_string), 4),
+        # Prefix matches get second priority
+        (Book.book_name.ilike(q_start), 3),
+        (Book.series.ilike(q_start), 3),
+        # Contains matches get lowest priority
+        (Book.book_name.ilike(q), 2),
+        (Book.series.ilike(q), 2),
+        else_=1
+    )
+
+    books = (Book.query.filter(or_(Book.book_name.ilike(q), Book.series.ilike(q)))
+             .order_by(relevance.desc(), Book.series, Book.book_name)
+             .all())
 
     if not books:
         return [], 404

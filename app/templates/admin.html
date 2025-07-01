@@ -510,8 +510,6 @@
             if (response.ok) {
                 showBookMessage(`הספר "${requiredData.book_name}" נוצר בהצלחה!`, 'success');
                 form.reset();
-                // Reload books count to update stats
-                await loadBooksCount();
             } else {
                 showBookMessage(data.message || 'נכשל ביצירת הספר', 'error');
             }

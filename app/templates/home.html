@@ -82,7 +82,6 @@
         .search-container {
             display: flex;
             gap: 1rem;
-            margin-bottom: 1rem;
         }
 
         .search-input {
@@ -156,7 +155,7 @@
         .message {
             padding: 0.75rem;
             border-radius: 5px;
-            margin-bottom: 1rem;
+            margin-top: 1rem;
             text-align: center;
         }
 
@@ -207,10 +206,10 @@
         }
 
         .book-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #1f2937;
+            font-size: 1.1rem;
+            color: #102686;
             margin-bottom: 0.5rem;
+            font-weight: 750;
         }
 
         .book-author {
@@ -220,10 +219,10 @@
         }
 
         .book-series {
-            color: #7c3aed;
-            font-weight: 500;
+            color: #1f2937;
+            font-weight: bold;
             margin-bottom: 0.75rem;
-            font-size: 0.95rem;
+            font-size: 1.2rem;
         }
 
         .book-description, .book-notes, .book-librarian-notes {
@@ -371,6 +370,7 @@
 
         .system-message-container {
             max-width: 800px;
+            margin-top: 1rem;
             margin: 1rem auto;
             background-color: white;
             border-radius: 10px;
@@ -612,7 +612,13 @@
                         <strong>${escapeHtml(book.series)}</strong>
                         ${book.series_index ? ` (#${book.series_index})` : ''}
                     </div>
-                ` : ''}
+                    <div class="book-title">${escapeHtml(book.book_name)}</div>
+                ` : `
+                <div class="book-series">${escapeHtml(book.book_name)}</div>
+                `
+            }
+
+                ${book.author ? `<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : ''}
 
                 <div class="book-details">
                     <div class="book-detail">
