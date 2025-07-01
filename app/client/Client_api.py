@@ -4,7 +4,7 @@ from flask import request, Blueprint
 
 from client.Permission import Permission
 from database import db
-from app.client.Client_db import *
+from client.Client_db import *
 from passwordManager import hashPassword
 
 client_route = Blueprint("client_bp", __name__)
