@@ -190,9 +190,12 @@
             padding: 1.5rem;
             transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.75s ease;
             text-align: right;
-
             opacity: 0;
             transform: translateY(10px);
+
+            display: flex;
+            flex-direction: column;
+            min-height: 250px;
         }
 
         .book-card.visible {
@@ -267,6 +270,16 @@
 
         .book-detail .value {
             color: #6b7280;
+        }
+
+        .book-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-button-container {
+            margin-top: auto; /* This pushes the button to the bottom */
         }
 
         .availability {
@@ -603,94 +616,95 @@
                 bookHolder = await fetchBookById(book.id);
                 holders = bookHolder.holders;
             }
-
             return `
             <div class="book-card">
+                <div class="book-content">
+                    ${book.series ? `
+                        <div class="book-series">
+                            <strong>${escapeHtml(book.series)}</strong>
+                            ${book.series_index ? ` (כרך ${book.series_index})` : ''}
+                        </div>
+                        <div class="book-title">${escapeHtml(book.book_name)}</div>
+                    ` : `
+                    <div class="book-series">${escapeHtml(book.book_name)}</div>
+                    `}
 
-                ${book.series ? `
-                    <div class="book-series">
-                        <strong>${escapeHtml(book.series)}</strong>
-                        ${book.series_index ? ` (כרך ${book.series_index})` : ''}
-                    </div>
-                    <div class="book-title">${escapeHtml(book.book_name)}</div>
-                ` : `
-                <div class="book-series">${escapeHtml(book.book_name)}</div>
-                `
-            }
+                    ${book.author ? `<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : ''}
 
-                ${book.author ? `<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : ''}
-
-                <div class="book-details">
-                    <div class="book-detail">
-                        <span class="label">קטגוריה:</span>
-                        <span class="value">${escapeHtml(book.category)}</span>
-                    </div>
-                    ${book.sub_category ? `
+                    <div class="book-details">
                         <div class="book-detail">
-                            <span class="label">תת-קטגוריה:</span>
-                            <span class="value">${escapeHtml(book.sub_category)}</span>
+                            <span class="label">קטגוריה:</span>
+                            <span class="value">${escapeHtml(book.category)}</span>
+                        </div>
+                        ${book.sub_category ? `
+                            <div class="book-detail">
+                                <span class="label">תת-קטגוריה:</span>
+                                <span class="value">${escapeHtml(book.sub_category)}</span>
+                            </div>
+                        ` : ''}
+                        ${book.label ? `
+                            <div class="book-detail">
+                                <span class="label">תווית:</span>
+                                <span class="value">${escapeHtml(book.label)}</span>
+                            </div>
+                        ` : ''}
+                        <div class="book-detail">
+                            <span class="label">זמין:</span>
+                            <span class="availability ${book.isTaken ? 'unavailable' : 'available'}">
+                                ${book.isTaken ? 'לא זמין' : `${book.quantity} עותקים`}
+                            </span>
+                        </div>
+                    </div>
+
+                    ${book.description ? `
+                        <div class="book-description">
+                            <strong>תיאור:</strong>
+                            <p>${escapeHtml(book.description)}</p>
                         </div>
                     ` : ''}
-                    ${book.label ? `
-                        <div class="book-detail">
-                            <span class="label">תווית:</span>
-                            <span class="value">${escapeHtml(book.label)}</span>
+
+                    ${book.notes ? `
+                        <div class="book-notes">
+                            <strong>הערות:</strong>
+                            <p>${escapeHtml(book.notes)}</p>
                         </div>
                     ` : ''}
-                    <div class="book-detail">
-                        <span class="label">זמין:</span>
-                        <span class="availability ${book.isTaken ? 'unavailable' : 'available'}">
-                            ${book.isTaken ? 'לא זמין' : `${book.quantity} עותקים`}
-                        </span>
-                    </div>
+
+                    ${book.librarian_notes && currentUser.permission === 9 ? `
+                        <div class="book-librarian-notes">
+                            <strong>הערות ספרן:</strong>
+                            <p>${escapeHtml(book.librarian_notes)}</p>
+                        </div>
+                    ` : ''}
+
+                    ${holders ? `
+                        <div class="book-holder">
+                            <strong>נמצא אצל</strong>
+                            <p>${escapeHtml(holders.map(h => h.display_name).join(', '))}</p>
+                        </div>
+                    ` : ''}
                 </div>
 
-                ${book.description ? `
-                    <div class="book-description">
-                        <strong>תיאור:</strong>
-                        <p>${escapeHtml(book.description)}</p>
-                    </div>
-                ` : ''}
-
-                ${book.notes ? `
-                    <div class="book-notes">
-                        <strong>הערות:</strong>
-                        <p>${escapeHtml(book.notes)}</p>
-                    </div>
-                ` : ''}
-
-                ${book.librarian_notes && currentUser.permission === 9 ? `
-                    <div class="book-librarian-notes">
-                        <strong>הערות ספרן:</strong>
-                        <p>${escapeHtml(book.librarian_notes)}</p>
-                    </div>
-                ` : ''}
-
-                ${holders ? `
-                    <div class="book-holder">
-                        <strong>נמצא אצל</strong>
-                        <p>${escapeHtml(holders.map(h => h.display_name).join(', '))}</p>
-                    </div>
-                ` : ''}
-
-                ${isOwnedByUser ? `
-                    <button
-                        class="return-btn"
-                        onclick="returnBook(${book.id})"
-                    >
-                        החזר ספר
-                    </button>
-                ` : `
-                    <button
-                        class="obtain-btn"
-                        onclick="obtainBook(${book.id})"
-                        ${book.isTaken ? 'disabled' : ''}
-                    >
-                        ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
-                    </button>
-                `}
+                <div class="book-button-container">
+                    ${isOwnedByUser ? `
+                        <button
+                            class="return-btn"
+                            onclick="returnBook(${book.id})"
+                        >
+                            החזר ספר
+                        </button>
+                    ` : `
+                        <button
+                            class="obtain-btn"
+                            onclick="obtainBook(${book.id})"
+                            ${book.isTaken ? 'disabled' : ''}
+                        >
+                            ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
+                        </button>
+                    `}
+                </div>
             </div>
-        `;
+            `;
         }));
 
         booksContainer.innerHTML = titleHtml + `<div class="books-grid">${booksHTML.join('')}</div>`;
@@ -796,7 +810,7 @@
                 >
                     החזר ספר
                 </button>
-            `;
+                `;
 
             } else {
                 // Restore button on error
@@ -895,7 +909,7 @@
                     >
                         קבל ספר
                     </button>
-                `;
+                    `;
                 }
 
             } else {
