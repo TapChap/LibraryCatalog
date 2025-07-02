@@ -37,6 +37,28 @@ function handleKeyPress(event) {
     }
 }
 
+// Function to group books by category and subcategory
+function groupBooksByCategory(books) {
+    const grouped = {};
+
+    books.forEach(book => {
+        const category = book.category || 'ללא קטגוריה';
+        const subCategory = book.sub_category || 'כללי';
+
+        if (!grouped[category]) {
+            grouped[category] = {};
+        }
+
+        if (!grouped[category][subCategory]) {
+            grouped[category][subCategory] = [];
+        }
+
+        grouped[category][subCategory].push(book);
+    });
+
+    return grouped;
+}
+
 async function showAllBooks() {
     try {
         console.log(allBooks)
@@ -74,7 +96,7 @@ async function searchBooks() {
         const data = await response.json();
 
         if (response.ok) {
-            await displayBooks(data.books);
+            await displayBooks(data.books, false, true, false); // Don't group search results
             if (data.books.length === 0) {
                 showMessage('לא נמצאו ספרים עם השם הזה', 'info');
             } else {
@@ -94,7 +116,7 @@ async function searchBooks() {
     }
 }
 
-async function displayBooks(books, isHeldBooks = false, animate = true) {
+async function displayBooks(books, isHeldBooks = false, animate = true, groupByCategory = true) {
     const booksContainer = document.getElementById('books-container');
     const motionStaggerDelay_ms = 75;
 
@@ -105,115 +127,152 @@ async function displayBooks(books, isHeldBooks = false, animate = true) {
     }
 
     const titleHtml = isHeldBooks ? '<div class="section-title">הספרים שלכם</div>' : '';
+    let contentHtml = '';
 
-    const booksHTML = await Promise.all(books.map(async book => {
-        const isOwnedByUser = isHeldBooks || heldBooks.some(heldBook => heldBook.id === book.id);
+    if (groupByCategory && !isHeldBooks) {
+        // Group books by category and subcategory
+        const groupedBooks = groupBooksByCategory(books);
+        const sortedCategories = Object.keys(groupedBooks); //.sort();
 
-        var bookHolder, holders;
-        if (!isOwnedByUser && book.isTaken) {
-            bookHolder = await fetchBookById(book.id);
-            holders = bookHolder.holders;
+        for (const category of sortedCategories) {
+            contentHtml += `<div class="category-header">${escapeHtml(category)}</div>`;
+
+            const subCategories = groupedBooks[category];
+            const sortedSubCategories = Object.keys(subCategories); //.sort();
+
+            for (const subCategory of sortedSubCategories) {
+                if (sortedSubCategories.length > 1 || subCategory !== 'כללי') {
+                    contentHtml += `<div class="subcategory-header">${escapeHtml(subCategory)}</div>`;
+                }
+
+                const categoryBooks = subCategories[subCategory];
+                const booksHTML = await Promise.all(categoryBooks.map(async book => {
+                    return await generateBookCardHTML(book, isHeldBooks);
+                }));
+
+                contentHtml += `<div class="books-grid">${booksHTML.join('')}</div>`;
+            }
         }
-        return `
-            <div class="book-card">
-                <div class="book-content">
-                    ${book.series ? `
-                        <div class="book-series">
-                            <strong>${escapeHtml(book.series)}</strong>
-                            ${book.series_index ? ` (כרך ${book.series_index})` : ''}
-                        </div>
-                        <div class="book-title">${escapeHtml(book.book_name)}</div>
-                    ` : `
-                    <div class="book-series">${escapeHtml(book.book_name)}</div>
-                    `}
+    } else {
+        // Display books without grouping (for search results and held books)
+        const booksHTML = await Promise.all(books.map(async book => {
+            return await generateBookCardHTML(book, isHeldBooks);
+        }));
 
-                    ${book.author ? `<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : ''}
+        contentHtml = `<div class="books-grid">${booksHTML.join('')}</div>`;
+    }
 
-                    <div class="book-details">
-                        <div class="book-detail">
-                            <span class="label">קטגוריה:</span>
-                            <span class="value">${escapeHtml(book.category)}</span>
-                        </div>
-                        ${book.sub_category ? `
-                            <div class="book-detail">
-                                <span class="label">תת-קטגוריה:</span>
-                                <span class="value">${escapeHtml(book.sub_category)}</span>
-                            </div>
-                        ` : ''}
-                        ${book.label ? `
-                            <div class="book-detail">
-                                <span class="label">תווית:</span>
-                                <span class="value">${escapeHtml(book.label)}</span>
-                            </div>
-                        ` : ''}
-                        <div class="book-detail">
-                            <span class="label">זמין:</span>
-                            <span class="availability ${book.isTaken ? 'unavailable' : 'available'}">
-                                ${book.isTaken ? 'לא זמין' : `${book.quantity} עותקים`}
-                            </span>
-                        </div>
-                    </div>
+    booksContainer.innerHTML = titleHtml + contentHtml;
 
-                    ${book.description ? `
-                        <div class="book-description">
-                            <strong>תיאור:</strong>
-                            <p>${escapeHtml(book.description)}</p>
-                        </div>
-                    ` : ''}
-
-                    ${book.notes ? `
-                        <div class="book-notes">
-                            <strong>הערות:</strong>
-                            <p>${escapeHtml(book.notes)}</p>
-                        </div>
-                    ` : ''}
-
-                    ${book.librarian_notes && currentUser.permission === 9 ? `
-                        <div class="book-librarian-notes">
-                            <strong>הערות ספרן:</strong>
-                            <p>${escapeHtml(book.librarian_notes)}</p>
-                        </div>
-                    ` : ''}
-
-                    ${holders ? `
-                        <div class="book-holder">
-                            <strong>נמצא אצל</strong>
-                            <p>${escapeHtml(holders.map(h => h.display_name).join(', '))}</p>
-                        </div>
-                    ` : ''}
-                </div>
-
-                <div class="book-button-container">
-                    ${isOwnedByUser ? `
-                        <button
-                            class="return-btn"
-                            onclick="returnBook(${book.id})"
-                        >
-                            החזר ספר
-                        </button>
-                    ` : `
-                        <button
-                            class="obtain-btn"
-                            onclick="obtainBook(${book.id})"
-                            ${book.isTaken ? 'disabled' : ''}
-                        >
-                            ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
-                        </button>
-                    `}
-                </div>
-            </div>
-            `;
-    }));
-
-    booksContainer.innerHTML = titleHtml + `<div class="books-grid">${booksHTML.join('')}</div>`;
-
-    requestAnimationFrame(() => {
-        document.querySelectorAll('.book-card').forEach((card, i) => {
-            setTimeout(() => {
-                card.classList.add('visible');
-            }, i * motionStaggerDelay_ms); // optional stagger effect
+    if (animate) {
+        requestAnimationFrame(() => {
+            document.querySelectorAll('.book-card').forEach((card, i) => {
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, i * motionStaggerDelay_ms);
+            });
         });
-    });
+    }
+}
+
+async function generateBookCardHTML(book, isHeldBooks) {
+    const isOwnedByUser = isHeldBooks || heldBooks.some(heldBook => heldBook.id === book.id);
+
+    var bookHolder, holders;
+    if (!isOwnedByUser && book.isTaken) {
+        bookHolder = await fetchBookById(book.id);
+        holders = bookHolder.holders;
+    }
+
+    return `
+        <div class="book-card">
+            <div class="book-content">
+                ${book.series ? `
+                    <div class="book-series">
+                        <strong>${escapeHtml(book.series)}</strong>
+                        ${book.series_index ? ` (כרך ${book.series_index})` : ''}
+                    </div>
+                    <div class="book-title">${escapeHtml(book.book_name)}</div>
+                ` : `
+                <div class="book-series">${escapeHtml(book.book_name)}</div>
+                `}
+
+                ${book.author ? `<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : ''}
+
+                <div class="book-details">
+                    <div class="book-detail">
+                        <span class="label">קטגוריה:</span>
+                        <span class="value">${escapeHtml(book.category)}</span>
+                    </div>
+                    ${book.sub_category ? `
+                        <div class="book-detail">
+                            <span class="label">תת-קטגוריה:</span>
+                            <span class="value">${escapeHtml(book.sub_category)}</span>
+                        </div>
+                    ` : ''}
+                    ${book.label ? `
+                        <div class="book-detail">
+                            <span class="label">תווית:</span>
+                            <span class="value">${escapeHtml(book.label)}</span>
+                        </div>
+                    ` : ''}
+                    <div class="book-detail">
+                        <span class="label">זמין:</span>
+                        <span class="availability ${book.isTaken ? 'unavailable' : 'available'}">
+                            ${book.isTaken ? 'לא זמין' : `${book.quantity} עותקים`}
+                        </span>
+                    </div>
+                </div>
+
+                ${book.description ? `
+                    <div class="book-description">
+                        <strong>תיאור:</strong>
+                        <p>${escapeHtml(book.description)}</p>
+                    </div>
+                ` : ''}
+
+                ${book.notes ? `
+                    <div class="book-notes">
+                        <strong>הערות:</strong>
+                        <p>${escapeHtml(book.notes)}</p>
+                    </div>
+                ` : ''}
+
+                ${book.librarian_notes && currentUser.permission === 9 ? `
+                    <div class="book-librarian-notes">
+                        <strong>הערות ספרן:</strong>
+                        <p>${escapeHtml(book.librarian_notes)}</p>
+                    </div>
+                ` : ''}
+
+                ${holders ? `
+                    <div class="book-holder">
+                        <strong>נמצא אצל</strong>
+                        <p>${escapeHtml(holders.map(h => h.display_name).join(', '))}</p>
+                    </div>
+                ` : ''}
+            </div>
+
+            <div class="book-button-container">
+                ${isOwnedByUser ? `
+                    <button
+                        class="return-btn"
+                        onclick="returnBook(${book.id})"
+                    >
+                        החזר ספר
+                    </button>
+                ` : `
+                    <button
+                        class="obtain-btn"
+                        onclick="obtainBook(${book.id})"
+                        ${book.isTaken ? 'disabled' : ''}
+                    >
+                        ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
+                    </button>
+                `}
+            </div>
+        </div>
+        `;
 }
 
 async function fetchBookById(bookId){
@@ -506,7 +565,7 @@ function toggleHeldBooks() {
     const heldBooksBtn = document.querySelector('.held-books-btn');
 
     if (showingHeldBooks) {
-        displayBooks(heldBooks, true);
+        displayBooks(heldBooks, true, true, false); // Don't group held books
         heldBooksBtn.textContent = 'חזור לחיפוש';
         showMessage(`יש לכם ${heldBooks.length} ספרים`, 'info');
     } else {
@@ -534,18 +593,6 @@ async function loadAllUsers() {
         if (response.ok) allUsers = data
     } catch (error) {
         console.error('Load users error:', error);
-    }
-}
-
-async function loadBooksCount() {
-    try {
-        const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/all`);
-        const data = await response.json();
-
-        if (response.ok) totalBooksCount = data.books.length || 0;
-        else console.error('Failed to load books count:', data.message);
-    } catch (error) {
-        console.error('Load books count error:', error);
     }
 }
 
