@@ -5,7 +5,6 @@ from book.Book_db import *
 
 book_route = Blueprint("book_bp", __name__)
 
-
 @book_route.route('/add', methods=['POST'])
 def add_book():
     data = request.get_json()
@@ -50,7 +49,7 @@ def add_book():
 
 
 @book_route.route('/<string:book_name>', methods=['GET'])
-def fetch_book(book_name):
+def fetch_books(book_name):
     books, status_code = searchBook(book_name)
     if status_code == 404:
         return {"message": "Book not found"}, 404

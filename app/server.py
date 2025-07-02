@@ -33,11 +33,11 @@ app.register_blueprint(library_route, url_prefix="/library")
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("landing.html")
 
 @app.route('/home')
 def home():
-    return render_template("home.html")
+    return render_template("main.html")
 
 @app.route('/admin')
 def admin():

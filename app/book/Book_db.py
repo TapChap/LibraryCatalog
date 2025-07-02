@@ -98,4 +98,28 @@ def equals(book1, book2):
 
 
 def getAllBooks():
-    return Book.query.all()
+    relevance = case(
+        (Book.category.ilike('תנ"ך'), 21),
+        (Book.category.ilike("תנאים"), 20),
+        (Book.category.ilike("תלמוד"), 19),
+        (Book.category.ilike("גאונים"), 18),
+        (Book.category.ilike("ראשונים"), 17),
+        (Book.category.ilike("אחרונים"), 16),
+        (Book.category.ilike("ספרי מצוות"), 15),
+        (Book.category.ilike("הלכה"), 14),
+        (Book.category.ilike('שותי"ם'), 13),
+        (Book.category.ilike("תורת הנסתר"), 12),
+        (Book.category.ilike("חסידות"), 11),
+        (Book.category.ilike("מוסר"), 10),
+        (Book.category.ilike("סידור התפילה והגדה של פסח"), 9),
+        (Book.category.ilike("מחשבה"), 8),
+        (Book.category.ilike('מחקר התנ"ך'), 7),
+        (Book.category.ilike('חז"ל'), 6),
+        (Book.category.ilike("היסטוריה"), 5),
+        (Book.category.ilike("מחשבת ישראל"), 4),
+        (Book.category.ilike("םילוסופיה ומדעי החברה"), 3),
+        (Book.category.ilike("שירה וספרות"), 2),
+        else_= 1
+    )
+
+    return Book.query.order_by(relevance.desc(), Book.category).order_by(Book.series)

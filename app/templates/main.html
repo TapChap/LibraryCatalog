@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>מערכת ספרייה - ישיבת מחנים</title>
+    <link rel="stylesheet" href="/static/MainPage/main.css">
+</head>
+<body>
+<div class="header">
+    <h1>📚 מערכת הספרייה - ישיבת מחנים</h1>
+    <div class="user-info">
+        <span id="user-display">ברוכים הבאים!</span>
+        <button class="btn admin-btn" id="admin" onclick="admin_dashboard()">עמוד ניהול</button>
+        <button class="btn logout-btn" onclick="logout()">התנתק</button>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="system-message-container" id="systemMessageContainer">
+        <div class="message-header">
+            <h1>🔔 הודעת מערכת</h1>
+        </div>
+
+        <div class="message-display" id="messageDisplay"></div>
+    </div>
+
+    <div class="welcome-section">
+        <h2>ברוכים הבאים לספרייה של ישיבת מחנים</h2>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-users">-</div>
+                <div class="stat-label">משתמשים</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-books">-</div>
+                <div class="stat-label">ספרים במערכת</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-books-borrowed">-</div>
+                <div class="stat-label">ספרים מושאלים</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-section">
+        <div class="search-container">
+            <input
+                    type="text"
+                    id="search-input"
+                    class="search-input"
+                    placeholder="הכניסו שם ספר לחיפוש..."
+                    onkeypress="handleKeyPress(event)"
+            />
+            <button class="search-btn" id="search-btn" onclick="searchBooks()">
+                חפש ספרים
+            </button>
+            <button class="held-books-btn" onclick="toggleHeldBooks()">
+                הספרים שלי
+            </button>
+        </div>
+        <div id="message-container"></div>
+    </div>
+
+    <div id="books-container">
+        <!-- Books will be displayed here -->
+    </div>
+</div>
+
+<script src="/static/config.js"></script>
+<script src="/static/MainPage/main.js"></script>
+
+</body>
+</html>
