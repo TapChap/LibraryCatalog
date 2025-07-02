@@ -6,7 +6,7 @@ let totalBooksCount = 0;
 let showingHeldBooks = false;
 
 // Initialize the page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Get user info from sessionStorage
     const userData = sessionStorage.getItem('libraryUser');
     if (userData) {
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     loadSystemMessage();
 
-    Promise.all([loadAllBooks(), loadAllUsers()]).then((__)=> {
+    Promise.all([loadAllBooks(), loadAllUsers()]).then((__) => {
         showAllBooks();
         updateStats();
     })
@@ -164,14 +164,15 @@ async function displayBooks(books, isHeldBooks = false, animate = true, groupByC
 
     booksContainer.innerHTML = titleHtml + contentHtml;
 
-    if (animate) {
-        requestAnimationFrame(() => {
+    if (animate) requestAnimationFrame(() => {
             document.querySelectorAll('.book-card').forEach((card, i) => {
                 setTimeout(() => {
                     card.classList.add('visible');
                 }, i * motionStaggerDelay_ms);
             });
         });
+    else {
+        document.querySelectorAll('.book-card').forEach(card => card.classList.add('visible'));
     }
 }
 
@@ -254,33 +255,66 @@ async function generateBookCardHTML(book, isHeldBooks) {
             </div>
 
             <div class="book-button-container">
-                ${isOwnedByUser ? `
+                ${currentUser.permission === 9 ? `
+                    <div class="admin-button-container">
                     <button
-                        class="return-btn"
-                        onclick="returnBook(${book.id})"
-                    >
-                        החזר ספר
-                    </button>
+                            class="edit-btn"
+                            onclick="editBook(${book.id})"
+                        >
+                            ערוך ספר
+                        </button>
+                        ${isOwnedByUser ? `
+                            <button
+                                class="return-btn"
+                                onclick="returnBook(${book.id})"
+                            >
+                                החזר ספר
+                            </button>
+                        ` : `
+                            <button
+                                class="obtain-btn"
+                                onclick="obtainBook(${book.id})"
+                                ${book.isTaken ? 'disabled' : ''}
+                            >
+                                ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
+                            </button>
+                        `}
+                        <button
+                            class="delete-btn"
+                            onclick="deleteBook(${book.id})"
+                        >
+                            מחק ספר
+                        </button>
+                    </div>
                 ` : `
-                    <button
-                        class="obtain-btn"
-                        onclick="obtainBook(${book.id})"
-                        ${book.isTaken ? 'disabled' : ''}
-                    >
-                        ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
-                    </button>
+                    ${isOwnedByUser ? `
+                        <button
+                            class="return-btn"
+                            onclick="returnBook(${book.id})"
+                        >
+                            החזר ספר
+                        </button>
+                    ` : `
+                        <button
+                            class="obtain-btn"
+                            onclick="obtainBook(${book.id})"
+                            ${book.isTaken ? 'disabled' : ''}
+                        >
+                            ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
+                        </button>
+                    `}
                 `}
             </div>
         </div>
         `;
 }
 
-async function fetchBookById(bookId){
+async function fetchBookById(bookId) {
     try {
         const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/id/${bookId}`);
         const data = await response.json();
 
-        if (response.ok){
+        if (response.ok) {
             return data.book;
         } else {
             showMessage(data.message || 'נכשל במציאת ספר', 'error');
@@ -322,10 +356,11 @@ async function obtainBook(bookId) {
         const data = await response.json();
 
         if (response.ok) {
-            showMessage(`הספר "${data.book.book_name}" נתקבל בהצלחה!`, 'success');
+            // showMessage(`הספר "${data.book.book_name}" נתקבל בהצלחה!`, 'success');
 
             // Update held books data
             await loadHeldBooks();
+            await loadAllBooks();
 
             // Update the availability display in the card
             const availabilitySpan = bookCard.querySelector('.availability');
@@ -336,21 +371,16 @@ async function obtainBook(bookId) {
 
             if (bookIndex !== -1) {
                 const book = allBooks[bookIndex];
-                // Reduce available quantity by 1
-                const newAvailableCount = book.quantity - (book.taken_count || 0) - 1;
 
-                if (newAvailableCount <= 0) {
+                if (book.quantity <= 0) {
                     // No more copies available
                     availabilitySpan.textContent = 'לא זמין';
                     availabilitySpan.className = 'availability unavailable';
-                    allBooks[bookIndex].isTaken = true;
                     shouldDisableButton = true;
                 } else {
                     // Still copies available
-                    availabilitySpan.textContent = `${newAvailableCount} עותקים`;
+                    availabilitySpan.textContent = `${book.quantity} עותקים`;
                     availabilitySpan.className = 'availability available';
-                    // Update taken count
-                    allBooks[bookIndex].taken_count = (book.taken_count || 0) + 1;
                 }
             } else {
                 // Fallback if book not found in array
@@ -359,8 +389,9 @@ async function obtainBook(bookId) {
                 shouldDisableButton = true;
             }
 
-            // Always replace with return button since THIS USER just obtained the book
-            obtainBtn.outerHTML = `
+            // Replace with return button (admin gets all three buttons)
+            if (currentUser.permission === 9) {
+                obtainBtn.outerHTML = `
                 <button
                     class="return-btn"
                     onclick="returnBook(${bookId})"
@@ -368,6 +399,16 @@ async function obtainBook(bookId) {
                     החזר ספר
                 </button>
                 `;
+            } else {
+                obtainBtn.outerHTML = `
+                <button
+                    class="return-btn"
+                    onclick="returnBook(${bookId})"
+                >
+                    החזר ספר
+                </button>
+                `;
+            }
 
         } else {
             // Restore button on error
@@ -421,6 +462,7 @@ async function returnBook(bookId) {
 
             // Update held books data
             await loadHeldBooks();
+            await loadAllBooks();
 
             if (showingHeldBooks) {
                 // If we're showing held books, remove this card entirely
@@ -443,15 +485,13 @@ async function returnBook(bookId) {
 
                 if (bookIndex !== -1) {
                     const book = allBooks[bookIndex];
-                    // Increase available quantity by 1 (return a copy)
-                    const newAvailableCount = book.quantity - Math.max((book.taken_count || 1) - 1, 0);
 
-                    availabilitySpan.textContent = `${newAvailableCount} עותקים`;
+                    availabilitySpan.textContent = `${book.quantity} עותקים`;
                     availabilitySpan.className = 'availability available';
 
                     // Update taken count
-                    allBooks[bookIndex].taken_count = Math.max((book.taken_count || 1) - 1, 0);
-                    allBooks[bookIndex].isTaken = allBooks[bookIndex].taken_count >= book.quantity;
+                    allBooks[bookIndex].quantity = Math.max((book.quantity || 1) - 1, 0);
+                    allBooks[bookIndex].isTaken = allBooks[bookIndex].quantity >= book.quantity;
                 } else {
                     // Fallback if book not found in array
                     availabilitySpan.textContent = '1 עותק';
@@ -459,7 +499,8 @@ async function returnBook(bookId) {
                 }
 
                 // Replace the return button with obtain button
-                returnBtn.outerHTML = `
+                if (currentUser.permission === 9) {
+                    returnBtn.outerHTML = `
                     <button
                         class="obtain-btn"
                         onclick="obtainBook(${bookId})"
@@ -467,6 +508,16 @@ async function returnBook(bookId) {
                         קבל ספר
                     </button>
                     `;
+                } else {
+                    returnBtn.outerHTML = `
+                    <button
+                        class="obtain-btn"
+                        onclick="obtainBook(${bookId})"
+                    >
+                        קבל ספר
+                    </button>
+                    `;
+                }
             }
 
         } else {
@@ -513,7 +564,7 @@ async function loadHeldBooks() {
     }
 }
 
-async function loadAllBooks(){
+async function loadAllBooks() {
     try {
         const response = await fetch(`http://${window.CONFIG.SERVER_URL}/book/all`, {
             method: 'GET',
@@ -530,6 +581,38 @@ async function loadAllBooks(){
     } catch (error) {
         console.error('Error loading held books:', error);
         heldBooks = [];
+    }
+}
+
+async function editBook(bookId){
+
+}
+
+async function deleteBook(bookId){
+    if (!confirm("האם אתה בטוח שברצונך למחוק את הספר?")) {
+        return;
+    }
+
+    try {
+        const result = await fetch(`http://${window.CONFIG.SERVER_URL}/book/delete/id/${bookId}`, {
+            method: 'DELETE',
+        })
+        if (result.ok) {
+            if (showingHeldBooks) {
+                await loadHeldBooks();
+                displayBooks(heldBooks, true, false, false)
+                loadAllBooks()
+            }
+            else {
+                await loadAllBooks();
+                displayBooks(allBooks, false, false, true)
+                loadHeldBooks()
+            }
+        } else {
+            console.error("deleteBook error", result.statusText)
+        }
+    } catch (error) {
+        console.error("delete user error", error)
     }
 }
 
@@ -556,7 +639,7 @@ function logout() {
     window.location.href = '/';
 }
 
-function admin_dashboard(){
+function admin_dashboard() {
     window.location.href = '/admin';
 }
 

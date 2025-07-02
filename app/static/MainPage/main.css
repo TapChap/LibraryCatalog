@@ -58,6 +58,48 @@ body {
     background-color: #c48035;
 }
 
+.admin-button-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.edit-btn {
+    padding: 0.75rem;
+    font-size: 1rem;
+    background-color: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-btn:hover:not(:disabled) {
+    background-color: #6d28d9;
+}
+
+.delete-btn {
+    padding: 0.75rem;
+    font-size: 1rem;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover:not(:disabled) {
+    background-color: #dc2626;
+}
+
+/* Adjust the existing obtain button for admin grid layout */
+.admin-button-container .obtain-btn,
+
+.admin-button-container .return-btn {
+    margin-top: 0; /* Remove top margin when in grid */
+}
+
 .main-content {
     max-width: 1400px;
     margin: 1rem auto;

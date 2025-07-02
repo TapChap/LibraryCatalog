@@ -1,6 +1,6 @@
 from flask import request, Blueprint
 
-from book.Book_db import *
+import book.Book_db as db
 
 book_route = Blueprint("book_bp", __name__)
 
@@ -25,7 +25,7 @@ def add_book():
     if not book_name or not category:
         return {"message": "Missing book name or category"}, 400
 
-    new_book = createBook(
+    new_book = db.createBook(
         book_name, category, quantity=quantity,
         series=series, series_index=series_index, author=author,
         label=label, sub_cat=sub_cat, sub_cat_index=sub_cat_index,
@@ -36,7 +36,7 @@ def add_book():
 
 @book_route.route('/<string:book_name>', methods=['GET'])
 def fetch_books(book_name):
-    books, status_code = searchBook(book_name)
+    books, status_code = db.searchBook(book_name)
     if status_code == 404:
         return {"message": "Book not found"}, 404
 
@@ -47,7 +47,7 @@ def fetch_books(book_name):
 
 @book_route.route('/id/<int:id>', methods=['GET'])
 def fetch_book_by_id(id):
-    book, status_code = getBookById(id)
+    book, status_code = db.getBookById(id)
     if status_code == 404:
         return {"message": "Book not found"}, 404
 
@@ -55,8 +55,19 @@ def fetch_book_by_id(id):
 
 @book_route.route('/all', methods=['GET'])
 def get_all_books():
-    books = getAllBooks()
+    books = db.getAllBooks()
 
     book_json_list = [book.toJson(True, True) for book in books]
 
     return {"books": book_json_list}, 200
+
+@book_route.route('/delete/id/<int:book_id>', methods={'DELETE'})
+def delete_book(book_id):
+    book, status = db.getBookById(book_id)
+    print(book, status)
+
+    if status == 200:
+        db.deleteBook(book)
+        return {"message": "book deleted successfully"}, 200
+
+    return {"message": "book not found"}, 404

@@ -111,14 +111,9 @@ def equals(book1, book2):
             book1.sub_cat_index == book2.sub_cat_index
     )
 
-def deleteBook(book_id):
-    book, status = getBookById(book_id)
-
-    if status == 200:
-        db.session.delete(book)
-        db.session.commit()
-        return 200
-    return 404
+def deleteBook(book):
+    db.session.delete(book)
+    db.session.commit()
 
 def getAllBooks():
     relevance = case(
