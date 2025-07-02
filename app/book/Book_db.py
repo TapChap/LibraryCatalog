@@ -1,6 +1,6 @@
 from models import Book
 from sqlalchemy import or_, case
-
+from database import db
 
 def getBook(book_name):
     books = Book.query.filter_by(book_name=book_name)
@@ -65,7 +65,7 @@ def getBookById(book_id):
 def createBook(book_name, category, quantity=1,
                series="", series_index="", author="", label="", sub_cat="",
                sub_cat_index=0, desc="", notes="", librarian_notes=""):
-    return Book(
+    book = Book(
         book_name=book_name, category=category,
 
         series=series,
@@ -80,6 +80,21 @@ def createBook(book_name, category, quantity=1,
         librarian_notes=librarian_notes
     )
 
+    existingBook, status_code = bookExists(book)
+    if status_code == 200 and equals(existingBook, book):
+        book = existingBook
+
+        book.quantity += book.quantity
+        book.isTaken = False
+        book.description = book.description
+        book.notes = book.notes
+        book.librarian_notes = book.librarian_notes
+    else:
+        db.session.add(book)
+
+    db.session.commit()
+
+    return book
 
 def equals(book1, book2):
     if not book1 or not book2:
@@ -96,6 +111,14 @@ def equals(book1, book2):
             book1.sub_cat_index == book2.sub_cat_index
     )
 
+def deleteBook(book_id):
+    book, status = getBookById(book_id)
+
+    if status == 200:
+        db.session.delete(book)
+        db.session.commit()
+        return 200
+    return 404
 
 def getAllBooks():
     relevance = case(

@@ -174,9 +174,10 @@ body {
 .user-card {
     background-color: #f9fafb;
     border-radius: 10px;
-    padding: 1.5rem;
+    padding: 1.25rem;
     border: 1px solid #e5e7eb;
     transition: box-shadow 0.2s;
+    position: relative;
 }
 
 .user-card:hover {
@@ -190,9 +191,30 @@ body {
     margin-bottom: 0.5rem;
 }
 
+.delete-user-btn {
+    background-color: #ef4444;
+    padding: 0.75rem;
+    width: fit-content;
+    scale: 0.75;
+    font-size: 1rem;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+}
+
+.delete-user-btn:hover:not(:disabled) {
+    background-color: #dc2626;
+}
+
 .user-info-detail {
     font-size: 0.9rem;
     color: #6b7280;
+    margin-top: 1rem;
     margin-bottom: 1rem;
 }
 

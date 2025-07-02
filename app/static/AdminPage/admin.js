@@ -113,7 +113,6 @@ async function loadAllUsers() {
 
         if (response.ok) {
             allUsers = data
-
             displayUsers(allUsers);
         } else {
             showUsersMessage(data.message || 'נכשל בטעינת המשתמשים', 'error');
@@ -137,6 +136,7 @@ function displayUsers(users) {
     const usersHTML = users.map(user => `
             <div class="user-card">
                 <div class="user-name">${escapeHtml(user.display_name || user.username)}</div>
+                <div class="delete-user-btn" onclick="deleteUser(${user.id})" title="מחק משתמש">🗑️</div>
                 <div class="user-info-detail">
                     <strong>משתמש:</strong> ${escapeHtml(user.username)} |
                     <strong>מזהה:</strong> ${user.id} |
@@ -160,6 +160,21 @@ function displayUsers(users) {
         `).join('');
 
     usersContainer.innerHTML = `<div class="users-grid">${usersHTML}</div>`;
+}
+
+async function deleteUser(userId){
+    if (!confirm("האם אתה בטוח שברצונך למחוק את המשתמש?")) {
+        return;
+    }
+
+    try {
+        const result = await fetch(`http://${window.CONFIG.SERVER_URL}/user/delete/id/${userId}`, {
+                method: 'DELETE',
+            })
+        loadAllUsers()
+    } catch (error) {
+        console.error("delete user error", error)
+    }
 }
 
 async function removeBookFromUser(userId, bookId, bookName, element) {

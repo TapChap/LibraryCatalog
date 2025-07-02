@@ -1,6 +1,5 @@
 from flask import request, Blueprint
 
-from database import db
 from book.Book_db import *
 
 book_route = Blueprint("book_bp", __name__)
@@ -31,19 +30,6 @@ def add_book():
         series=series, series_index=series_index, author=author,
         label=label, sub_cat=sub_cat, sub_cat_index=sub_cat_index,
         desc=desc, notes=notes, librarian_notes=librarian_notes)
-
-    book, status_code = bookExists(new_book)
-    if status_code == 200 and equals(book, new_book):
-        book.quantity += new_book.quantity
-        book.isTaken = False
-
-        book.description = new_book.description
-        book.notes = new_book.notes
-        book.librarian_notes = new_book.librarian_notes
-    else:
-        db.session.add(new_book)
-
-    db.session.commit()
 
     return {"message": "updated bookDB", "Book": new_book.toJson(full=True)}, 201
 
