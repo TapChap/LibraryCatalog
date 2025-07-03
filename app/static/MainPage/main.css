@@ -224,10 +224,10 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     padding: 1.5rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.75s ease;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease, opacity 0.75s ease;
     text-align: right;
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(-150px);
 
     display: flex;
     flex-direction: column;

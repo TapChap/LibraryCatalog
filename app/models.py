@@ -68,7 +68,7 @@ class Book(db.Model):
     notes = db.Column(db.String(500), nullable=True)
     librarian_notes = db.Column(db.String(500), nullable=True)
 
-    # The relationship to clients is defined via backref in the Client model
+    # The relationship to clients is defined via backref in the Client model: holders
 
     def toJson(self, holders=False, full=False):
         json = {

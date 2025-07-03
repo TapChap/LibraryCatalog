@@ -30,7 +30,7 @@ export class LibraryState {
 		return this.showingHeldBooks;
 	}
 	
-	isUserAdmin() {
-		return this.currentUser && this.currentUser.permission === 9;
+	isUserModerator() {
+		return this.currentUser && this.currentUser.permission > 1;
 	}
 }

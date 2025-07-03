@@ -42,10 +42,10 @@ function displayWelcomeMessage(user) {
 	document.getElementById('user-display').textContent = `ברוכים הבאים, ${displayName}!`;
 }
 
-function setupAdminButton(user) {
+function setupAdminButton() {
 	const adminBtn = document.getElementById("admin");
 	adminBtn.onclick=admin_dashboard
-	adminBtn.hidden = user.permission === 1;
+	adminBtn.hidden = !state.isUserModerator();
 }
 
 function setupLogoutButton() {
@@ -415,7 +415,7 @@ function generateBookNotesHtml(book) {
 }
 
 function generateLibrarianNotesHtml(book) {
-	return (book.librarian_notes && state.isUserAdmin()) ? `
+	return (book.librarian_notes && state.isUserModerator()) ? `
         <div class="book-librarian-notes">
             <strong>הערות ספרן:</strong>
             <p>${escapeHtml(book.librarian_notes)}</p>
@@ -433,7 +433,7 @@ function generateBookHoldersHtml(holders) {
 }
 
 function generateBookButtonsHtml(book, isOwnedByUser) {
-	if (state.isUserAdmin()) {
+	if (state.isUserModerator()) {
 		return generateAdminButtonsHtml(book, isOwnedByUser);
 	} else {
 		return generateUserButtonsHtml(book, isOwnedByUser);
@@ -444,19 +444,19 @@ function generateAdminButtonsHtml(book, isOwnedByUser) {
 	return `
         <div class="admin-button-container">
             <button class="edit-btn" onclick="editBook(${book.id})">
-                ערוך ספר
+                ערוך
             </button>
             ${isOwnedByUser ? `
                 <button class="return-btn" onclick="returnBook(${book.id})">
-                    החזר ספר
+                    החזר
                 </button>
             ` : `
                 <button class="obtain-btn" onclick="obtainBook(${book.id})" ${book.is_taken ? 'disabled' : ''}>
-                    ${book.is_taken ? 'לא זמין' : 'קבל ספר'}
+                    ${book.is_taken ? 'לא זמין' : 'קבל'}
                 </button>
             `}
             <button class="delete-btn" onclick="deleteBook(${book.id})">
-                מחק ספר
+                מחק
             </button>
         </div>
     `;
@@ -514,7 +514,7 @@ async function returnBook(bookId) {
 	} catch (error) {
 		console.error('Return book error:', error);
 		showMessage(error.message || 'שגיאה בהתחברות לשרת', 'error');
-		restoreButtonState(button, 'החזר ספר', '#f59e0b');
+		restoreButtonState(button, 'החזר', '#f59e0b');
 	}
 }
 
@@ -616,7 +616,7 @@ function replaceButtonWithObtain(button, bookId) {
 
 function removeBookCardWithAnimation(bookCard) {
 	bookCard.style.opacity = '0';
-	bookCard.style.transform = 'translateY(-20px)';
+	bookCard.style.transform = 'scale(0.01) rotate(180deg)';
 	
 	setTimeout(() => {
 		bookCard.remove();

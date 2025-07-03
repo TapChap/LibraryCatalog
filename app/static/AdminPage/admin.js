@@ -136,14 +136,17 @@ function displayUsers(users) {
     const usersHTML = users.map(user => `
             <div class="user-card">
                 <div class="user-name">${escapeHtml(user.display_name || user.username)}</div>
-                <div class="user-buttons">
-                    <div class="delete-user-btn" onclick="deleteUser(${user.id})" title="מחק משתמש">🗑️</div>
-                    <div class="ascend-user-btn" onclick="ascendUser('${user.username}')" title="הפוך משתמש למנהל">👨‍💼️</div>
-                </div>
+                ${user.permission !== 9?
+                    `<div class="user-buttons">
+                        <div class="delete-user-btn" onclick="deleteUser(${user.id})" title="מחק משתמש">🗑️</div>
+                        <div class="ascend-user-btn" onclick="ascendUser('${user.username}')" title="הפוך משתמש למנהל">👨‍💼️</div>
+                    </div>`
+                    : ``
+                }
                 <div class="user-info-detail">
                     <strong>משתמש:</strong> ${escapeHtml(user.username)} |
                     <strong>מזהה:</strong> ${user.id} |
-                    <strong>הרשאה:</strong> ${user.permission > 1 ? 'מנהל' : 'משתמש רגיל'}
+                    <strong>הרשאה:</strong> ${getUserPermissionName(user.permission)}
                 </div>
 
                 <div class="books-section">
@@ -353,4 +356,10 @@ function logout() {
 
 function goBack() {
     window.location.href = '/home';
+}
+
+function getUserPermissionName(permissionLevel){
+    if (permissionLevel === 1) return 'משתמש'
+    if (permissionLevel === 2) return 'מנהל'
+    if (permissionLevel === 9) return 'בעלים'
 }

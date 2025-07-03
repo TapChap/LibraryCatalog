@@ -32,14 +32,12 @@ def toggle_permission_db(client):
     elif client.permission == Permission.MODERATOR.value:
         client.permission = Permission.USER.value
 
-    print(client.permission)
-
     db.session.commit()
 
 def delete_client(client_id):
     client, status = getClientByID(client_id)
 
-    if status == 200:
+    if status == 200 and client.permission != Permission.OWNER.value:
         db.session.delete(client)
         db.session.commit()
     return status
