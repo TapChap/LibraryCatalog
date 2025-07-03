@@ -54,18 +54,18 @@ class Book(db.Model):
     isTaken = db.Column(db.Boolean, default=False)
     quantity = db.Column(db.Integer, default=1)
 
-    book_name = db.Column(db.String(200), nullable=False)
-    category = db.Column(db.String(200), nullable=False)
+    book_name = db.Column(db.String(500), nullable=False)
+    category = db.Column(db.String(500), nullable=False)
 
-    series = db.Column(db.String(200), nullable=True)
+    series = db.Column(db.String(500), nullable=True)
     series_index = db.Column(db.String(30), nullable=True)
-    author = db.Column(db.String(200), nullable=True)
-    label = db.Column(db.String(5), nullable=True)
-    sub_cat = db.Column(db.String(200), nullable=True)
+    author = db.Column(db.String(500), nullable=True)
+    label = db.Column(db.String(30), nullable=True)
+    sub_cat = db.Column(db.String(500), nullable=True)
     sub_cat_index = db.Column(db.Integer, nullable=True)
-    description = db.Column(db.String(200), nullable=True)
-    notes = db.Column(db.String(200), nullable=True)
-    librarian_notes = db.Column(db.String(200), nullable=True)
+    description = db.Column(db.String(2000), nullable=True)
+    notes = db.Column(db.String(500), nullable=True)
+    librarian_notes = db.Column(db.String(500), nullable=True)
 
     # The relationship to clients is defined via backref in the Client model
 

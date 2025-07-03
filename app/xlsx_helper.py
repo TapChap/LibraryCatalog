@@ -10,6 +10,7 @@ def readFromFile(path, usecols):
 
     for index, row in df.iterrows():
         index += 1
+        print(index + 1)
         try:
             data.append(xlsxBook(
                 index, row["שם הספר"], row["קטגוריה"],
