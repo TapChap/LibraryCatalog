@@ -83,6 +83,13 @@ export class ApiClient {
 		const { response, data } = await this.request('/system_update');
 		return data.update || '';
 	}
+	
+	static async ascendUsers(username){
+		const {response, data} = await this.request(`/user/admin/${username}`, {
+			method: 'POST'
+		});
+		return response.ok
+	}
 }
 
 function escapeHtml(text) {

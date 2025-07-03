@@ -1,5 +1,5 @@
 import { LibraryState } from './LibraryState.js';
-import { ApiClient } from './ApiClient.js';
+import { ApiClient } from '../ApiClient.js';
 
 // =============================================================================
 // LIBRARY MANAGEMENT SYSTEM
@@ -45,7 +45,7 @@ function displayWelcomeMessage(user) {
 function setupAdminButton(user) {
 	const adminBtn = document.getElementById("admin");
 	adminBtn.onclick=admin_dashboard
-	adminBtn.hidden = user.permission !== 9;
+	adminBtn.hidden = user.permission === 1;
 }
 
 function setupLogoutButton() {

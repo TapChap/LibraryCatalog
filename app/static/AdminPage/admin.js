@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('admin-display').textContent = `שלום, ${currentUser.display_name || currentUser.username}`;
 
         // Check if user has admin permissions
-        if (currentUser.permission !== 9) {
+        if (currentUser.permission === 1) {
             showBookMessage('אין לכם הרשאות ניהול', 'error');
             setTimeout(() => {
                 window.location.href = '/home';
@@ -136,11 +136,14 @@ function displayUsers(users) {
     const usersHTML = users.map(user => `
             <div class="user-card">
                 <div class="user-name">${escapeHtml(user.display_name || user.username)}</div>
-                <div class="delete-user-btn" onclick="deleteUser(${user.id})" title="מחק משתמש">🗑️</div>
+                <div class="user-buttons">
+                    <div class="delete-user-btn" onclick="deleteUser(${user.id})" title="מחק משתמש">🗑️</div>
+                    <div class="ascend-user-btn" onclick="ascendUser('${user.username}')" title="הפוך משתמש למנהל">👨‍💼️</div>
+                </div>
                 <div class="user-info-detail">
                     <strong>משתמש:</strong> ${escapeHtml(user.username)} |
                     <strong>מזהה:</strong> ${user.id} |
-                    <strong>הרשאה:</strong> ${user.permission === 9 ? 'מנהל' : 'משתמש רגיל'}
+                    <strong>הרשאה:</strong> ${user.permission > 1 ? 'מנהל' : 'משתמש רגיל'}
                 </div>
 
                 <div class="books-section">
@@ -174,6 +177,15 @@ async function deleteUser(userId){
         loadAllUsers()
     } catch (error) {
         console.error("delete user error", error)
+    }
+}
+
+async function ascendUser(username){
+    try {
+        await fetch(`http://${window.CONFIG.SERVER_URL}/user/admin/${username}`, {method: 'POST'});
+        loadAllUsers()
+    } catch (error) {
+        console.error("admin user error", error)
     }
 }
 

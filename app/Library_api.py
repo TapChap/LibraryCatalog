@@ -1,6 +1,5 @@
 from flask import request, Blueprint
 
-from database import db
 from book.Book_db import *
 from client.Client_db import *
 
@@ -31,8 +30,8 @@ def obtain_book(client_id):
         return {"message": "Client already has this book"}, 400
 
     # Decrease quantity and add to client's held books
-    book.quantity -= 1
-    book.is_taken = book.quantity == 0  # Mark as taken if no copies left
+    book.available_count -= 1
+    book.is_taken = book.available_count == 0  # Mark as taken if no copies left
 
     client.held_books.append(book)
 
@@ -63,7 +62,7 @@ def return_book(client_id):
     if book not in client.held_books:
         return {"message": "attempt to return book that isn't taken by user"}, 400
 
-    book.quantity += 1
+    book.available_count += 1
     book.is_taken = False
 
     client.held_books.remove(book)

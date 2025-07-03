@@ -191,24 +191,45 @@ body {
     margin-bottom: 0.5rem;
 }
 
+.user-buttons {
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+
+    display: flex;
+    align-items: center;
+}
+
 .delete-user-btn {
     background-color: #ef4444;
     padding: 0.75rem;
     width: fit-content;
-    scale: 0.75;
-    font-size: 1rem;
+    scale: 0.8;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s;
-    position: absolute;
-    top: 0.25rem;
-    left: 0.25rem;
 }
 
 .delete-user-btn:hover:not(:disabled) {
     background-color: #dc2626;
+}
+
+.ascend-user-btn {
+    background-color: #e0a71d;
+    padding: 0.75rem;
+    width: fit-content;
+    scale: 0.8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.ascend-user-btn:hover:not(:disabled) {
+    background-color: #c49421;
 }
 
 .user-info-detail {

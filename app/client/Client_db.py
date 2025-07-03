@@ -1,4 +1,4 @@
-from client import Permission
+from client.Permission import Permission
 from models import Client
 from database import db
 
@@ -25,8 +25,15 @@ def createClient(username, display_name, permission_level, password, salt):
     db.session.commit()
     return client
 
-def ascend_permission_db(client):
-    client.permission = Permission.Permission.ADMIN.value
+def toggle_permission_db(client):
+    if client.permission == Permission.USER.value:
+        client.permission = Permission.MODERATOR.value
+
+    elif client.permission == Permission.MODERATOR.value:
+        client.permission = Permission.USER.value
+
+    print(client.permission)
+
     db.session.commit()
 
 def delete_client(client_id):

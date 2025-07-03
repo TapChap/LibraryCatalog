@@ -2,6 +2,8 @@ import re
 import client.Client_db as db
 
 from flask import request, Blueprint
+
+from client.Permission import Permission
 from passwordManager import hashPassword
 
 client_route = Blueprint("client_bp", __name__)
@@ -9,7 +11,7 @@ yovel_client_route = Blueprint("yovel_client_bp", __name__)
 
 @client_route.route('/signup', methods=['POST'])
 @yovel_client_route.route('/signup', methods=['POST'])
-def signup(permission_level=1):
+def signup():
     data = request.get_json()
     username: str = data.get('username')
     display_name: str = data.get('display_name')
@@ -31,20 +33,21 @@ def signup(permission_level=1):
     if db.getClient(username)[1] == 200:
         return {"message": "User already exists", "offending_field": "username"}, 409
 
-    new_user = db.createClient(username.strip(), display_name.strip(), permission_level, *hashPassword(password))
+    permission = lambda: Permission.OWNER.value if len(db.getAllClients()) == 0 else Permission.USER.value
+    new_user = db.createClient(username.strip(), display_name.strip(), permission(), *hashPassword(password))
 
     return {"message": "User created", "user": new_user.toJson()}, 201
 
 
 @client_route.route('/admin/<string:username>', methods=['POST'])
 @yovel_client_route.route('/admin/<string:username>', methods=['POST'])
-def ascend_permission(username):
+def toggle_permission(username):
     user, status_code = db.getClient(username)
     if status_code == 404:
         return {"message": "User not found"}, 400
 
-    db.ascend_permission_db(user)
-    return {"message": "ascended user to admin permission"}, 200
+    db.toggle_permission_db(user)
+    return {"message": "toggled user's permission"}, 200
 
 @client_route.route('/delete/id/<int:user_id>', methods=['DELETE'])
 @yovel_client_route.route('/delete/id/<int:user_id>', methods=['DELETE'])
