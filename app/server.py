@@ -1,4 +1,4 @@
-import json, os, uuid
+import json, os, uuid, mimetypes
 
 from flask import Flask, render_template
 from flask_cors import CORS
@@ -12,6 +12,8 @@ from xlsx_helper import *
 from dotenv import load_dotenv
 
 load_dotenv()
+mimetypes.add_type('application/javascript', '.js')
+
 
 app = Flask(__name__)
 CORS(app)
