@@ -51,8 +51,9 @@ class Client(db.Model):
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    isTaken = db.Column(db.Boolean, default=False)
-    quantity = db.Column(db.Integer, default=1)
+    is_taken = db.Column(db.Boolean, default=False)
+    available_count = db.Column(db.Integer, default=1)
+    copies = db.Column(db.Integer, default=1)
 
     book_name = db.Column(db.String(500), nullable=False)
     category = db.Column(db.String(500), nullable=False)
@@ -72,8 +73,9 @@ class Book(db.Model):
     def toJson(self, holders=False, full=False):
         json = {
             "id": self.id,
-            "isTaken": self.isTaken,
-            "quantity": self.quantity,
+            "is_taken": self.is_taken,
+            "quantity": self.available_count,
+            "copies": self.copies,
             "book_name": self.book_name,
             "category": self.category
         }

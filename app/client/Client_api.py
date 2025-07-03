@@ -5,8 +5,10 @@ from flask import request, Blueprint
 from passwordManager import hashPassword
 
 client_route = Blueprint("client_bp", __name__)
+yovel_client_route = Blueprint("yovel_client_bp", __name__)
 
 @client_route.route('/signup', methods=['POST'])
+@yovel_client_route.route('/signup', methods=['POST'])
 def signup(permission_level=1):
     data = request.get_json()
     username: str = data.get('username')
@@ -35,6 +37,7 @@ def signup(permission_level=1):
 
 
 @client_route.route('/admin/<string:username>', methods=['POST'])
+@yovel_client_route.route('/admin/<string:username>', methods=['POST'])
 def ascend_permission(username):
     user, status_code = db.getClient(username)
     if status_code == 404:
@@ -44,6 +47,7 @@ def ascend_permission(username):
     return {"message": "ascended user to admin permission"}, 200
 
 @client_route.route('/delete/id/<int:user_id>', methods=['DELETE'])
+@yovel_client_route.route('/delete/id/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     status = db.delete_client(user_id)
 
@@ -52,6 +56,7 @@ def delete_user(user_id):
     return {"message": "user not found"}, 404
 
 @client_route.route('/login', methods=['POST'])
+@yovel_client_route.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -71,8 +76,8 @@ def login():
 
     return {"message": "Logged in", "user": user.toJson()}, 200
 
-
 @client_route.route('/<string:username>')
+@yovel_client_route.route('/<string:username>')
 def fetch_client(username):
     client, status_code = db.getClient(username)
     if status_code == 404:
@@ -84,6 +89,7 @@ def fetch_client(username):
 
 
 @client_route.route('/id/<int:id>')
+@yovel_client_route.route('/id/<int:id>')
 def fetch_client_by_id(id):
     client, status_code = db.getClientByID(id)
     if status_code == 404:
@@ -91,10 +97,11 @@ def fetch_client_by_id(id):
 
     print("client", client.toJson())
 
-    return client.toJson(), 200
+    return client.toJson(not isRequestFromYovel(request.path)), 200
 
 
 @client_route.route('/id/<int:client_id>/holding', methods=['GET'])
+@yovel_client_route.route('/id/<int:client_id>/holding', methods=['GET'])
 def get_held_books(client_id):
     client, status_code = db.getClientByID(client_id)
 
@@ -103,11 +110,16 @@ def get_held_books(client_id):
 
     held_books = [book.toJson(full=True, holders=False) for book in client.held_books]
 
+    if isRequestFromYovel(request.path):
+        return {"books": held_books}, 200
     return {"client": client.toJson(False), "books": held_books}, 200
 
-
 @client_route.route('/all', methods=['GET'])
+@yovel_client_route.route('/all', methods=['GET'])
 def get_client_db():
     clients = db.getAllClients()
     client_json_list = [client.toJson() for client in clients]
     return client_json_list, 200
+
+def isRequestFromYovel(reqPath):
+    return reqPath.split('/')[1] == 'users'

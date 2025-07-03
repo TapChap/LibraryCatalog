@@ -77,7 +77,8 @@ def createBook(book_name, category, quantity=1,
         label=label,
         sub_cat=sub_cat,
         sub_cat_index=sub_cat_index,
-        quantity=quantity,
+        available_count=quantity,
+        copies=quantity,
         description=desc,
         notes=notes,
         librarian_notes=librarian_notes
@@ -87,8 +88,9 @@ def createBook(book_name, category, quantity=1,
     if status_code == 200 and equals(existingBook, book):
         book = existingBook
 
-        book.quantity += book.quantity
-        book.isTaken = False
+        book.available_count += book.available_count
+        book.copies += book.available_count
+        book.is_taken = False
         book.description = book.description
         book.notes = book.notes
         book.librarian_notes = book.librarian_notes

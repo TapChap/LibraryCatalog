@@ -30,7 +30,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 app.register_blueprint(client_route, url_prefix="/user")
+app.register_blueprint(yovel_client_route, url_prefix="/users")
 app.register_blueprint(book_route, url_prefix="/book")
+app.register_blueprint(yovel_book_route, url_prefix="/books")
 app.register_blueprint(library_route, url_prefix="/library")
 
 @app.route('/')

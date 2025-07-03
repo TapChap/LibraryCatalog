@@ -81,7 +81,13 @@ export class ApiClient {
 	
 	static async getSystemMessage() {
 		const { response, data } = await this.request('/system_update');
-		if (!response.ok) throw new Error('Failed to load system message');
 		return data.update || '';
 	}
+}
+
+function escapeHtml(text) {
+	if (!text) return '';
+	const div = document.createElement('div');
+	div.textContent = text;
+	return div.innerHTML;
 }

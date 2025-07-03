@@ -23,7 +23,7 @@ def obtain_book(client_id):
         return {"message": "User not found"}, 404
 
     # Check if book is available
-    if book.isTaken:
+    if book.is_taken:
         return {"message": "Book not available"}, 400
 
     # Check if the client already has this book
@@ -32,7 +32,7 @@ def obtain_book(client_id):
 
     # Decrease quantity and add to client's held books
     book.quantity -= 1
-    book.isTaken = book.quantity == 0  # Mark as taken if no copies left
+    book.is_taken = book.quantity == 0  # Mark as taken if no copies left
 
     client.held_books.append(book)
 
@@ -64,7 +64,7 @@ def return_book(client_id):
         return {"message": "attempt to return book that isn't taken by user"}, 400
 
     book.quantity += 1
-    book.isTaken = False
+    book.is_taken = False
 
     client.held_books.remove(book)
 

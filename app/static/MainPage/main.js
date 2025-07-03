@@ -131,6 +131,11 @@ async function loadSystemMessage() {
 	}
 }
 
+function closeSystemMessage(){
+	const messageContainer = document.getElementById("systemMessageContainer")
+	messageContainer.style.display = "none";
+}
+
 // =============================================================================
 // SEARCH FUNCTIONALITY
 // =============================================================================
@@ -204,7 +209,7 @@ async function displayBooks(books, isHeldBooks = false, animate = true, groupByC
 	booksContainer.innerHTML = titleHtml + contentHtml;
 	
 	if (animate) {
-		animateBookCards();
+		animateBookCards(books.length);
 	} else {
 		showAllBookCards();
 	}
@@ -234,7 +239,7 @@ async function generateGroupedBooksHtml(books) {
 		html += `<div class="category-header">${escapeHtml(category)}</div>`;
 		
 		const subCategories = groupedBooks[category];
-		const subCategoryKeys = Object.keys(subCategories);
+		const subCategoryKeys = Object.keys(subCategories).sort();
 		
 		for (const subCategory of subCategoryKeys) {
 			if (subCategoryKeys.length > 1 || subCategory !== 'כללי') {
@@ -283,8 +288,13 @@ function groupBooksByCategory(books) {
 	return grouped;
 }
 
-function animateBookCards() {
-	const motionStaggerDelay = 75;
+function animateBookCards(amount) {
+	const lowerLimit = 0.75 * 1000, upper_limit = 5 * 1000
+	const clamp = val => Math.min(upper_limit, Math.max(lowerLimit, val))
+	
+	const tAnimationTime = amount * 45;
+	const motionStaggerDelay = clamp(tAnimationTime) / amount;
+	console.log(motionStaggerDelay, motionStaggerDelay * amount)
 	
 	requestAnimationFrame(() => {
 		document.querySelectorAll('.book-card').forEach((card, index) => {
@@ -328,7 +338,7 @@ async function generateBookCardHTML(book, isHeldBooks) {
 }
 
 async function getBookHolders(book, isOwnedByUser) {
-	if (!isOwnedByUser && book.isTaken) {
+	if (!isOwnedByUser && book.is_taken) {
 		try {
 			const bookDetails = await ApiClient.getBookById(book.id);
 			return bookDetails.holders;
@@ -378,8 +388,8 @@ function generateBookDetailsHtml(book) {
             ` : ''}
             <div class="book-detail">
                 <span class="label">זמין:</span>
-                <span class="availability ${book.isTaken ? 'unavailable' : 'available'}">
-                    ${book.isTaken ? 'לא זמין' : `${book.quantity} עותקים`}
+                <span class="availability ${book.is_taken ? 'unavailable' : 'available'}">
+                    ${book.is_taken ? 'לא זמין' : `${book.quantity} עותקים`}
                 </span>
             </div>
         </div>
@@ -441,8 +451,8 @@ function generateAdminButtonsHtml(book, isOwnedByUser) {
                     החזר ספר
                 </button>
             ` : `
-                <button class="obtain-btn" onclick="obtainBook(${book.id})" ${book.isTaken ? 'disabled' : ''}>
-                    ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
+                <button class="obtain-btn" onclick="obtainBook(${book.id})" ${book.is_taken ? 'disabled' : ''}>
+                    ${book.is_taken ? 'לא זמין' : 'קבל ספר'}
                 </button>
             `}
             <button class="delete-btn" onclick="deleteBook(${book.id})">
@@ -458,8 +468,8 @@ function generateUserButtonsHtml(book, isOwnedByUser) {
             החזר ספר
         </button>
     ` : `
-        <button class="obtain-btn" onclick="obtainBook(${book.id})" ${book.isTaken ? 'disabled' : ''}>
-            ${book.isTaken ? 'לא זמין' : 'קבל ספר'}
+        <button class="obtain-btn" onclick="obtainBook(${book.id})" ${book.is_taken ? 'disabled' : ''}>
+            ${book.is_taken ? 'לא זמין' : 'קבל ספר'}
         </button>
     `;
 }
@@ -635,6 +645,9 @@ function refreshCurrentView() {
 // =============================================================================
 
 function showMessage(text, type) {
+	//disable website messages
+	return ;
+	
 	const messageContainer = document.getElementById('message-container');
 	messageContainer.innerHTML = `<div class="message ${type}">${escapeHtml(text)}</div>`;
 	
@@ -704,3 +717,18 @@ async function editBook(bookId) {
 	// TODO: Implement edit book functionality
 	console.log('Edit book:', bookId);
 }
+
+// =============================================================================
+// export function to be accessible from the html file
+// =============================================================================
+
+window.searchBooks = searchBooks;
+window.closeSystemMessage = closeSystemMessage;
+window.toggleHeldBooks = toggleHeldBooks;
+window.obtainBook = obtainBook;
+window.returnBook = returnBook;
+window.deleteBook = deleteBook;
+window.editBook = editBook;
+window.handleKeyPress = handleKeyPress;
+window.admin_dashboard = admin_dashboard;
+window.logout = logout;
