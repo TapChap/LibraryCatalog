@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+    if (sessionStorage.getItem('libraryUser')) window.location.href = '/home';
+
     const signUpButton = document.getElementById('signUp');
     const signInButton = document.getElementById('signIn');
     const container = document.getElementById('container');
@@ -10,14 +12,14 @@ document.addEventListener("DOMContentLoaded", function() {
     signInButton.addEventListener('click', () => {
         container.classList.remove("right-panel-active");
     });
-    
-    document.addEventListener("keydown", function(event) {
+});
+
+document.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
             if (container.classList.contains("right-panel-active")) handleSignup();
             else handleLogin();
         }
     });
-});
 
 async function handleSignup() {
     const username = document.getElementById("signup_username").value;
@@ -32,7 +34,10 @@ async function handleSignup() {
 
     const data = await response.json();
 
-    if (response.ok) await handleLogin(username, password);
+    if (response.ok) {
+        sessionStorage.setItem('libraryUser', JSON.stringify(data.user));
+        window.location.href = '/home'; // Redirect to home page
+    }
     else alert(data.message);
 }
 

@@ -17,6 +17,8 @@ def signup():
     display_name: str = data.get('display_name')
     password: str = data.get("password")
 
+    print(data)
+
     # username validation
     if not username or len(username) < 3:
         return {"message": "Username too short", "offending_field": "username"}, 400

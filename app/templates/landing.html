@@ -5,29 +5,28 @@
     <title>Library Tracker - Login / Signup</title>
     <link rel="stylesheet" href="/static/LandingPage/landing.css">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
 </head>
 <body>
 
 <div class="container" id="container">
     <div class="form-container sign-up-container">
-        <form action="#">
+        <div class="form">
             <h1>צור חשבון</h1>
             <span>בכדי להכנס לספרייה</span>
             <input id="signup_username" type="text" placeholder="שם משתמש" />
             <input id="signup_displayName" type="text" placeholder="שם תצוגה" />
             <input id="signup_password" type="password" placeholder="סיסמה" />
-            <button onclick="handleSignup()">הרשמה</button>
-        </form>
+            <button>הרשמה</button>
+        </div>
     </div>
     <div class="form-container sign-in-container">
-        <form action="#">
+        <div class="form">
             <h1>התחברות</h1>
             <span>התחבר לחשבון האישי שלך</span>
             <input id="login_username" type="text" placeholder="שם משתמש" />
             <input id="login_password" type="password" placeholder="סיסמה" />
-            <button onclick="handleLogin()">התחבר</button>
-        </form>
+            <button>התחבר</button>
+        </div>
     </div>
     <div class="overlay-container">
         <div class="overlay">
