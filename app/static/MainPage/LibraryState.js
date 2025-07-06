@@ -21,6 +21,10 @@ export class LibraryState {
 		this.totalBooksCount = books.length;
 	}
 	
+	getBookById(bookId){
+		return this.allBooks.find(book => book.id === bookId)
+	}
+	
 	setAllUsers(users) {
 		this.allUsers = users;
 	}

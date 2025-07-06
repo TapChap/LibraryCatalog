@@ -1,5 +1,5 @@
-import { LibraryState } from './LibraryState.js';
-import { ApiClient } from '../ApiClient.js';
+import {LibraryState} from './LibraryState.js';
+import {ApiClient} from '../ApiClient.js';
 
 // =============================================================================
 // LIBRARY MANAGEMENT SYSTEM
@@ -44,13 +44,13 @@ function displayWelcomeMessage(user) {
 
 function setupAdminButton() {
 	const adminBtn = document.getElementById("admin");
-	adminBtn.onclick=admin_dashboard
+	adminBtn.onclick = admin_dashboard
 	adminBtn.hidden = !state.isUserModerator();
 }
 
 function setupLogoutButton() {
 	const logoutBtn = document.getElementById("logout");
-	logoutBtn.onclick=logout
+	logoutBtn.onclick = logout
 }
 
 async function loadInitialData() {
@@ -60,7 +60,7 @@ async function loadInitialData() {
 		loadHeldBooks(),
 		loadSystemMessage()
 	]);
-	showAllBooks();
+	displayBooks(state.allBooks);
 }
 
 function setupEventListeners() {
@@ -131,7 +131,7 @@ async function loadSystemMessage() {
 	}
 }
 
-function closeSystemMessage(){
+function closeSystemMessage() {
 	const messageContainer = document.getElementById("systemMessageContainer")
 	messageContainer.style.display = "none";
 }
@@ -185,10 +185,6 @@ function setSearchLoadingState(button, isLoading) {
 		button.disabled = false;
 		button.textContent = 'חפש ספרים';
 	}
-}
-
-function showAllBooks() {
-	displayBooks(state.allBooks);
 }
 
 // =============================================================================
@@ -288,20 +284,17 @@ function groupBooksByCategory(books) {
 	return grouped;
 }
 
-function animateBookCards(amount) {
+async function animateBookCards(amount) {
 	const lowerLimit = 0.75 * 1000, upper_limit = 5 * 1000
 	const clamp = val => Math.min(upper_limit, Math.max(lowerLimit, val))
 	
 	const tAnimationTime = amount * 45;
 	const motionStaggerDelay = clamp(tAnimationTime) / amount;
-	console.log(motionStaggerDelay, motionStaggerDelay * amount)
 	
-	requestAnimationFrame(() => {
-		document.querySelectorAll('.book-card').forEach((card, index) => {
-			setTimeout(() => {
-				card.classList.add('visible');
-			}, index * motionStaggerDelay);
-		});
+	document.querySelectorAll('.book-card').forEach((card, index) => {
+		setTimeout(() => {
+			card.classList.add('visible');
+		}, index * motionStaggerDelay);
 	});
 }
 
@@ -323,7 +316,6 @@ async function generateBookCardHTML(book, isHeldBooks) {
         <div class="book-card">
             <div class="book-content">
                 ${generateBookTitleHtml(book)}
-                ${generateBookAuthorHtml(book)}
                 ${generateBookDetailsHtml(book)}
                 ${generateBookDescriptionHtml(book)}
                 ${generateBookNotesHtml(book)}
@@ -363,17 +355,17 @@ function generateBookTitleHtml(book) {
 	}
 }
 
-function generateBookAuthorHtml(book) {
-	return book.author ? `<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : '';
-}
-
 function generateBookDetailsHtml(book) {
 	return `
         <div class="book-details">
+        ${book.author ? `
+			<div class="book-author">מאת ${escapeHtml(book.author)}</div>` : ''}
+        
             <div class="book-detail">
                 <span class="label">קטגוריה:</span>
                 <span class="value">${escapeHtml(book.category)}</span>
             </div>
+            
             ${book.sub_category ? `
                 <div class="book-detail">
                     <span class="label">תת-קטגוריה:</span>
@@ -496,7 +488,12 @@ async function obtainBook(bookId) {
 	
 	try {
 		await ApiClient.obtainBook(state.currentUser.id, bookId);
-		await refreshBookData();
+		
+		const obtainedBook = state.getBookById(bookId);
+		obtainedBook.quantity = obtainedBook.quantity - 1;
+		state.heldBooks.push(obtainedBook);
+		
+		// await refreshBookData();
 		updateBookCardAfterObtain(bookId, button);
 	} catch (error) {
 		console.error('Obtain book error:', error);
@@ -687,6 +684,13 @@ function updateStats() {
 	document.getElementById('total-books-borrowed').textContent = totalBooksBorrowed;
 }
 
+async function sleep(ms) {
+	const start = performance.now();
+	while (performance.now() - start < ms) {
+		continue;
+	}
+}
+
 // =============================================================================
 // NAVIGATION FUNCTIONS
 // =============================================================================
@@ -712,7 +716,7 @@ function toggleHeldBooks() {
 		clearBooksContainer();
 		heldBooksBtn.textContent = 'הספרים שלי';
 		document.getElementById('message-container').innerHTML = '';
-		showAllBooks();
+		displayBooks(state.allBooks, false, false, true);
 	}
 }
 

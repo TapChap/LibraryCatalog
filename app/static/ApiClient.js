@@ -24,8 +24,12 @@ export class ApiClient {
 	}
 	
 	static async getAllBooks() {
+		const startTimeStamp = performance.now();
+		
 		const { response, data } = await this.request('/book/all');
 		if (!response.ok) throw new Error(data.message || 'Failed to load books');
+		
+		console.log("fetchAll time: " + (performance.now() - startTimeStamp) / 1000.0 + 's')
 		return data.books || [];
 	}
 	
