@@ -88,13 +88,19 @@ class Book(db.Model):
         formatted_label = ""
 
         if full:
-            if self.sub_cat_index:
-                if self.label:
-                    if len(self.label) > 1: # handling label edge cases
-                        prefix, index = self.label.split('.')
-                        formatted_label = f"{prefix}.{self.sub_cat_index}.{index}"
-                    else:
-                        formatted_label = f'{self.label}.{self.sub_cat_index}.0'
+            try:
+                if self.sub_cat_index:
+                    if self.label:
+                        if len(self.label) > 1: # handling label edge cases
+                            prefix, index = self.label.split('.')
+                            formatted_label = f"{prefix}.{self.sub_cat_index}.{index}"
+                        else:
+                            formatted_label = f'{self.label}.{self.sub_cat_index}.0'
+            except ValueError:
+                print(f"!! LABEL ERROR AT BOOK: {self.book_name}:{self.id} !!")
+                print(f"LABEL: {self.label}")
+
+                formatted_label = "UNABLE TO RETRIEVE LABEL"
 
             json.update({
                 "series": self.series,

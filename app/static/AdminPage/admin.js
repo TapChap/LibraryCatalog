@@ -91,7 +91,7 @@ async function createBook() {
 
         if (response.ok) {
             showBookMessage(`הספר "${requiredData.book_name}" נוצר בהצלחה!`, 'success');
-            form.reset();
+            resetForm();
         } else {
             showBookMessage(data.message || 'נכשל ביצירת הספר', 'error');
         }
@@ -101,6 +101,35 @@ async function createBook() {
     } finally {
         createBtn.disabled = false;
         createBtn.textContent = 'צור ספר';
+    }
+}
+
+function lockField(fieldId){
+    const field = document.getElementById(fieldId)
+    const button = document.querySelector(`button[data-field="${fieldId}"]`)
+    
+    if (field.classList.contains("locked")){
+        field.classList.remove("locked")
+        field.readOnly = false;
+        
+        button.classList.remove("locked")
+    } else {
+        field.classList.add("locked")
+        field.readOnly = true;
+        
+        button.classList.add("locked")
+    }
+}
+
+function resetForm(){
+    const form = document.getElementById('create-book-form');
+    
+    for (let field of form){
+        if (field.tagName === "INPUT" || field.tagName === "TEXTAREA" || field.tagName === "NUMBER"){
+            console.log(field)
+            if (!field.classList.contains("locked"))
+                field.value = '';
+        }
     }
 }
 

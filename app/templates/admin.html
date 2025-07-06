@@ -35,62 +35,96 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label for="book_name" class="required">שם הספר</label>
-                    <input type="text" id="book_name" name="book_name" class="form-input" required>
+                    <div class="input-wrapper">
+                        <input type="text" id="book_name" name="book_name" class="form-input" required>
+                        <button type="button" class="lock-btn" data-field="book_name" onclick="lockField('book_name')">🔒</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="category" class="required">קטגוריה</label>
-                    <input type="text" id="category" name="category" class="form-input" required>
+                    <div class="input-wrapper">
+                        <input type="text" id="category" name="category" class="form-input" required>
+                        <button type="button" class="lock-btn" data-field="category" onclick="lockField('category')">🔒</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="sub_cat">תת-קטגוריה</label>
-                    <input type="text" id="sub_cat" name="sub_cat" class="form-input">
+                    <div class="input-wrapper">
+                        <input type="text" id="sub_cat" name="sub_cat" class="form-input">
+                        <button type="button" class="lock-btn" data-field="sub_cat" onclick="lockField('sub_cat')">🔒</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="author">מחבר</label>
-                    <input type="text" id="author" name="author" class="form-input">
+                    <div class="input-wrapper">
+                        <input type="text" id="author" name="author" class="form-input">
+                        <button type="button" class="lock-btn" data-field="author" onclick="lockField('author')">🔒</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="series">סדרה</label>
-                    <input type="text" id="series" name="series" class="form-input">
+                    <div class="input-wrapper">
+                        <input type="text" id="series" name="series" class="form-input">
+                        <button type="button" class="lock-btn" data-field="series" onclick="lockField('series')">🔒</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="series_index">מספר בסדרה</label>
-                    <input id="series_index" name="series_index" class="form-input" min="1">
+                    <div class="input-wrapper">
+                        <input id="series_index" name="series_index" class="form-input" min="1">
+                        <button type="button" class="lock-btn" data-field="series_index" onclick="lockField('series_index')">🔒</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="label">תווית</label>
-                    <input type="text" id="label" name="label" class="form-input">
+                    <div class="input-wrapper">
+                        <input type="text" id="label" name="label" class="form-input">
+                        <button type="button" class="lock-btn" data-field="label" onclick="lockField('label')">🔒</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="sub_cat_index">קאטר</label>
-                    <input type="number" id="sub_cat_index" name="sub_cat_index" class="form-input" min="1">
+                    <div class="input-wrapper">
+                        <input type="number" id="sub_cat_index" name="sub_cat_index" class="form-input" min="1">
+                        <button type="button" class="lock-btn" data-field="sub_cat_index" onclick="lockField('sub_cat_index')">🔒</button>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="description">תיאור</label>
-                <textarea id="description" name="description" class="form-textarea" rows="3"></textarea>
+                <div class="textarea-wrapper">
+                    <textarea id="description" name="description" class="form-textarea" rows="3"></textarea>
+                    <button type="button" class="lock-btn" data-field="description" onclick="lockField('description')">🔒</button>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="notes">הערות</label>
-                <textarea id="notes" name="notes" class="form-textarea" rows="3"></textarea>
+                <div class="textarea-wrapper">
+                    <textarea id="notes" name="notes" class="form-textarea" rows="3"></textarea>
+                    <button type="button" class="lock-btn" data-field="notes" onclick="lockField('notes')">🔒</button>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="librarian_notes">הערות ספרן</label>
-                <textarea id="librarian_notes" name="librarian_notes" class="form-textarea" rows="3"></textarea>
+                <div class="textarea-wrapper">
+                    <textarea id="librarian_notes" name="librarian_notes" class="form-textarea" rows="3"></textarea>
+                    <button type="button" class="lock-btn" data-field="librarian_notes" onclick="lockField('librarian_notes')">🔒</button>
+                </div>
             </div>
 
             <button type="submit" class="create-btn" id="create-btn">צור ספר</button>
         </form>
+    </div>
     </div>
 
     <div class="section system-update-section">

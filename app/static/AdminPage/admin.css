@@ -99,9 +99,85 @@ body {
     margin-bottom: 0.5rem;
 }
 
+.lock-btn {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: 1px #1f2937;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #d1d5db;
+    padding: 0.25rem;
+    transition: all 0.2s;
+    z-index: 10;
+    opacity: 0.5;
+}
+
 .form-group label.required::after {
     content: ' *';
     color: #ef4444;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-input, .form-textarea {
+    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    font-size: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    text-align: right;
+    direction: rtl;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.form-input.locked {
+    background-color: #f9fafb;
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.1);
+    pointer-events: none;
+    user-select: none;
+}
+
+.form-textarea.locked {
+    background-color: #f9fafb;
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.1);
+    pointer-events: none;
+    user-select: none;
+    resize: none;
+}
+
+.lock-btn:hover {
+    background-color: #f9fafb;
+    color: #9ca3af;
+    opacity: 1;
+}
+
+.lock-btn.locked {
+    color: #6b7280;
+    opacity: 1;
+}
+
+.lock-btn.locked:hover {
+    color: #4b5563;
+}
+.textarea-wrapper {
+    position: relative;
+}
+
+.textarea-wrapper .lock-btn {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.75rem;
+    transform: none;
 }
 
 .form-input, .form-textarea {
@@ -330,4 +406,10 @@ body {
 .submit-btn:disabled, .delete-btn:disabled {
     background-color: #9ca3af;
     cursor: not-allowed;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
