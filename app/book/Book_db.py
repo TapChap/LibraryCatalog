@@ -65,12 +65,13 @@ def getBookById(book_id):
     return book, 200
 
 
-def createBook(book_name, category, quantity=1,
+def createBook(book_name, category, quantity=1, location="",
                series="", series_index="", author="", label="", sub_cat="",
                sub_cat_index=0, desc="", notes="", librarian_notes=""):
     book = Book(
         book_name=book_name, category=category,
 
+        location=location,
         series=series,
         series_index=series_index,
         author=author,
@@ -108,6 +109,7 @@ def equals(book1, book2):
     return (
             book1.book_name == book2.book_name and
             book1.category == book2.category and
+            book1.location == book2.location and
             book1.series == book2.series and
             book1.series_index == book2.series_index and
             book1.author == book2.author and

@@ -53,13 +53,13 @@ def system_update_api():
 
 @app.route('/loadFromFile', methods=['POST'])
 def loadFromFile():
-    json_data = request.form.get('dataColumns')
+    json_data = request.form.get('location')
     file = request.files.get('data')
 
     filename = f"{uuid.uuid4()}_{file.filename}"
     file.save(filename)
 
-    data = readFromFile(filename, json.loads(json_data).get('dataColumns'))
+    data = readFromFile(filename, json.loads(json_data).get("location"))
     writeToSQL(data, db)
 
     os.remove(filename)

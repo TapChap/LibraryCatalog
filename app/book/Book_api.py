@@ -13,6 +13,7 @@ def add_book():
     category = data.get("category")
 
     # Get other parameters from URL query string
+    location = request.args.get("location")
     series = request.args.get("series")
     series_index = request.args.get("series_index")
     author = request.args.get("author")
@@ -28,7 +29,7 @@ def add_book():
         return {"message": "Missing book name or category"}, 400
 
     new_book = db.createBook(
-        book_name, category, quantity=quantity,
+        book_name, category, quantity=quantity, location=location,
         series=series, series_index=series_index, author=author,
         label=label, sub_cat=sub_cat, sub_cat_index=sub_cat_index,
         desc=desc, notes=notes, librarian_notes=librarian_notes)

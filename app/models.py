@@ -58,6 +58,7 @@ class Book(db.Model):
     book_name = db.Column(db.String(500), nullable=False)
     category = db.Column(db.String(500), nullable=False)
 
+    location = db.Column(db.String(200), nullable=True)
     series = db.Column(db.String(500), nullable=True)
     series_index = db.Column(db.String(30), nullable=True)
     author = db.Column(db.String(500), nullable=True)
@@ -100,9 +101,10 @@ class Book(db.Model):
                 print(f"!! LABEL ERROR AT BOOK: {self.book_name}:{self.id} !!")
                 print(f"LABEL: {self.label}")
 
-                formatted_label = "UNABLE TO RETRIEVE LABEL"
+                formatted_label = self.label
 
             json.update({
+                "location": self.location,
                 "series": self.series,
                 "series_index": self.series_index,
                 "author": self.author,

@@ -1,7 +1,7 @@
 import pandas as pd
 
 class xlsxBook:
-    def __init__(self, xlsxIndex, book_name, category, series, series_index, author, label,
+    def __init__(self, xlsxIndex, book_name, category, location, series, series_index, author, label,
                  sub_cat, sub_cat_index, copies, desc, notes, librarian_notes):
 
         if pd.isna(book_name) or pd.isna(category):
@@ -11,6 +11,7 @@ class xlsxBook:
         self.book_name = str(book_name)
         self.category = str(category)
 
+        self.location = str(location)
         self.series = str(series) if not pd.isna(series) else None
         self.series_index = str(series_index) if not pd.isna(series_index) else None
         self.author = str(author) if not pd.isna(author) else None
@@ -31,7 +32,7 @@ class xlsxBook:
 
     def serialize(self):
         return [
-            self.book_name, self.category, self.quantity, self.series,
+            self.book_name, self.category, self.quantity, self.location, self.series,
             self.series_index, self.author, self.label, self.sub_cat,
             self.sub_cat_index, self.desc, self.notes, self.librarian_notes
         ]

@@ -2,8 +2,8 @@ import pandas as pd
 from book.xlsxBook import xlsxBook
 from book.Book_db import createBook
 
-def readFromFile(path, usecols):
-    df = pd.read_excel(path, usecols=usecols)
+def readFromFile(path, location):
+    df = pd.read_excel(path, usecols="A:M")
     df = df.dropna(how='all')
 
     data = []
@@ -13,7 +13,7 @@ def readFromFile(path, usecols):
         print(index + 1)
         try:
             data.append(xlsxBook(
-                index, row["שם הספר"], row["קטגוריה"],
+                index, row["שם הספר"], row["קטגוריה"], location,
                 row["סדרה"], row["מספר בסדרה"], row["מחבר"], row["תווית"], row["תת-קטגוריה"],
                 row["קאטר"], row["כפילויות"], row["תיאור"], row["הערות"], row["הערות ספרן"]))
         except ValueError:

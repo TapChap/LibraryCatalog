@@ -58,17 +58,14 @@ async function createBook() {
             }
         } else if (trimmedValue) {
             // Optional fields go as URL parameters
-            if (key === 'series_index' || key === 'sub_cat_index') {
-                urlParams.append(key, parseInt(trimmedValue));
-            } else {
-                urlParams.append(key, trimmedValue);
-            }
+            if (key === 'sub_cat_index') urlParams.append(key, parseInt(trimmedValue));
+            else urlParams.append(key, trimmedValue);
         }
     }
 
     // Validate required fields
     if (!requiredData.book_name || !requiredData.category) {
-        showBookMessage('אנא מלאו את כל השדות החובה', 'error');
+        showBookMessage('אנא מלאו את כל שדות החובה', 'error');
         return;
     }
 
@@ -126,7 +123,6 @@ function resetForm(){
     
     for (let field of form){
         if (field.tagName === "INPUT" || field.tagName === "TEXTAREA" || field.tagName === "NUMBER"){
-            console.log(field)
             if (!field.classList.contains("locked"))
                 field.value = '';
         }

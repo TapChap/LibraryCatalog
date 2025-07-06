@@ -160,9 +160,9 @@ async function searchBooks() {
 	
 	try {
 		const books = await ApiClient.searchBooks(bookName);
-		await displayBooks(books, false, true, false);
+		if (books !== 404) await displayBooks(books, false, true, false);
 		
-		const message = books.length === 0
+		const message = books === 404
 			? 'לא נמצאו ספרים עם השם הזה'
 			: `נמצאו ${books.length} ספר/ים`;
 		const messageType = books.length === 0 ? 'info' : 'success';
@@ -386,6 +386,14 @@ function generateBookDetailsHtml(book) {
                     <span class="value">${escapeHtml(book.label)}</span>
                 </div>
             ` : ''}
+            
+            ${book.location ? `
+                <div class="book-detail">
+                    <span class="label">מיקום:</span>
+                    <span class="location ${book.location}">${escapeHtml(book.location)}</span>
+                </div>
+            ` : ''}
+            
             <div class="book-detail">
                 <span class="label">זמין:</span>
                 <span class="availability ${book.is_taken ? 'unavailable' : 'available'}">
@@ -645,8 +653,7 @@ function refreshCurrentView() {
 // =============================================================================
 
 function showMessage(text, type) {
-	//disable website messages
-	return ;
+	// if (type !== "info") return;
 	
 	const messageContainer = document.getElementById('message-container');
 	messageContainer.innerHTML = `<div class="message ${type}">${escapeHtml(text)}</div>`;

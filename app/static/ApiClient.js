@@ -32,7 +32,7 @@ export class ApiClient {
 	static async searchBooks(bookName) {
 		const endpoint = `/book/${encodeURIComponent(escapeHtml(bookName))}`;
 		const { response, data } = await this.request(endpoint);
-		if (!response.ok) throw new Error(data.message || 'Search failed');
+		if (!response.ok) return 404;
 		return data.books || [];
 	}
 	

@@ -265,8 +265,8 @@ body {
 }
 
 .book-description, .book-notes, .book-librarian-notes {
-    margin-top: 1rem;
-    padding-top: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
     border-top: 1px solid #e5e7eb;
 }
 
@@ -306,6 +306,27 @@ body {
 
 .book-detail .value {
     color: #6b7280;
+}
+
+.location {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 500;
+
+    background-color: #5483da;
+    color: #ffffff;
+}
+
+.location.ספרייה {
+    background-color: #da5954;
+    color: #ffffff;
+}
+
+.location.בימד {
+    background-color: #f5d33b;
+    color: #000000;
 }
 
 .book-content {
