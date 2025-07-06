@@ -9,7 +9,7 @@ if %errorLevel% neq 0 (
 )
 
 REM === Customize your domain and IP ===
-set IP=127.0.0.1
+set IP=192.168.181.247
 set DOMAIN=library.machanaim.com
 
 REM === Hosts file path ===
@@ -24,10 +24,12 @@ if %errorlevel%==0 (
     echo Entry already exists: %IP% %DOMAIN%
 ) else (
     echo Adding entry: %IP% %DOMAIN%
+	echo . >> "%HOSTS_FILE%"
     echo 	%IP% %DOMAIN%>>"%HOSTS_FILE%"
 )
 
 REM === Flush DNS cache ===
 ipconfig /flushdns
 
+start http://%DOMAIN%
 exit
