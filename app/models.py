@@ -91,16 +91,16 @@ class Book(db.Model):
         if full:
             try:
                 if self.sub_cat_index:
-                    if self.label:
-                        if len(self.label) > 1: # handling label edge cases
-                            prefix, index = self.label.split('.')
-                            formatted_label = f"{prefix}.{self.sub_cat_index}.{index}"
-                        else:
-                            formatted_label = f'{self.label}.{self.sub_cat_index}.0'
+                    formatted_label = self.label + " | " + str(self.sub_cat_index)
+            #         if self.label:
+            #             if len(self.label) > 1: # handling label edge cases
+            #                 prefix, index = self.label.split('.')
+            #                 formatted_label = f"{prefix}.{self.sub_cat_index}.{index}"
+            #             else:
+            #                 formatted_label = f'{self.label}.{self.sub_cat_index}.0'
             except ValueError:
                 print(f"!! LABEL ERROR AT BOOK: {self.book_name}:{self.id} !!")
                 print(f"LABEL: {self.label}")
-
                 formatted_label = self.label
 
             json.update({

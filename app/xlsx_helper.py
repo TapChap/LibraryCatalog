@@ -13,7 +13,7 @@ def readFromFile(path, location):
         print(index + 1)
         try:
             data.append(xlsxBook(
-                index, row["שם הספר"], row["קטגוריה"], location,
+                index, row["שם"], row["קטגוריה"], location,
                 row["סדרה"], row["מספר בסדרה"], row["מחבר"], row["תווית"], row["תת-קטגוריה"],
                 row["קאטר"], row["כפילויות"], row["תיאור"], row["הערות"], row["הערות ספרן"]))
         except ValueError:

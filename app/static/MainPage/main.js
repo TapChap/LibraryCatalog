@@ -294,7 +294,7 @@ async function animateBookCards(amount) {
 	document.querySelectorAll('.book-card').forEach((card, index) => {
 		setTimeout(() => {
 			card.classList.add('visible');
-		}, index * motionStaggerDelay);
+		}, (index + 1) * motionStaggerDelay);
 	});
 }
 

@@ -319,14 +319,19 @@ body {
     color: #ffffff;
 }
 
-.location.ספרייה {
+.location.ספריה {
     background-color: #da5954;
     color: #ffffff;
 }
 
-.location.בימד {
+.location.בית-מדרש {
     background-color: #f5d33b;
     color: #000000;
+}
+
+.location.א-א-אורבך {
+    background-color: #417910;
+    color: #ffffff;
 }
 
 .book-content {

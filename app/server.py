@@ -1,6 +1,6 @@
 import json, os, uuid, mimetypes
 
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 from flask_cors import CORS
 from sqlalchemy import text
 
@@ -34,6 +34,10 @@ app.register_blueprint(yovel_client_route, url_prefix="/users")
 app.register_blueprint(book_route, url_prefix="/book")
 app.register_blueprint(yovel_book_route, url_prefix="/books")
 app.register_blueprint(library_route, url_prefix="/library")
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 def index():
