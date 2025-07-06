@@ -1,6 +1,5 @@
 import {LibraryState} from './LibraryState.js';
 import {ApiClient} from '../ApiClient.js';
-import {PaginationState} from "./PaginationState.js";
 
 // =============================================================================
 // LIBRARY MANAGEMENT SYSTEM
@@ -8,7 +7,6 @@ import {PaginationState} from "./PaginationState.js";
 
 // Initialize global state
 const state = new LibraryState();
-const paginationState = new PaginationState();
 
 // =============================================================================
 // INITIALIZATION & SETUP
@@ -142,6 +140,12 @@ function closeSystemMessage() {
 // SEARCH FUNCTIONALITY
 // =============================================================================
 
+function handleKeyPress(event) {
+	if (event.key === 'Enter') {
+		searchBooks();
+	}
+}
+
 async function searchBooks() {
 	const searchInput = document.getElementById('search-input');
 	const bookName = searchInput.value.trim();
@@ -187,274 +191,23 @@ function setSearchLoadingState(button, isLoading) {
 // BOOK DISPLAY FUNCTIONS
 // =============================================================================
 
-
-// =============================================================================
-// OPTIMIZED BOOK DISPLAY FUNCTIONS
-// =============================================================================
-
 async function displayBooks(books, isHeldBooks = false, animate = true, groupByCategory = true) {
 	const booksContainer = document.getElementById('books-container');
-	
-	// Clear existing scroll listener
-	window.removeEventListener('scroll', handleScroll);
 	
 	if (books.length === 0) {
 		displayEmptyState(booksContainer, isHeldBooks);
 		return;
 	}
 	
-	// Set up pagination state
-	paginationState.setBooks(books, isHeldBooks, groupByCategory);
-	
-	// Clear container and add title
 	const titleHtml = isHeldBooks ? '<div class="section-title">הספרים שלכם</div>' : '';
-	booksContainer.innerHTML = titleHtml;
+	const contentHtml = await generateBooksHtml(books, isHeldBooks, groupByCategory);
 	
-	// Create books grid container
-	const booksGrid = document.createElement('div');
-	booksGrid.className = 'books-grid';
-	booksContainer.appendChild(booksGrid);
+	booksContainer.innerHTML = titleHtml + contentHtml;
 	
-	// Add loading indicator
-	const loadingIndicator = createLoadingIndicator();
-	booksContainer.appendChild(loadingIndicator);
-	
-	// Load first batch
-	await loadNextBatch(animate);
-	
-	// Set up scroll listener for infinite scroll
-	window.addEventListener('scroll', handleScroll);
-}
-
-function createLoadingIndicator() {
-	const loadingDiv = document.createElement('div');
-	loadingDiv.id = 'loading-indicator';
-	loadingDiv.className = 'loading-indicator';
-	loadingDiv.innerHTML = `
-        <div class="loading-spinner"></div>
-        <div class="loading-text">טוען ספרים נוספים...</div>
-    `;
-	loadingDiv.style.display = 'none';
-	return loadingDiv;
-}
-
-async function loadNextBatch(animate = true) {
-	if (paginationState.isLoading || !paginationState.hasMore) return;
-	
-	paginationState.isLoading = true;
-	const loadingIndicator = document.getElementById('loading-indicator');
-	
-	// Show loading indicator
-	if (paginationState.currentPage > 0) {
-		loadingIndicator.style.display = 'block';
-	}
-	
-	try {
-		const batch = paginationState.getNextBatch();
-		
-		if (batch.length > 0) {
-			await renderBookBatch(batch, animate);
-		}
-		
-		// Hide loading indicator
-		if (!paginationState.hasMore) {
-			loadingIndicator.style.display = 'none';
-		}
-	} finally {
-		paginationState.isLoading = false;
-		if (paginationState.hasMore) {
-			loadingIndicator.style.display = 'none';
-		}
-	}
-}
-
-async function renderBookBatch(books, animate = true) {
-	const booksGrid = document.querySelector('.books-grid');
-	if (!booksGrid) return;
-	
-	// Generate HTML for batch
-	const batchHtml = await generateBatchHtml(books);
-	
-	// Create temporary container to parse HTML
-	const tempContainer = document.createElement('div');
-	tempContainer.innerHTML = batchHtml;
-	
-	// Add cards to grid
-	const cards = tempContainer.querySelectorAll('.book-card');
-	cards.forEach(card => {
-		if (animate) {
-			card.style.opacity = '0';
-			card.style.transform = 'translateY(20px)';
-		}
-		booksGrid.appendChild(card);
-	});
-	
-	// Animate cards if needed
 	if (animate) {
-		await animateNewCards(cards);
-	}
-}
-
-async function generateBatchHtml(books) {
-	const cardsHtml = await Promise.all(
-		books.map(book => generateBookCardHTML(book, paginationState.isHeldBooksView))
-	);
-	return cardsHtml.join('');
-}
-
-async function animateNewCards(cards) {
-	const animationDelay = Math.min(
-		PAGINATION_CONFIG.ANIMATION_DELAY,
-		PAGINATION_CONFIG.MAX_ANIMATION_TIME / cards.length
-	);
-	
-	return new Promise(resolve => {
-		cards.forEach((card, index) => {
-			setTimeout(() => {
-				card.style.transition = 'all 0.3s ease';
-				card.style.opacity = '1';
-				card.style.transform = 'translateY(0)';
-				
-				if (index === cards.length - 1) {
-					setTimeout(resolve, 300);
-				}
-			}, index * animationDelay);
-		});
-	});
-}
-
-// =============================================================================
-// SCROLL HANDLING
-// =============================================================================
-
-function handleScroll() {
-	if (paginationState.isLoading || !paginationState.hasMore) return;
-	
-	const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-	const windowHeight = window.innerHeight;
-	const documentHeight = document.documentElement.scrollHeight;
-	
-	const scrolledToBottom = scrollTop + windowHeight >= documentHeight - PAGINATION_CONFIG.SCROLL_THRESHOLD;
-	
-	if (scrolledToBottom) {
-		loadNextBatch(true);
-	}
-}
-
-// =============================================================================
-// SEARCH OPTIMIZATION
-// =============================================================================
-
-// Debounced search function
-function createDebouncedSearch(delay = 300) {
-	let timeoutId;
-	return function(searchTerm) {
-		clearTimeout(timeoutId);
-		timeoutId = setTimeout(() => {
-			performSearch(searchTerm);
-		}, delay);
-	};
-}
-
-const debouncedSearch = createDebouncedSearch();
-
-function handleKeyPress(event) {
-	if (event.key === 'Enter') {
-		searchBooks();
+		animateBookCards(books.length);
 	} else {
-		// Optional: implement real-time search
-		// debouncedSearch(event.target.value);
-	}
-}
-
-async function performSearch(searchTerm) {
-	if (!searchTerm.trim()) {
-		displayBooks(state.allBooks, false, false, true);
-		return;
-	}
-	
-	try {
-		const books = await ApiClient.searchBooks(searchTerm);
-		if (books !== 404) {
-			await displayBooks(books, false, true, false);
-		}
-	} catch (error) {
-		console.error('Search error:', error);
-	}
-}
-
-// =============================================================================
-// IMPROVED BOOK ACTIONS
-// =============================================================================
-
-async function refreshCurrentView() {
-	const currentBooks = paginationState.isHeldBooksView ? state.heldBooks : state.allBooks;
-	const groupByCategory = !paginationState.isHeldBooksView;
-	
-	await displayBooks(currentBooks, paginationState.isHeldBooksView, false, groupByCategory);
-}
-
-function updateBookCardAfterReturn(bookId, button) {
-	const bookCard = button.closest('.book-card');
-	
-	if (paginationState.isHeldBooksView) {
-		// Remove from displayed books array
-		const index = paginationState.displayedBooks.findIndex(book => book.id === bookId);
-		if (index !== -1) {
-			paginationState.displayedBooks.splice(index, 1);
-		}
-		
-		// Remove from allBooksToShow array
-		const allIndex = paginationState.allBooksToShow.findIndex(book => book.id === bookId);
-		if (allIndex !== -1) {
-			paginationState.allBooksToShow.splice(allIndex, 1);
-		}
-		
-		removeBookCardWithAnimation(bookCard);
-	} else {
-		updateBookAvailability(bookCard, bookId);
-		replaceButtonWithObtain(button, bookId);
-	}
-}
-
-// =============================================================================
-// PERFORMANCE OPTIMIZATIONS
-// =============================================================================
-
-// Use requestAnimationFrame for smooth animations
-function requestAnimationFrame(callback) {
-	return window.requestAnimationFrame(callback);
-}
-
-// Optimize DOM queries by caching elements
-const domCache = {
-	booksContainer: null,
-	searchInput: null,
-	messageContainer: null,
-	
-	get(id) {
-		if (!this[id]) {
-			this[id] = document.getElementById(id);
-		}
-		return this[id];
-	}
-};
-
-// =============================================================================
-// MEMORY MANAGEMENT
-// =============================================================================
-
-function clearPaginationState() {
-	paginationState.reset();
-	window.removeEventListener('scroll', handleScroll);
-}
-
-// Call this when navigating away or resetting
-function cleanup() {
-	clearPaginationState();
-	// Clear any timeouts
-	if (window.searchTimeout) {
-		clearTimeout(window.searchTimeout);
+		showAllBookCards();
 	}
 }
 
@@ -541,7 +294,7 @@ async function animateBookCards(amount) {
 	document.querySelectorAll('.book-card').forEach((card, index) => {
 		setTimeout(() => {
 			card.classList.add('visible');
-		}, (index + 1) * motionStaggerDelay);
+		}, index * motionStaggerDelay);
 	});
 }
 
@@ -824,6 +577,17 @@ function updateBookCardAfterObtain(bookId, button) {
 	replaceButtonWithReturn(button, bookId);
 }
 
+function updateBookCardAfterReturn(bookId, button) {
+	const bookCard = button.closest('.book-card');
+	
+	if (state.showingHeldBooks) {
+		removeBookCardWithAnimation(bookCard);
+	} else {
+		updateBookAvailability(bookCard, bookId);
+		replaceButtonWithObtain(button, bookId);
+	}
+}
+
 function updateBookAvailability(bookCard, bookId) {
 	const availabilitySpan = bookCard.querySelector('.availability');
 	const book = state.allBooks.find(b => b.id === bookId);
@@ -870,6 +634,14 @@ function checkForEmptyBooksList() {
 	if (remainingCards.length === 0) {
 		document.getElementById('books-container').innerHTML =
 			'<div class="no-results">אין ספרים בבעלותכם כרגע</div>';
+	}
+}
+
+function refreshCurrentView() {
+	if (state.showingHeldBooks) {
+		displayBooks(state.heldBooks, true, false, false);
+	} else {
+		displayBooks(state.allBooks, false, false, true);
 	}
 }
 
@@ -971,8 +743,3 @@ window.editBook = editBook;
 window.handleKeyPress = handleKeyPress;
 window.admin_dashboard = admin_dashboard;
 window.logout = logout;
-window.displayBooks = displayBooks;
-window.handleScroll = handleScroll;
-window.loadNextBatch = loadNextBatch;
-window.refreshCurrentView = refreshCurrentView;
-window.cleanup = cleanup;
