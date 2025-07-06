@@ -10,14 +10,13 @@ def readFromFile(path, location):
 
     for index, row in df.iterrows():
         index += 1
-        print(index + 1)
         try:
             data.append(xlsxBook(
                 index, row["שם"], row["קטגוריה"], location,
                 row["סדרה"], row["מספר בסדרה"], row["מחבר"], row["תווית"], row["תת-קטגוריה"],
                 row["קאטר"], row["כפילויות"], row["תיאור"], row["הערות"], row["הערות ספרן"]))
-        except ValueError:
-            raise Exception(f"error at row {index+1}, incorrect data type")
+        except:
+            raise Exception(f"error at row {index+1}")
 
     return data
 
