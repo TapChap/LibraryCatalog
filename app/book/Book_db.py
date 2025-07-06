@@ -1,3 +1,5 @@
+import json
+
 from models import Book
 from sqlalchemy import or_, case
 from database import db
@@ -119,6 +121,13 @@ def equals(book1, book2):
 
 def deleteBook(book):
     db.session.delete(book)
+    db.session.commit()
+
+def updateBook(book, data):
+    data = dict(data)
+    for key, val in data.items():
+        book.__setattr__(key, val)
+
     db.session.commit()
 
 def getAllBooks():

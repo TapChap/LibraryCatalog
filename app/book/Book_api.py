@@ -79,13 +79,25 @@ def get_all_books():
 @yovel_book_route.route('/delete/id/<int:book_id>', methods={'DELETE'})
 def delete_book(book_id):
     book, status = db.getBookById(book_id)
-    print(book, status)
 
     if status == 200:
         db.deleteBook(book)
         return {"message": "book deleted successfully"}, 200
 
     return {"message": "book not found"}, 404
+
+@book_route.route('/update/id/<int:book_id>', methods=['POST'])
+def update_book(book_id):
+    book, status = db.getBookById(book_id)
+
+    if status == 404:
+        return {"message": "book not found"}, 404
+
+    data = request.get_json()
+    db.updateBook(book, data)
+
+    return {"message": "book updated"}, 200
+
 
 def isRequestFromYovel(reqPath):
     return reqPath.split('/')[1] == 'books'

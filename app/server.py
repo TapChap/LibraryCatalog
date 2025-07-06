@@ -45,7 +45,7 @@ def index():
 
 @app.route('/home')
 def home():
-    return render_template("main.html")
+    return render_template("home.html")
 
 @app.route('/admin')
 def admin():
