@@ -13,6 +13,10 @@ body {
 }
 
 .header {
+    background: #4158D0;
+    background: -webkit-linear-gradient(to right, #d93838, #2e4be3);
+    background: linear-gradient(to right, #d93838, #2e4be3);
+
     background-color: #3b82f6;
     color: white;
     padding: 1rem 2rem;
@@ -42,11 +46,11 @@ body {
 }
 
 .logout-btn {
-    background-color: #ef4444;
+    background-color: #294ed9;
 }
 
 .logout-btn:hover {
-    background-color: #dc2626;
+    background-color: #1f3fa2;
 }
 
 .back-btn {

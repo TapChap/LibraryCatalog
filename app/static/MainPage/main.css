@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -5,7 +7,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Fredoka", sans-serif;
     background-color: #f3f4f6;
     min-height: 100vh;
     direction: rtl;
@@ -13,7 +15,10 @@ body {
 }
 
 .header {
-    background-color: #3b82f6;
+    background: #4158D0;
+    background: -webkit-linear-gradient(to right, #d93838, #2e4be3);
+    background: linear-gradient(to right, #d93838, #2e4be3);
+
     color: white;
     padding: 1rem 2rem;
     display: flex;
@@ -43,11 +48,11 @@ body {
 }
 
 .logout-btn {
-    background-color: #ef4444;
+    background-color: #294ed9;
 }
 
 .logout-btn:hover {
-    background-color: #dc2626;
+    background-color: #1f3fa2;
 }
 
 .admin-btn {
@@ -457,6 +462,9 @@ body {
 }
 
 .message-header {
+    background: #4158D0;
+    background: -webkit-linear-gradient(to right, #d93838, #2e4be3);
+    background: linear-gradient(to right, #d93838, #2e4be3);
     position: relative;
 }
 

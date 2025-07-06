@@ -1,33 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he">
 <head>
     <meta charset="UTF-8"/>
     <title>Library Tracker - Login / Signup</title>
     <link rel="stylesheet" href="/static/LandingPage/landing.css">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
 </head>
 <body>
 
-<div class="container" id="signup-container" style="display: none;">
-    <h2>Sign Up</h2>
-    <div id="signup-msg"></div>
-    <input type="text" id="signup-username" placeholder="Username" required/>
-    <input type="text" id="signup-display" placeholder="Display Name" required/>
-    <input type="password" id="signup-password" placeholder="Password" required/>
-    <button onclick="handleSignup()">הרשמה</button>
-    <div class="switch-link">
-        כבר יש לך חשבון? <a href="#" onclick="toggleForm()">הכנס</a>
+<div class="container" id="container">
+    <div class="form-container sign-up-container">
+        <form action="#">
+            <h1>צור חשבון</h1>
+            <span>בכדי להכנס לספרייה</span>
+            <input id="signup_username" type="text" placeholder="שם משתמש" />
+            <input id="signup_displayName" type="text" placeholder="שם תצוגה" />
+            <input id="signup_password" type="password" placeholder="סיסמה" />
+            <button onclick="handleSignup()">הרשמה</button>
+        </form>
     </div>
-</div>
-
-<div class="container" id="login-container">
-    <h2>Log In</h2>
-    <div id="login-msg"></div>
-    <input type="text" id="login-username" placeholder="Username" required/>
-    <input type="password" id="login-password" placeholder="Password" required/>
-    <button onclick="handleLogin()">Log In</button>
-    <div class="switch-link">
-        Don't have an account? <a href="#" onclick="toggleForm()">Sign Up</a>
+    <div class="form-container sign-in-container">
+        <form action="#">
+            <h1>התחברות</h1>
+            <span>התחבר לחשבון האישי שלך</span>
+            <input id="login_username" type="text" placeholder="שם משתמש" />
+            <input id="login_password" type="password" placeholder="סיסמה" />
+            <button onclick="handleLogin()">התחבר</button>
+        </form>
+    </div>
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-left">
+                <h1>ברוך שובך!</h1>
+                <p>התחבר לחשבונך כדי להכנס לאתר</p>
+                <button class="ghost" id="signIn">התחבר</button>
+            </div>
+            <div class="overlay-panel overlay-right">
+                <h1>חדש פה?</h1>
+                <p>צור חשבון והתחל ללמוד כמו שלא למדת עד היום!</p>
+                <button class="ghost" id="signUp">הרשמה</button>
+            </div>
+        </div>
     </div>
 </div>
 

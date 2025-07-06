@@ -43,15 +43,17 @@ def searchBook(query_string):
     return books, 200
 
 
-def bookExists(book):
-    book_copy = Book.query.filter_by(
+def findBook(book):
+    book_copy = (Book.query.filter_by(
         book_name=book.book_name,
         category=book.category,
+        sub_cat=book.sub_cat,
         series=book.series,
         series_index=book.series_index,
         author=book.author,
-        sub_cat=book.sub_cat,
-        sub_cat_index=book.sub_cat_index).first()
+        label=book.label,
+        sub_cat_index=book.sub_cat_index,
+        location=book.location).first())
 
     if not book_copy:
         return None, 404
@@ -73,7 +75,6 @@ def createBook(book_name, category, quantity=1, location="",
                sub_cat_index=0, desc="", notes="", librarian_notes=""):
     book = Book(
         book_name=book_name, category=category,
-
         location=location,
         series=series,
         series_index=series_index,
@@ -88,16 +89,11 @@ def createBook(book_name, category, quantity=1, location="",
         librarian_notes=librarian_notes
     )
 
-    existingBook, status_code = bookExists(book)
-    if status_code == 200 and equals(existingBook, book):
-        book = existingBook
-
-        book.available_count += book.available_count
-        book.copies += book.available_count
-        book.is_taken = False
-        book.description = book.description
-        book.notes = book.notes
-        book.librarian_notes = book.librarian_notes
+    existingBook, status_code = findBook(book)
+    if status_code == 200:
+        existingBook.available_count += book.available_count
+        existingBook.copies += book.available_count
+        existingBook.is_taken = False
     else:
         db.session.add(book)
 
