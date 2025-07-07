@@ -13,7 +13,7 @@ def loadDBfromFile(path, location):
         try:
             data.append(xlsxBook(
                 index, row["שם"], row["קטגוריה"], location,
-                row["סדרה"], row["מספר בסדרה"], row["מחבר"], row["תווית"], row["תת-קטגוריה"],
+                row["סדרה"], row["כרך"], row["מחבר"], row["תווית"], row["תת-קטגוריה"],
                 row["קאטר"], row["כפילויות"], row["תיאור"], row["הערות"], row["הערות ספרן"]))
         except:
             raise Exception(f"error at row {index+1}")
