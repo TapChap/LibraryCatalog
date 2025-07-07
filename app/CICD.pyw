@@ -5,11 +5,11 @@ app = Flask(__name__)
 
 REPO_PATH = os.path.dirname(os.path.abspath(__file__))
 PID_FILE = os.path.join(REPO_PATH, "server.pid")
-SERVER_SCRIPT = os.path.join(REPO_PATH, "app.py")
+SERVER_SCRIPT = os.path.join(REPO_PATH, "server.pyw")
 LOG_FILE = os.path.join(REPO_PATH, "server.log")
 
 # Redirect listener output to file
-sys.stdout = open(os.path.join(REPO_PATH, "update_listener.log"), "a")
+sys.stdout = open(os.path.join(REPO_PATH, "server.log"), "a")
 sys.stderr = sys.stdout
 
 def kill_old_server():

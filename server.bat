@@ -1,11 +1,13 @@
 @echo off
-cd /d "C:\Users\Shai grossman\PycharmProjects\LibraryTrackerBackEnd\.venv\Scripts"
+cd /d "C:\Users\Shai grossman\PycharmProjects\LibraryTrackerBackEnd\app"
 
 echo Starting update listener...
-start "" pythonw update_listener.py
+start "" pythonw CICD.pyw
 
 echo Starting server app...
-start "" pythonw app.py
+start "" pythonw server.pyw
 
 echo All started in background.
 exit
+
+REM TASKKILL /F /IM pythonw.exe

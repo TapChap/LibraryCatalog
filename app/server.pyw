@@ -1,8 +1,9 @@
-import json, os, uuid, mimetypes
+import os, uuid, mimetypes
 
 from flask import Flask, render_template, send_from_directory
 from flask_cors import CORS
 from sqlalchemy import text
+from waitress import serve
 
 import system_update
 from client.Client_api import *
@@ -21,8 +22,10 @@ CORS(app)
 DB_USERNAME = os.getenv("DB_USERNAME")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
+MACHINE = os.getenv("MACHINE")
 
 PORT = os.getenv("PORT")
+HOST = os.getenv("HOST_IP")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USERNAME}:{DB_PASSWORD}@localhost/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -101,6 +104,12 @@ def runSQL(sql_string):
         return None
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # create tables
-    app.run(host="0.0.0.0", port=PORT, debug=True)
+    if MACHINE == 'dev':
+        with app.app_context():
+            db.create_all()
+        app.run(host=HOST, port=PORT, debug=True)
+
+    elif MACHINE == 'prod':
+        with app.app_context():
+            db.create_all()
+            serve(app, host=HOST, port=PORT)
