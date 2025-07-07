@@ -6,6 +6,7 @@ export class LibraryState {
 		this.allUsers = [];
 		this.totalBooksCount = 0;
 		this.showingHeldBooks = false;
+		this.showingSearchResults = false;
 	}
 	
 	setCurrentUser(user) {
@@ -36,9 +37,5 @@ export class LibraryState {
 	
 	isUserModerator() {
 		return this.currentUser && this.currentUser.permission > 1;
-	}
-	
-	getAllBooks(){
-		return this.allBooks;
 	}
 }

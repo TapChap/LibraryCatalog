@@ -156,9 +156,12 @@ function clearSearchBar(){
 	const searchInput = document.getElementById('search-input');
 	const clearSearchBtn = document.getElementById('clearSearchButton');
 	
+	console.log(state.showingSearchResults);
+	
 	searchInput.value = ''
 	clearSearchBtn.classList.replace('visible', 'invisible');
-	displayBooks(state.allBooks, false, true, true);
+	if (state.showingSearchResults) displayBooks(state.allBooks, false, true, true);
+	state.showingSearchResults = false;
 }
 
 async function searchBooks() {
@@ -171,15 +174,18 @@ async function searchBooks() {
 	}
 	
 	const searchBtn = document.getElementById('search-btn');
+	let message = '';
 	setSearchLoadingState(searchBtn, true);
 	
 	try {
 		const books = await ApiClient.searchBooks(bookName);
-		if (books !== 404) await displayBooks(books, false, true, false);
-		
-		const message = books === 404
-			? 'לא נמצאו ספרים עם השם הזה'
-			: `נמצאו ${books.length} ספר/ים`;
+		if (books === 404) {
+			message = 'לא נמצאו ספרים עם השם הזה';
+		} else {
+			message = `נמצאו ${books.length} ספר/ים`;
+			state.showingSearchResults = true
+			await displayBooks(books, false, true, false);
+		}
 		const messageType = books.length === 0 ? 'info' : 'success';
 		
 		showMessage(message, messageType);
@@ -727,6 +733,8 @@ function admin_dashboard() {
 function toggleHeldBooks() {
 	const showingHeld = state.toggleHeldBooksView();
 	const heldBooksBtn = document.querySelector('.held-books-btn');
+	
+	state.showingSearchResults = false;
 	
 	if (showingHeld) {
 		displayBooks(state.heldBooks, true, true, false);
