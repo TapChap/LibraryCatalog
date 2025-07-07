@@ -8,10 +8,6 @@ PID_FILE = os.path.join(REPO_PATH, "server.pid")
 SERVER_SCRIPT = os.path.join(REPO_PATH, "server.pyw")
 LOG_FILE = os.path.join(REPO_PATH, "server.log")
 
-# Redirect listener output to file
-sys.stdout = open(os.path.join(REPO_PATH, "server.log"), "a")
-sys.stderr = sys.stdout
-
 def kill_old_server():
     if not os.path.exists(PID_FILE):
         print("No PID file found.")
