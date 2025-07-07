@@ -1,3 +1,16 @@
 /.env
 /app/templates/.idea/*
 /.idea/codeStyles/codeStyleConfig.xml
+app/__pycache__/Library_api.cpython-313.pyc
+app/__pycache__/models.cpython-313.pyc
+app/__pycache__/passwordManager.cpython-313.pyc
+app/__pycache__/system_update.cpython-313.pyc
+app/__pycache__/xlsx_helper.cpython-313.pyc
+app/book/__pycache__/Book_api.cpython-313.pyc
+app/book/__pycache__/Book_db.cpython-313.pyc
+app/book/__pycache__/xlsxBook.cpython-313.pyc
+app/client/__pycache__/Client_api.cpython-313.pyc
+app/client/__pycache__/Client_db.cpython-313.pyc
+app/client/__pycache__/Permission.cpython-313.pyc
+app/.env
+app/__pycache__/database.cpython-313.pyc
