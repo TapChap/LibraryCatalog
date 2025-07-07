@@ -43,6 +43,30 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="series">סדרה</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="series" name="series" class="form-input">
+                        <button type="button" class="lock-btn" data-field="series" onclick="lockField('series')">🔒</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="series_index">כרך</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="series_index" name="series_index" class="form-input">
+                        <button type="button" class="lock-btn" data-field="series_index" onclick="lockField('series_index')">🔒</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="author">מחבר</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="author" name="author" class="form-input">
+                        <button type="button" class="lock-btn" data-field="author" onclick="lockField('author')">🔒</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="category" class="required">קטגוריה</label>
                     <div class="input-wrapper">
                         <input type="text" id="category" name="category" class="form-input" required>
@@ -59,41 +83,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="author">מחבר</label>
+                    <label for="label" class="required">תווית</label>
                     <div class="input-wrapper">
-                        <input type="text" id="author" name="author" class="form-input">
-                        <button type="button" class="lock-btn" data-field="author" onclick="lockField('author')">🔒</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="series">סדרה</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="series" name="series" class="form-input">
-                        <button type="button" class="lock-btn" data-field="series" onclick="lockField('series')">🔒</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="series_index">מספר בסדרה</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="series_index" name="series_index" class="form-input">
-                        <button type="button" class="lock-btn" data-field="series_index" onclick="lockField('series_index')">🔒</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="label">תווית</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="label" name="label" class="form-input">
+                        <input required type="text" id="label" name="label" class="form-input">
                         <button type="button" class="lock-btn" data-field="label" onclick="lockField('label')">🔒</button>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="sub_cat_index">קאטר</label>
+                    <label for="sub_cat_index" class="required">קאטר</label>
                     <div class="input-wrapper">
-                        <input type="number" id="sub_cat_index" name="sub_cat_index" class="form-input" min="1">
+                        <input required type="number" id="sub_cat_index" name="sub_cat_index" class="form-input" min="1">
                         <button type="button" class="lock-btn" data-field="sub_cat_index" onclick="lockField('sub_cat_index')">🔒</button>
                     </div>
                 </div>
