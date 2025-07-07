@@ -1,6 +1,6 @@
 import os, uuid, mimetypes
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, Response
 from flask_cors import CORS
 from sqlalchemy import text
 from waitress import serve
@@ -25,7 +25,8 @@ DB_NAME = os.getenv("DB_NAME")
 MACHINE = os.getenv("MACHINE")
 
 PORT = os.getenv("PORT")
-HOST = os.getenv("HOST_IP")
+HOST = os.getenv("HOST")
+SERVER_IP = os.getenv("SERVER_IP")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USERNAME}:{DB_PASSWORD}@localhost/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -72,6 +73,11 @@ def loadFromFile():
     os.remove(filename)
 
     return {"success": "successfully loaded from file"}, 201
+
+@app.route("/config.js")
+def config_js():
+    js = f'window.CONFIG = {{ SERVER_URL: "{SERVER_IP}" }};'
+    return Response(js, mimetype='application/javascript')
 
 @app.route('/drop/<string:table>', methods=['POST'])
 def drop_table(table):
