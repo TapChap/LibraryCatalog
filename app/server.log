@@ -1,0 +1,30 @@
+Flask listener started.
+ * Serving Flask app 'CICD'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:6000
+ * Running on http://192.168.181.250:6000
+Press CTRL+C to quit
+Flask listener started.
+ * Serving Flask app 'CICD'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:6000
+ * Running on http://192.168.181.250:6000
+Press CTRL+C to quit
+No PID file found.
+Started server with PID 12480
+192.168.181.247 - - [07/Jul/2025 17:41:43] "POST /update HTTP/1.1" 200 -
+Flask listener started.
+ * Serving Flask app 'CICD'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:6000
+ * Running on http://192.168.181.250:6000
+Press CTRL+C to quit
+Killed process 12480
+Started server with PID 12116
+192.168.181.247 - - [07/Jul/2025 17:42:10] "POST /update HTTP/1.1" 200 -

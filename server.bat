@@ -1,3 +1,5 @@
+@echo off
+
 cd "%projectpath%\app"
 
 echo Starting update listener...
@@ -7,6 +9,6 @@ echo Starting server app...
 start "" pythonw server.pyw > server.log 2>&1
 
 echo All started in background.
-@REM exit
+exit
 
 REM TASKKILL /F /IM pythonw.exe
