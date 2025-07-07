@@ -351,7 +351,11 @@ function generateBookTitleHtml(book) {
             <div class="book-title">${escapeHtml(book.book_name)}</div>
         `;
 	} else {
-		return `<div class="book-series">${escapeHtml(book.book_name)}</div>`;
+		return `
+			<div class="book-series">
+				${escapeHtml(book.book_name)}
+				${book.series_index ? ` (כרך ${book.series_index})` : ''}
+			</div>`;
 	}
 }
 
