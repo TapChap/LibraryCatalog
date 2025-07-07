@@ -1,5 +1,5 @@
 @echo off
-cd /d "C:\Users\Shai grossman\PycharmProjects\LibraryTrackerBackEnd\app"
+cd /d "\app"
 
 echo Starting update listener...
 start "" pythonw CICD.pyw
