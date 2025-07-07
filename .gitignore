@@ -14,3 +14,4 @@ app/client/__pycache__/Client_db.cpython-313.pyc
 app/client/__pycache__/Permission.cpython-313.pyc
 app/.env
 app/__pycache__/database.cpython-313.pyc
+app/server.pid
