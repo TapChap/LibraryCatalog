@@ -15,10 +15,7 @@ body {
 }
 
 .header {
-    background: #4158D0;
-    background: -webkit-linear-gradient(to right, #d93838, #2e4be3);
-    background: linear-gradient(to right, #d93838, #2e4be3);
-
+    background-color: #3b82f6;
     color: white;
     padding: 1rem 2rem;
     display: flex;
@@ -48,11 +45,11 @@ body {
 }
 
 .logout-btn {
-    background-color: #294ed9;
+    background-color: #e73a3a;
 }
 
 .logout-btn:hover {
-    background-color: #1f3fa2;
+    background-color: #cb2c2c;
 }
 
 .admin-btn {
@@ -280,6 +277,10 @@ body {
     color: #6b7280;
     font-size: 0.9rem;
     line-height: 1.4;
+    overflow-wrap: break-word;
+    flex-wrap: wrap;
+    hyphenate-character: "-";
+    hyphens: auto;
 }
 
 .book-librarian-notes {
@@ -462,9 +463,6 @@ body {
 }
 
 .message-header {
-    background: #4158D0;
-    background: -webkit-linear-gradient(to right, #d93838, #2e4be3);
-    background: linear-gradient(to right, #d93838, #2e4be3);
     position: relative;
 }
 
