@@ -1,8 +1,8 @@
 import pandas as pd
 from book.xlsxBook import xlsxBook
-from book.Book_db import createBook
+from book.Book_db import createBook, addBookToDB
 
-def readFromFile(path, location):
+def loadDBfromFile(path, location):
     df = pd.read_excel(path, usecols="A:M")
     df = df.dropna(how='all')
 
@@ -18,11 +18,5 @@ def readFromFile(path, location):
         except:
             raise Exception(f"error at row {index+1}")
 
-    return data
-
-def writeToSQL(data, db):
     for book in data:
-        sqlBook = createBook(*book.serialize())
-
-        db.session.add(sqlBook)
-    db.session.commit()
+        addBookToDB(createBook(*book.serialize()), True)

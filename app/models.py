@@ -118,9 +118,6 @@ class Book(db.Model):
 
         return json
 
-    def hash_book(self):
-        return hash(self.toJson(full=True))
-
 class Dictionary(db.Model):
     key = db.Column(db.String, primary_key=True)
     value = db.Column(db.String)

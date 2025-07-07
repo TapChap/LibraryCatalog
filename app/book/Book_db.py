@@ -75,7 +75,7 @@ def getBookById(book_id):
 def createBook(book_name, category, quantity=1, location="",
                series="", series_index="", author="", label="", sub_cat="",
                sub_cat_index=0, desc="", notes="", librarian_notes=""):
-    book = Book(
+    return Book(
         book_name=book_name, category=category,
         location=location,
         series=series,
@@ -91,17 +91,21 @@ def createBook(book_name, category, quantity=1, location="",
         librarian_notes=librarian_notes
     )
 
+def addBookToDB(book, incExistingBooks = True):
     existingBook, status_code = findBook(book)
     if status_code == 200:
-        existingBook.available_count += book.available_count
-        existingBook.copies += book.available_count
-        existingBook.is_taken = False
+        if incExistingBooks:
+            existingBook.available_count += book.available_count
+            existingBook.copies += book.available_count
+            existingBook.is_taken = False
+
+            existingBook.description=book.description,
+            existingBook.notes=book.notes,
+            existingBook.librarian_notes=book.librarian_notes,
     else:
         db.session.add(book)
 
     db.session.commit()
-
-    return book
 
 def equals(book1, book2):
     if not book1 or not book2:

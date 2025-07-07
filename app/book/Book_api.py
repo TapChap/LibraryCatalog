@@ -34,6 +34,8 @@ def add_book():
         label=label, sub_cat=sub_cat, sub_cat_index=sub_cat_index,
         desc=desc, notes=notes, librarian_notes=librarian_notes)
 
+    db.addBookToDB(new_book)
+
     return {"message": "updated bookDB", "Book": new_book.toJson(full=True)}, 201
 
 
