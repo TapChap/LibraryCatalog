@@ -19,4 +19,4 @@ def loadDBfromFile(path, location):
             raise Exception(f"error at row {index+1}")
 
     for book in data:
-        addBookToDB(createBook(*book.serialize()), True)
+        addBookToDB(createBook(*book.serialize()), False)
