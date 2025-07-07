@@ -15,3 +15,5 @@ app/client/__pycache__/Permission.cpython-313.pyc
 app/.env
 app/__pycache__/database.cpython-313.pyc
 app/server.pid
+server.log
+CICD.log
