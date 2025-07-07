@@ -37,4 +37,8 @@ export class LibraryState {
 	isUserModerator() {
 		return this.currentUser && this.currentUser.permission > 1;
 	}
+	
+	getAllBooks(){
+		return this.allBooks;
+	}
 }

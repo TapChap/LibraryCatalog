@@ -64,6 +64,8 @@ async function loadInitialData() {
 }
 
 function setupEventListeners() {
+	document.addEventListener('keyup', handleKeyPress)
+	
 	const searchInput = document.getElementById('search-input');
 	if (searchInput) {
 		searchInput.addEventListener('keypress', handleKeyPress);
@@ -141,9 +143,22 @@ function closeSystemMessage() {
 // =============================================================================
 
 function handleKeyPress(event) {
-	if (event.key === 'Enter') {
-		searchBooks();
-	}
+	const searchInput = document.getElementById('search-input');
+	const clearSearchBtn = document.getElementById('clearSearchButton');
+	
+	if (event.key === 'Enter') searchBooks();
+
+	if (searchInput.value.trim() !== '') clearSearchBtn.classList.replace('invisible', 'visible');
+	else clearSearchBtn.classList.replace('visible', 'invisible');
+}
+
+function clearSearchBar(){
+	const searchInput = document.getElementById('search-input');
+	const clearSearchBtn = document.getElementById('clearSearchButton');
+	
+	searchInput.value = ''
+	clearSearchBtn.classList.replace('visible', 'invisible');
+	displayBooks(state.allBooks, false, true, true);
 }
 
 async function searchBooks() {
@@ -203,6 +218,7 @@ async function displayBooks(books, isHeldBooks = false, animate = true, groupByC
 	const contentHtml = await generateBooksHtml(books, isHeldBooks, groupByCategory);
 	
 	booksContainer.innerHTML = titleHtml + contentHtml;
+	booksContainer.classList.remove("loader")
 	
 	if (animate) {
 		animateBookCards(books.length);
@@ -738,6 +754,7 @@ async function editBook(bookId) {
 // =============================================================================
 
 window.searchBooks = searchBooks;
+window.clearSearchBar = clearSearchBar;
 window.closeSystemMessage = closeSystemMessage;
 window.toggleHeldBooks = toggleHeldBooks;
 window.obtainBook = obtainBook;

@@ -48,25 +48,18 @@
 
     <div class="search-section">
         <div class="search-container">
-            <input
-                    type="text"
-                    id="search-input"
-                    class="search-input"
-                    placeholder="הכניסו שם ספר לחיפוש..."
-                    onkeypress="handleKeyPress(event)"
-            />
-            <button class="search-btn" id="search-btn" onclick="searchBooks()">
-                חפש ספרים
-            </button>
-            <button class="held-books-btn" onclick="toggleHeldBooks()">
-                הספרים שלי
-            </button>
+            <div class="search-wrapper">
+                <input type="text" id="search-input" class="search-input" placeholder="הכניסו שם ספר לחיפוש..." onkeypress="handleKeyPress(event)">
+                <button onclick="clearSearchBar()" id="clearSearchButton" class="clear-btn invisible">❌</button>
+            </div>
+            <button class="search-btn" id="search-btn" onclick="searchBooks()">חפש ספרים</button>
+            <button class="held-books-btn" onclick="toggleHeldBooks()">הספרים שלי</button>
         </div>
         <div id="message-container"></div>
     </div>
 
     <div id="books-container">
-        <!-- Books will be displayed here -->
+        <span class="loader"></span>
     </div>
 </div>
 

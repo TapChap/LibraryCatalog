@@ -44,6 +44,18 @@ body {
 
 }
 
+.visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s;
+}
+
+.invisible {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+
 .logout-btn {
     background-color: #e73a3a;
 }
@@ -95,11 +107,9 @@ body {
     background-color: #dc2626;
 }
 
-/* Adjust the existing obtain button for admin grid layout */
 .admin-button-container .obtain-btn,
-
 .admin-button-container .return-btn {
-    margin-top: 0; /* Remove top margin when in grid */
+    margin-top: 0;
 }
 
 .main-content {
@@ -122,14 +132,31 @@ body {
     gap: 1rem;
 }
 
-.search-input {
+.search-wrapper {
     flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 2px solid #ccc;
+    border-radius: 3px;
+}
+
+.search-input {
     padding: 0.75rem;
+    width: 100%;
     font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
     text-align: right;
     direction: rtl;
+    border: 0;
+}
+
+.clear-btn {
+    position: absolute;
+    background-color: transparent;
+    left: 1rem;
+    color: black;
+    cursor: pointer;
+    border: none;
 }
 
 .search-btn {
@@ -451,7 +478,6 @@ body {
 
 .system-message-container {
     max-width: 800px;
-    margin-top: 1rem;
     margin: 1rem auto;
     background-color: white;
     border-radius: 10px;
@@ -541,9 +567,8 @@ body {
 .category-header {
     font-size: 1.8rem;
     font-weight: bold;
-    color: #1f2937;
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     color: white;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     padding: 1rem 1.5rem;
     margin: 2rem 0 1rem 0;
     border-radius: 10px;
@@ -591,4 +616,36 @@ body {
     width: 50px;
     height: 2px;
     background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+}
+
+.loader {
+    margin: 0 50% 0 50%;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-block;
+    border-top: 4px solid #7c3aed;
+    border-right: 4px solid transparent;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+.loader::after {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border-bottom: 4px solid #3b82f6;
+    border-left: 4px solid transparent;
+}
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

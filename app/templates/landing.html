@@ -22,7 +22,7 @@
     <div class="form-container sign-in-container">
         <div class="form">
             <h1>התחבר</h1>
-            <span>התחבר לחשבון האישי שלך</span>
+            <span>לחשבון האישי שלך</span>
             <input id="login_username" type="text" placeholder="שם משתמש" />
             <input id="login_password" type="password" placeholder="סיסמה" />
             <button onclick="handleLogin()">התחבר</button>
@@ -31,14 +31,18 @@
     <div class="overlay-container">
         <div class="overlay">
             <div class="overlay-panel overlay-left">
-                <h1>ברוך שובך!</h1>
-                <p>התחבר לחשבונך כדי להכנס לאתר</p>
-                <button class="ghost" id="signIn">התחבר</button>
+                <div class="left-positioner">
+                    <h1>ברוך שובך!</h1>
+                    <p>התחבר לחשבונך כדי להכנס לאתר</p>
+                   <button class="ghost" id="signIn">התחבר</button>
+                </div>
             </div>
             <div class="overlay-panel overlay-right">
-                <h1>חדש פה?</h1>
-                <p>צור חשבון כדי לקבל גישה מלאה לספריית הישיבה!</p>
-                <button class="ghost" id="signUp">הרשמה</button>
+                <div class="right-positioner">
+                    <h1>חדש פה?</h1>
+                    <p>צור חשבון כדי לקבל גישה מלאה לספריית הישיבה!</p>
+                    <button class="ghost" id="signUp">הרשמה</button>
+                </div>
             </div>
         </div>
     </div>

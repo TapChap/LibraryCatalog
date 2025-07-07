@@ -5,67 +5,70 @@
 }
 
 body {
-    background: #f6f5f7;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     font-family: "Fredoka", sans-serif;
     height: 100vh;
-    margin: -20px 0 50px;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
     font-weight: bold;
     direction: rtl;
     margin: 0;
+    font-size: 2.5rem;
 }
 
 h2 {
     text-align: center;
     direction: rtl;
+    font-size: 2rem;
 }
 
 p {
     direction: rtl;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 100;
-    line-height: 20px;
-    letter-spacing: 0.5px;
-    margin: 20px 0 30px;
+    line-height: 26px;
+    letter-spacing: 0.6px;
+    margin: 25px 0 40px;
 }
 
 span {
-    font-size: 12px;
+    font-size: 16px; /* Increased from 12px */
 }
 
 a {
     color: #333;
-    font-size: 14px;
+    font-size: 18px; /* Increased from 14px */
     text-decoration: none;
-    margin: 15px 0;
+    margin: 20px 0; /* Increased from 15px */
 }
 
 button {
     direction: rtl;
     border-radius: 20px;
-    border: 1px solid #4158D0;
+    border: 3px solid #4158D0;
     background-color: #4158D0;
     color: #FFFFFF;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: bold;
-    padding: 12px 45px;
-    letter-spacing: 1px;
+    padding: 16px 60px;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
-    transition: transform 80ms ease-in;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #1d36b0; /* Darker purple on hover */
+    transform: translateY(-2px);
 }
 
 button:active {
-    transform: scale(0.95);
-}
-
-button:focus {
-    outline: none;
+    transform: translateY(0) scale(0.95);
 }
 
 button.ghost {
@@ -79,30 +82,38 @@ div .form {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding: 0 50px;
+    padding: 0 65px; /* Increased from 50px */
     height: 100%;
     text-align: center;
 }
 
-input {
-    direction: rtl;
-    background-color: #eee;
-    border: none;
-    padding: 12px 15px;
-    margin: 8px 0;
-    width: 100%;
-}
-
 .container {
     background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 14px 28px rgba(0,0,0,0.25),
-    0 10px 10px rgba(0,0,0,0.22);
+    border-radius: 30px; /* Rounded corners like the image */
+    box-shadow: -15px 20px 20px rgba(0,0,0,0.25); /* Subtle shadow */
     position: relative;
     overflow: hidden;
-    width: 768px;
-    max-width: 100%;
-    min-height: 480px;
+    width: 90vw;
+    height: 90vh;
+    max-width: 900px;
+}
+
+input {
+    direction: rtl;
+    background-color: #f8fafc; /* Light gray background */
+    border: 2px solid #e2e8f0; /* Light border */
+    border-radius: 10px; /* Rounded corners */
+    padding: 16px 20px;
+    margin: 10px 0;
+    width: 100%;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: rgba(46, 75, 227, 0.5); /* Purple border on focus */
+    box-shadow: 0 0 0 1px rgba(46, 75, 227, 0.5); /* Purple glow */
 }
 
 .form-container {
@@ -152,21 +163,22 @@ input {
     position: absolute;
     top: 0;
     left: 50%;
-    width: 50%;
+    width: 75%;
     height: 100%;
     overflow: hidden;
     transition: transform 0.6s ease-in-out;
+    border-radius: 150px 150px 100px 100px;
     z-index: 100;
 }
 
 .container.right-panel-active .overlay-container{
     transform: translateX(-100%);
+    border-radius: 150px 150px 100px 100px;
 }
 
 .overlay {
-    background: #4158D0;
-    background: -webkit-linear-gradient(to right, #d93838, #2e4be3);  /*2e4be3*/
-    background: linear-gradient(to right, #d93838, #2e4be3);  /*2e4be3*/
+    background: transparent;
+    background: linear-gradient(45deg, #d93838, #1e3cec);
 
     background-repeat: no-repeat;
     background-size: cover;
@@ -190,7 +202,7 @@ input {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding: 0 40px;
+    padding: 0 50px;
     text-align: center;
     top: 0;
     height: 100%;
@@ -214,4 +226,12 @@ input {
 
 .container.right-panel-active .overlay-right {
     transform: translateX(20%);
+}
+
+.left-positioner {
+    margin-left: 40%;
+}
+
+.right-positioner {
+    margin-right: 40%;
 }
