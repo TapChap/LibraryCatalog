@@ -160,7 +160,11 @@ function clearSearchBar(){
 	
 	searchInput.value = ''
 	clearSearchBtn.classList.replace('visible', 'invisible');
-	if (state.showingSearchResults) displayBooks(state.allBooks, false, true, true);
+	if (state.showingSearchResults) {
+		clearBooksContainer();
+		displayLoadingAnimation(true);
+		setTimeout(()=> displayBooks(state.allBooks, false, true, true));
+	}
 	state.showingSearchResults = false;
 }
 
@@ -224,13 +228,20 @@ async function displayBooks(books, isHeldBooks = false, animate = true, groupByC
 	const contentHtml = await generateBooksHtml(books, isHeldBooks, groupByCategory);
 	
 	booksContainer.innerHTML = titleHtml + contentHtml;
-	booksContainer.classList.remove("loader")
+	displayLoadingAnimation(false);
 	
 	if (animate) {
 		animateBookCards(books.length);
 	} else {
 		showAllBookCards();
 	}
+}
+
+function displayLoadingAnimation(loading){
+	const booksContainer = document.getElementById('books-container');
+	
+	if (loading) booksContainer.innerHTML = `<span class="loader"></span>`;
+	else booksContainer.classList.remove("loading");
 }
 
 function displayEmptyState(container, isHeldBooks) {
