@@ -12,6 +12,39 @@ document.addEventListener("DOMContentLoaded", function() {
     signInButton.addEventListener('click', () => {
         container.classList.remove("right-panel-active");
     });
+    
+    
+    // Get the password input and the toggle icon
+    const passwordInput = document.getElementById('login_password');
+    const togglePassword = document.getElementById('togglePassword');
+    
+    // Add click event listener to the eye icon
+    togglePassword.addEventListener('click', function () {
+        // Toggle the type attribute between 'password' and 'text'
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Toggle the eye icon
+        if (type === 'password') {
+            // Show eye-off icon (closed eye)
+            this.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" stroke-dasharray="2 2" />
+                    <circle cx="12" cy="12" r="3" />
+                    <line x1="2" y1="2" x2="22" y2="22" stroke="currentColor" stroke-width="2" />
+                </svg>
+            `;
+        } else {
+            // Show eye icon (open eye)
+            this.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+            `;
+        }
+    });
+    
 });
 
 document.addEventListener("keydown", function(event) {

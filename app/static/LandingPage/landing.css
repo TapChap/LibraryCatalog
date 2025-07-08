@@ -124,6 +124,32 @@ input:focus {
     transition: all 0.6s ease-in-out;
 }
 
+
+.input-group {
+    display: flex;
+    position: relative;
+    width: 100%;
+}
+
+.input-group .eye-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px; /* Position on the left for RTL (Hebrew) */
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease-in-out;
+}
+
+.input-group .eye-icon:hover {
+    color: #555;
+}
+
 .sign-in-container {
     left: 0;
     width: 50%;
