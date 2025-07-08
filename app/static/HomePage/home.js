@@ -530,7 +530,7 @@ async function obtainBook(bookId) {
 		obtainedBook.quantity = obtainedBook.quantity - 1;
 		state.heldBooks.push(obtainedBook);
 		
-		// await refreshBookData();
+		await refreshBookData();
 		updateBookCardAfterObtain(bookId, button);
 	} catch (error) {
 		console.error('Obtain book error:', error);
