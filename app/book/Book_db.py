@@ -1,7 +1,5 @@
-import json
-
 from models import Book
-from sqlalchemy import or_, case
+from sqlalchemy import or_, and_, case
 from database import db
 
 def getBook(book_name):
@@ -23,21 +21,33 @@ def searchBook(query_string):
         (Book.series.ilike(query_string), 4),
         (Book.author.ilike(query_string), 4),
         (Book.category.ilike(query_string), 4),
+        (Book.label.ilike(query_string), 4),
         # Prefix matches get second priority
         (Book.book_name.ilike(q_start), 3),
         (Book.series.ilike(q_start), 3),
         (Book.author.ilike(q_start), 3),
         (Book.category.ilike(q_start), 3),
+        (Book.label.ilike(q_start), 3),
         # Contains matches get lowest priority
         (Book.book_name.ilike(q), 2),
         (Book.series.ilike(q), 2),
         (Book.author.ilike(q), 2),
         (Book.category.ilike(q), 2),
-        else_=1
-    )
+        (Book.label.ilike(q), 2),
+        else_=1)
 
-    books = (Book.query.filter(or_(Book.book_name.ilike(q), Book.series.ilike(q), Book.author.ilike(q), Book.category.ilike(q)))
-             .order_by(relevance.desc(), Book.series, Book.book_name, Book.author, Book.category)
+    books = (Book.query.filter(or_(
+        Book.book_name.ilike(q),
+        Book.series.ilike(q),
+        Book.author.ilike(q),
+        Book.category.ilike(q),
+        Book.label.ilike(q)))
+             .order_by(relevance.desc(),
+                   Book.series,
+                   Book.book_name,
+                   Book.author,
+                   Book.category,
+                   Book.label)
              .all())
 
     if not books:

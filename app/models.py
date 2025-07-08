@@ -110,7 +110,6 @@ class Book(db.Model):
                 "author": self.author,
                 "label": self.label if not self.sub_cat_index else formatted_label,
                 "sub_category": self.sub_cat,
-                "sub_category_index": self.sub_cat_index,
                 "description": self.description,
                 "notes": self.notes,
                 "librarian_notes": self.librarian_notes
