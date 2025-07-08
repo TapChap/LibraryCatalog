@@ -125,13 +125,13 @@ input:focus {
 }
 
 
-.input-group {
+.password-wrapper {
     display: flex;
     position: relative;
     width: 100%;
 }
 
-.input-group .eye-icon {
+.password-wrapper .eye-icon {
     position: absolute;
     top: 50%;
     left: 15px; /* Position on the left for RTL (Hebrew) */
@@ -146,7 +146,7 @@ input:focus {
     transition: color 0.2s ease-in-out;
 }
 
-.input-group .eye-icon:hover {
+.password-wrapper .eye-icon:hover {
     color: #555;
 }
 
