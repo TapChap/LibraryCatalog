@@ -99,10 +99,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="sub_cat_index" class="required">מיקום</label>
+                    <label for="location" class="required">מיקום</label>
                     <div class="input-wrapper">
-                        <input required type="text" id="location" name="location" class="form-input">
+                        <input required list="locations" type="text" id="location" name="location" class="form-input">
                         <button type="button" class="lock-btn" data-field="location" onclick="lockField('location')">🔒</button>
+
+                        <datalist id="locations">
+                            <option>ספריה</option>
+                            <option>בית-מדרש</option>
+                        </datalist>
                     </div>
                 </div>
             </div>

@@ -102,7 +102,7 @@ body {
 .lock-btn {
     position: absolute;
     left: 0.5rem;
-    top: 50%;
+    top: 45%;
     transform: translateY(-50%);
     background: none;
     border: 1px #1f2937;
@@ -166,9 +166,6 @@ body {
     opacity: 1;
 }
 
-.lock-btn.locked:hover {
-    color: #4b5563;
-}
 .textarea-wrapper {
     position: relative;
 }
