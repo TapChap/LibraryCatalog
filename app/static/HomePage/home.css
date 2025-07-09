@@ -135,6 +135,7 @@ body {
 .search-wrapper {
     flex: 1;
     position: relative;
+    min-width: max-content;
     display: flex;
     align-items: center;
     border: 2px solid #ccc;
@@ -160,7 +161,7 @@ body {
 }
 
 .search-btn {
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1.77rem;
     font-size: 1rem;
     background-color: #3b82f6;
     color: white;

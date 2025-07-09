@@ -169,7 +169,7 @@ input:focus {
 .container.right-panel-active .sign-up-container {
     /*transform: translateX(100%);*/
     z-index: 5;
-    animation: show 0.6s;
+    animation: show 0.6s ease-in-out;
 }
 
 @keyframes show {
@@ -310,7 +310,7 @@ input:focus {
     .container.right-panel-active .sign-up-container {
         transform: translateY(100%);
         z-index: 5;
-        animation: show 0.6s;
+        animation: show 0.6s ease-in-out;
     }
 
     /* Mobile: Vertical overlay */
