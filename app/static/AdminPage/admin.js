@@ -68,6 +68,8 @@ async function createBook() {
         showBookMessage('אנא מלאו את כל שדות החובה', 'error');
         return;
     }
+    
+    if (!confirm(`להוסיף ספר: ${requiredData.book_name}?`)) return
 
     createBtn.disabled = true;
     createBtn.textContent = 'יוצר...';
